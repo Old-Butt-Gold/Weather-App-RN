@@ -8,7 +8,7 @@ module.exports = {
       colors: {
         primary: "#fafcfd", // Синий цвет
         accent: "#FFFFFF", // Желтый цвет
-        backPrimary: "#5A8BAB", // Красный цвет
+        backPrimary: "#011019", // Красный цвет
       },
       fontFamily: {
         "poppins-regular": ["Poppins-Regular", "sans-serif"],
