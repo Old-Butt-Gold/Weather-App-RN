@@ -8,11 +8,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
 import {useCustomFonts} from "./components/loads/fonts";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {ClockComponent} from "./assets/svg-icons/сomponents/ClockComponent";
+import {ClockComponent} from "./components/ClockComponent";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 export default function App() {
 
     const [currentAnimationIndex, setCurrentAnimationIndex] = useState(0);
@@ -52,7 +54,7 @@ export default function App() {
 
 
     if (!fontsLoaded) {
-        return null; // Пока шрифты не загрузились, показывается Splash Screen
+        return null;
     }
 
     const isNightTime = currentTime.getHours() >= 0 && currentTime.getHours() < 6;
@@ -75,7 +77,7 @@ export default function App() {
         setAnimationKey(prevKey => prevKey + 1);
     };
     return (
-        <ScrollView className="flex-1 ">
+        <ScrollView className="flex-1">
         <View className="flex-1">
             <StatusBar style="light" />
 
@@ -85,13 +87,13 @@ export default function App() {
                 className="absolute h-full w-full"
             />
 
-            <SafeAreaView className="flex-1 justify-center items-center px-4 w-full relative">
+            <SafeAreaView className="flex-1 justify-center items-center px-4 w-full relative ">
                 <View className="absolute top-20 px-10 py-1 rounded-[35px] flex-col items-center">
                     <Text className="font-manrope-extrabold text-2xl text-accent">Минск</Text>
                     <View className="w-20 h-2 bg-white/20 rounded-2xl"></View>
                 </View>
                 <View
-                    className="absolute p-3 top-20 right-5  flex justify-center items-center overflow-hidden rounded-[15px] bg-white/20"
+                    className="absolute p-3 top-20 right-5 flex justify-center items-center overflow-hidden rounded-[15px] bg-white/20"
                     style={{
                         borderRadius: 15,
                         overflow: 'hidden',
@@ -126,7 +128,17 @@ export default function App() {
                         tint="light" // Цвет размытия: "light", "dark", "default"
                         className="absolute w-full h-[600px] z-0"
                     />
+                    <View
+                        className="absolute p-2 top-5 right-5 flex justify-center items-center overflow-hidden rounded-[15px] bg-white/20"
+                        style={{
+                            borderRadius: 15,
+                            overflow: 'hidden',
+                            elevation: 0,
+                        }}
+                    >
+                        <Ionicons name="reload-circle-sharp" size={24} color="white" />
 
+                    </View>
                     {/* Основной контент */}
                     <View className="absolute w-full h-[600px] bg-[rgba(90,139,171,0.1)]" />
                     <View className="absolute top-5 left-5">
@@ -138,6 +150,7 @@ export default function App() {
                     </View>
 
                     <View className="flex-row w-full px-3 flex items-end mt-4 justify-between">
+
                         <View className="flex-row flex justify-center items-start h-[130px] pr-7 relative">
                             <Text className="font-poppins-medium text-primary text-[90px] text-center ">25</Text>
                             <Text className="text-primary font-poppins-bold text-[25px] mt-8 text-right">&deg;</Text>
@@ -157,7 +170,7 @@ export default function App() {
                                     }
                                     autoPlay
                                     loop={false}
-                                    style={{ width: 150, height: 150 }}
+                                    style={{ width: 170, height: 170 }}
                                     onAnimationFinish={() => {
                                         if (clickAnimation) {
                                             setClickAnimation(null); // После кликовой анимации вернуть обычную
@@ -204,37 +217,34 @@ export default function App() {
                             <View className="flex py-2 px-4 flex-col bg-white/20 w-[48%] justify-center items-start rounded-[20px] relative">
                                 <FontAwesome6 name="temperature-three-quarters" size={24} color="white" className="absolute top-2 right-3"/>
                                 <View className="flex-row flex justify-center items-center h-[65px]">
-                                    <Text className="font-manrope-semibold text-accent text-[36px] py-2">12</Text>
+                                    <Text className="font-manrope-bold text-accent text-[36px] py-2">12</Text>
                                     <Text className="text-accent font-manrope-medium text-[28px]">&deg;</Text>
-                                    <Text className="text-accent font-manrope-bold text-[15px] mt-[28px]">C</Text>
+                                    <Text className="text-accent font-manrope-bold text-[15px] mt-[32px]">C</Text>
                                 </View>
                                 <Text className="font-manrope-medium text-white/60 text-[12px]">Ощущается как</Text>
                             </View>
                             <View className="flex py-2 px-4 flex-col bg-white/20 w-[48%] justify-center items-start rounded-[20px] relative">
-                                <FontAwesome6 name="temperature-three-quarters" size={24} color="white" className="absolute top-2 right-3"/>
+                                <FontAwesome6 name="wind" size={24} color="white" className="absolute top-2 right-3"/>
                                 <View className="flex-row flex justify-center items-center h-[65px]">
-                                    <Text className="font-manrope-semibold text-accent text-[36px] py-2">12</Text>
-                                    <Text className="text-accent font-manrope-medium text-[28px]">&deg;</Text>
-                                    <Text className="text-accent font-manrope-bold text-[15px] mt-[28px]">C</Text>
+                                    <Text className="font-manrope-bold text-accent text-[36px] py-2">5</Text>
+                                    <Text className="text-accent font-manrope-bold text-[15px] mt-[32px]">м/c</Text>
                                 </View>
-                                <Text className="font-manrope-medium text-white/60 text-[12px]">Ощущается как</Text>
+                                <Text className="font-manrope-medium text-white/60 text-[12px]">Скорость ветра</Text>
                             </View><View className="flex py-2 px-4 flex-col bg-white/20 w-[48%] justify-center items-start rounded-[20px] relative">
-                            <FontAwesome6 name="temperature-three-quarters" size={24} color="white" className="absolute top-2 right-3"/>
+                            <Ionicons name="rainy-sharp" size={24} color="white" className="absolute top-2 right-3" />
                             <View className="flex-row flex justify-center items-center h-[65px]">
-                                <Text className="font-manrope-medium text-accent text-[36px] py-2">12</Text>
-                                <Text className="text-accent font-manrope-medium text-[28px]">&deg;</Text>
-                                <Text className="text-accent font-manrope-bold text-[15px] mt-[28px]">C</Text>
+                                <Text className="font-manrope-bold text-accent text-[36px] py-2">68</Text>
+                                <Text className="text-accent font-manrope-bold text-[15px] mt-[32px]">%</Text>
                             </View>
-                            <Text className="font-manrope-medium text-white/60 text-[12px]">Ощущается как</Text>
+                            <Text className="font-manrope-medium text-white/60 text-[12px]">Вероятность дождя</Text>
                         </View>
                             <View className="flex py-2 px-4 flex-col bg-white/20 w-[48%] justify-center items-start rounded-[20px] relative">
-                            <FontAwesome6 name="temperature-three-quarters" size={24} color="white" className="absolute top-2 right-3"/>
+                                <MaterialIcons name="water-drop" size={24} color="white" className="absolute top-2 right-3"/>
                             <View className="flex-row flex justify-center items-center h-[65px]">
-                                <Text className="font-manrope-medium text-accent text-[36px] py-2">12</Text>
-                                <Text className="text-accent font-manrope-medium text-[28px]">&deg;</Text>
-                                <Text className="text-accent font-manrope-bold text-[15px] mt-[28px]">C</Text>
+                                <Text className="font-manrope-bold text-accent text-[36px] py-2">4</Text>
+                                <Text className="text-accent font-manrope-bold text-[15px] mt-[32px]">%</Text>
                             </View>
-                            <Text className="font-manrope-medium text-white/60 text-[12px]">Ощущается как</Text>
+                            <Text className="font-manrope-medium text-white/60 text-[12px]">Влажность</Text>
                         </View>
                         </View>
                     </View>

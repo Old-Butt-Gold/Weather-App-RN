@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import Svg, { Circle, Text as SvgText, Line } from 'react-native-svg';
+import {BlurView} from "expo-blur";
 
 export const ClockComponent = () => {
     const [time, setTime] = useState(new Date());
@@ -25,7 +26,13 @@ export const ClockComponent = () => {
     const hourMarks = Array.from({ length: 24 }, (_, i) => i);
 
     return (
-        <View className="mt-10 mb-20 items-center">
+        <View className="mt-8 items-center relative rounded-[35px] overflow-hidden">
+            <BlurView
+                intensity={44} // Интенсивность размытия (от 0 до 100)
+                tint="light" // Цвет размытия: "light", "dark", "default"
+                className="absolute w-full h-[600px] z-0 rounded-[35px] overflow-hidden"
+            />
+            <View className="absolute w-full h-[600px] bg-[rgba(90,139,171,0.1)]" />
             <Svg height="400" width="400" viewBox="0 0 100 100">
                 {/* Внешний круг */}
                 <Circle cx="50" cy="50" r="45" fill="#5A8BAB" stroke="#2B3F56" strokeWidth="0.5" />
@@ -94,22 +101,7 @@ export const ClockComponent = () => {
 
             </Svg>
 
-            {/* Индикаторы (оставляем как было) */}
-            <View className="flex-row mt-4">
-                <Text className="text-white mx-2">30 TIM</Text>
-                <Text className="text-white mx-2">30 SEX</Text>
-                <Text className="text-white mx-2">1 31 PPM</Text>
-            </View>
-            <View className="flex-row mt-2">
-                <Text className="text-white mx-2">90 SAM</Text>
-                <Text className="text-white mx-2">90 MESS</Text>
-                <Text className="text-white mx-2">20</Text>
-            </View>
-            <View className="flex-row mt-4">
-                <Text className="text-white mx-2">RAN 2M</Text>
-                <Text className="text-white mx-2">00 00</Text>
-                <Text className="text-white mx-2">0</Text>
-            </View>
+
         </View>
     );
 };
