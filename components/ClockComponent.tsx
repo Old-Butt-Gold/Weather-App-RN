@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Svg, { Circle, Text as SvgText, Line } from 'react-native-svg';
-import {BlurView} from "expo-blur";
+import { BlurView } from "expo-blur";
+import {LinearGradient} from "expo-linear-gradient";
 
 export const ClockComponent = () => {
     const [time, setTime] = useState(new Date());
+    const screenWidth = Dimensions.get('window').width;
+    const svgSize = screenWidth;
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -13,95 +16,88 @@ export const ClockComponent = () => {
         return () => clearInterval(timer);
     }, []);
 
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
-    const seconds = time.getSeconds();
-
-    // Углы для стрелок (24-часовой формат)
-    const hourAngle = hours * 15 + minutes * 0.25; // 360° / 24 = 15° на час
-    const minuteAngle = minutes * 6; // 360° / 60 = 6° на минуту
-    const secondAngle = seconds * 6; // 360° / 60 = 6° на секунду
-
-    // Метки для 24-часового циферблата
     const hourMarks = Array.from({ length: 24 }, (_, i) => i);
 
+    // 🔥 Температура на каждый час (примерные данные)
+    const temperatures = [
+        -2, -1, 0, 0, 1, 3, 6, 10, 14, 17, 20, 22,
+        24, 25, 24, 22, 19, 15, 12, 9, 6, 4, 2, 0
+    ];
+
     return (
-        <View className="mt-8 items-center relative rounded-[35px] overflow-hidden">
+        <LinearGradient
+            start={{ x: 0.5, y: 0.4 }} // Центр градиента
+            end={{ x: 1.0, y: 1.0 }} // Расширение градиента (создает радиальный эффект)
+            colors={[
+            'rgba(90, 139, 171, 0.2)', // #7FC3AE с прозрачностью 70%
+             '   rgb(18,144,216)', // #7FC3AE с прозрачностью 30%
+            ]}
+            className="mt-8 items-center relative overflow-hidden rounded-[35] w-full" style={{ height: svgSize }}>
             <BlurView
-                intensity={44} // Интенсивность размытия (от 0 до 100)
-                tint="light" // Цвет размытия: "light", "dark", "default"
-                className="absolute w-full h-[600px] z-0 rounded-[35px] overflow-hidden"
+                intensity={44}
+                tint="light"
+                className="absolute w-full h-full z-0 overflow-hidden rounded-[35]"
             />
-            <View className="absolute w-full h-[600px] bg-[rgba(90,139,171,0.1)]" />
-            <Svg height="400" width="400" viewBox="0 0 100 100">
-                {/* Внешний круг */}
-                <Circle cx="50" cy="50" r="45" fill="#5A8BAB" stroke="#2B3F56" strokeWidth="0.5" />
+            <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
+            <Svg
+                width={svgSize}
+                height={svgSize}
+                viewBox="0 0 100 100"
+            >
+                <Circle cx="50" cy="50" r="1" fill="#FFFFFF" />
 
-                {/* Центр часов */}
-                <Circle cx="50" cy="50" r="2" fill="#2B3F56" />
-
-                {/* Метки часов (24 деления) */}
                 {hourMarks.map((hour) => {
-                    const angle = hour * 15; // 360° / 24 = 15°
+                    const angle = hour * 15;
                     const rad = (angle * Math.PI) / 180;
-                    const x = 50 + 40 * Math.sin(rad);
-                    const y = 50 - 40 * Math.cos(rad);
 
-                    // Для лучшей читаемости размещаем цифры только на основных позициях
-                    if (hour % 2 === 0) {
-                        return (
-                            <React.Fragment key={hour}>
-                                {/* Длинные метки для четных часов */}
-                                <Line
-                                    x1={50 + 35 * Math.sin(rad)}
-                                    y1={50 - 35 * Math.cos(rad)}
-                                    x2={50 + 40 * Math.sin(rad)}
-                                    y2={50 - 40 * Math.cos(rad)}
-                                    stroke="#FFFFFF"
-                                    strokeWidth="0.5"
-                                />
-                                {/* Цифры */}
-                                <SvgText
-                                    x={50 + 30 * Math.sin(rad)}
-                                    y={50 - 30 * Math.cos(rad)}
-                                    textAnchor="middle"
-                                    fill="#FFFFFF"
-                                    fontSize="4"
-                                >
-                                    {hour === 0 ? 24 : hour}
-                                </SvgText>
-                            </React.Fragment>
-                        );
-                    } else {
-                        // Короткие метки для нечетных часов
-                        return (
+                    const textRadius = 35;
+                    const tempRadius = 42;
+                    const markStartRadius = 20;
+                    const markEndRadius = 24;
+
+                    const displayHour = hour === 0 ? 24 : hour;
+
+                    return (
+                        <React.Fragment key={hour}>
+                            {/* Метка */}
                             <Line
-                                key={hour}
-                                x1={50 + 38 * Math.sin(rad)}
-                                y1={50 - 38 * Math.cos(rad)}
-                                x2={50 + 40 * Math.sin(rad)}
-                                y2={50 - 40 * Math.cos(rad)}
+                                x1={50 + markStartRadius * Math.sin(rad)}
+                                y1={50 - markStartRadius * Math.cos(rad)}
+                                x2={50 + markEndRadius * Math.sin(rad)}
+                                y2={50 - markEndRadius * Math.cos(rad)}
                                 stroke="#FFFFFF"
-                                strokeWidth="0.3"
+                                strokeWidth={hour % 2 === 0 ? "1" : "0.4"}
+                                strokeLinecap="round"
+                                strokeOpacity={0.8}
                             />
-                        );
-                    }
+                            {/* Время */}
+                            <SvgText
+                                x={50 + textRadius * Math.sin(rad)}
+                                y={50 - textRadius * Math.cos(rad)}
+                                textAnchor="middle"
+                                fill="#FFFFFF"
+                                fillOpacity={0.8}
+                                fontSize="2.5"
+                                fontFamily="Poppins-Medium"
+                            >
+                                {`${displayHour}:00`}
+                            </SvgText>
+                            {/* Температура */}
+                            <SvgText
+                                x={50 + tempRadius * Math.sin(rad)}
+                                y={50 - tempRadius * Math.cos(rad)}
+                                textAnchor="middle"
+                                fill="#FFFFFF"
+                                fillOpacity={1}
+                                fontSize="3"
+                                fontFamily="Poppins-SemiBold"
+                            >
+                                {`${temperatures[hour]}°`}
+                            </SvgText>
+                        </React.Fragment>
+                    );
                 })}
-
-                {/* Стрелка часов (24-часовая) */}
-                <Line
-                    x1="50" y1="50"
-                    x2="50" y2="25"
-                    stroke="#FFFFFF"
-                    strokeWidth="2"
-                    transform={`rotate(${hourAngle}, 50, 50)`}
-                />
-
-                {/* Стрелка минут */}
-
             </Svg>
-
-
-        </View>
+        </LinearGradient>
     );
 };

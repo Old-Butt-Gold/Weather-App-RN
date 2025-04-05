@@ -41,16 +41,10 @@ export default function App() {
 
     useEffect(() => {
         // Пример входящих данных о времени
-        const incomingTime = "2022-01-01T00:00"; // Замените на реальные данные
+        const incomingTime = "2022-01-01T02:00"; // Замените на реальные данные
         setCurrentTime(new Date(incomingTime));
     }, []);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
 
 
     if (!fontsLoaded) {
@@ -82,29 +76,24 @@ export default function App() {
             <StatusBar style="light" />
 
             <Image
-                blurRadius={10}
+                blurRadius={4}
                 source={require("./assets/bg.png")}
                 className="absolute h-full w-full"
             />
 
-            <SafeAreaView className="flex-1 justify-center items-center px-4 w-full relative ">
-                <View className="absolute top-20 px-10 py-1 rounded-[35px] flex-col items-center">
+            <SafeAreaView className="flex-1 justify-center items-center px-4 w-full relative pb-5">
+                <View className="absolute top-20 px-10 py-1 rounded-[35] flex-col items-center">
                     <Text className="font-manrope-extrabold text-2xl text-accent">Минск</Text>
                     <View className="w-20 h-2 bg-white/20 rounded-2xl"></View>
                 </View>
                 <View
-                    className="absolute p-3 top-20 right-5 flex justify-center items-center overflow-hidden rounded-[15px] bg-white/20"
-                    style={{
-                        borderRadius: 15,
-                        overflow: 'hidden',
-                        elevation: 0,
-                    }}
+                    className="absolute p-3 top-20 right-5 flex justify-center items-center overflow-hidden rounded-[15] bg-white/20"
                 >
                     <FontAwesome name="search" size={24} color="white" />
                 </View>
 
                 <View
-                    className="absolute p-3 top-20 left-5 flex justify-center items-center overflow-hidden rounded-[15px] bg-white/20"
+                    className="absolute p-3 top-20 left-5 flex justify-center items-center overflow-hidden rounded-[15] bg-white/20"
                     style={{
                         borderRadius: 15,
                         overflow: 'hidden',
@@ -121,20 +110,16 @@ export default function App() {
                         'rgba(90, 139, 171, 0.2)', // #7FC3AE с прозрачностью 70%
                         'rgb(18,144,216)', // #7FC3AE с прозрачностью 30%
                     ]}
-                    className="w-full flex flex-col items-center py-10 overflow-hidden relative rounded-[35px] mt-40"
+                    className="w-full flex flex-col items-center py-10 overflow-hidden relative rounded-[35] mt-40"
                 >
                     <BlurView
                         intensity={44} // Интенсивность размытия (от 0 до 100)
                         tint="light" // Цвет размытия: "light", "dark", "default"
-                        className="absolute w-full h-[600px] z-0"
+                        className="absolute w-full h-[600] z-0"
                     />
                     <View
-                        className="absolute p-2 top-5 right-5 flex justify-center items-center overflow-hidden rounded-[15px] bg-white/20"
-                        style={{
-                            borderRadius: 15,
-                            overflow: 'hidden',
-                            elevation: 0,
-                        }}
+                        className="absolute p-2 top-5 right-5 flex justify-center items-center overflow-hidden rounded-[15] bg-white/20"
+
                     >
                         <Ionicons name="reload-circle-sharp" size={24} color="white" />
 
@@ -202,7 +187,7 @@ export default function App() {
                         </View>
                     </View>
                     <View className="flex w-full px-4 z-1">
-                        <View className="flex flex-row px-4 py-2 gap-3 bg-white/20 w-[120px] justify-center items-center rounded-[35px]">
+                        <View className="flex flex-row px-4 py-2 gap-3 bg-white/20 w-[120] justify-center items-center rounded-[35]">
                             <View className="flex-row flex justify-center items-center ">
                                 <AntDesign name="arrowup" size={18} color="white" className=""/>
                                 <Text className="font-poppins-medium text-accent text-[13px]">25&deg;</Text>
