@@ -437,11 +437,11 @@ export const ClockComponent = () => {
                     {/* Стрелка направления ветра */}
                     <Polygon
                         points={`
-              ${50 + (5.5 * 1.35) * Math.cos(angleRad)},${63 + (5.5 * 1.35) * Math.sin(angleRad)} 
-              ${50 + (5.5 - 0.5) * Math.cos(angleRad + Math.PI / 10)},${63 + (5.5 - 0.5) * Math.sin(angleRad + Math.PI / 10)} 
-              ${50 + 5.5 * Math.cos(angleRad)},${63 + 5.5 * Math.sin(angleRad)} 
-              ${50 + (5.5 - 0.5) * Math.cos(angleRad - Math.PI / 10)},${63 + (5.5 - 0.5) * Math.sin(angleRad - Math.PI / 10)}
-            `}
+                          ${50 + (5.5 * 1.35) * Math.cos(angleRad)},${63 + (5.5 * 1.35) * Math.sin(angleRad)} 
+                          ${50 + (5.5 - 0.5) * Math.cos(angleRad + Math.PI / 10)},${63 + (5.5 - 0.5) * Math.sin(angleRad + Math.PI / 10)} 
+                          ${50 + 5.5 * Math.cos(angleRad)},${63 + 5.5 * Math.sin(angleRad)} 
+                          ${50 + (5.5 - 0.5) * Math.cos(angleRad - Math.PI / 10)},${63 + (5.5 - 0.5) * Math.sin(angleRad - Math.PI / 10)}
+                        `}
                         fill="white"
                     />
 
