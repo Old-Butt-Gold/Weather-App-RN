@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
-  content: ["./App.tsx", "./screens/**/*.{tsx,ts}"],
+  content: [
+    "./App.tsx",
+    "./screens/**/*.{tsx,ts}",
+    "./components/**/*.{tsx,ts}" // Добавляем эту строку
+  ],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {

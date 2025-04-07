@@ -97,7 +97,9 @@ export default function App() {
                     <LinearGradient
                         colors={['rgba(90, 139, 171, 0.2)', 'rgb(18,144,216)']}
                         className="w-full mt-6 p-6 relative overflow-hidden rounded-[35]"
-                    >
+                        start={{ x: 0.5, y: 0.4 }} // Центр градиента
+                        end={{ x: 1.0, y: 1.0 }} // Расширение градиента (создает радиальный эффект)
+                                        >
                         <BlurView
                             intensity={44}
                             tint="light"
@@ -127,11 +129,11 @@ export default function App() {
                             </View>
 
                             {/* Temperature and Animation */}
-                            <View className="flex-row justify-between mt-4 border-2">
-                                <View className="flex-row items-start border-2">
-                                    <View className="flex-col flex border-2 border-accent">
+                            <View className="flex-row justify-between mt-4">
+                                <View className="flex-row items-start">
+                                    <View className="flex-col flex border-accent">
                                         <Text className="text-accent text-[20px] font-manrope-extrabold">Дождливо</Text>
-                                        <Text className="font-poppins-medium text-primary text-[90px] border-2 h-[90] leading-[100px]">25</Text>
+                                        <Text className="font-poppins-medium text-primary text-[90px] h-[90] leading-[100px]">25</Text>
                                         <View className="flex-row justify-center mt-2">
                                             <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
                                                 <View className="flex-row items-center">
@@ -149,7 +151,7 @@ export default function App() {
 
                                 </View>
 
-                                <TouchableOpacity onPress={handleAnimationPress} activeOpacity={1}  className='border-2'>
+                                <TouchableOpacity onPress={handleAnimationPress} activeOpacity={1}>
                                     <LottieView
                                         key={animationKey}
                                         source={
@@ -198,10 +200,10 @@ export default function App() {
                                     { icon: <Ionicons name="rainy-sharp" size={24} color="white" />, value: "68", unit: "%", label: "Вероятность дождя" },
                                     { icon: <MaterialIcons name="water-drop" size={24} color="white" />, value: "4", unit: "%", label: "Влажность" }
                                 ].map((item, index) => (
-                                    <View key={index} className="w-[48%] bg-white/20 rounded-[20px] px-5 py-4">
+                                    <View key={index} className="w-[48%] bg-white/20 rounded-[20px] px-3 py-4">
                                         <View className="absolute top-2 right-3">{item.icon}</View>
-                                        <View className="flex-row items-end h-[50px]">
-                                            <Text className="font-manrope-bold text-accent text-[36px]">{item.value}</Text>
+                                        <View className="flex-row items-end">
+                                            <Text className="font-manrope-bold text-accent text-[36px] h-[60]">{item.value}</Text>
                                             <Text className="text-accent font-manrope-bold text-[15px] mb-1 ml-1">{item.unit}</Text>
                                         </View>
                                         <Text className="font-manrope-medium text-white/60 text-[12px]">{item.label}</Text>
