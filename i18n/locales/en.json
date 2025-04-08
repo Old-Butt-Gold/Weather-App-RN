@@ -1,0 +1,28 @@
+{
+  "weather": {
+    "feelsLike": "Feels like",
+    "windSpeed": "Wind speed",
+    "rainChance": "Rain chance",
+    "humidity": "Humidity",
+    "rainy": "Rainy",
+    "reload": "Reload",
+    "temperatureRange": "Temperature range"
+  },
+  "date": {
+    "weekdayShort": "Thu",
+    "monthShort": "Apr"
+  },
+  "city": "Minsk",
+  "clock": {
+    "weatherDescriptions": [
+      "Clear", "Cloudy", "Light rain", "Heavy rain",
+      "Thunderstorm", "Snow", "Fog", "Overcast",
+      "Partly cloudy", "Drizzle", "Hail", "Blizzard"
+    ],
+    "directions": ["N", "E", "S", "W"],
+    "windSpeedUnit": "m/s",
+    "dateFormat": "M.D",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  }
+}
