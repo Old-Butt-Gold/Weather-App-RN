@@ -13,8 +13,11 @@ interface RingWithGradientProps {
         colorStart: { r: number; g: number; b: number };
         colorEnd: { r: number; g: number; b: number };
     }[];
-    defaultColor?: string; // Стандартный цвет
-    opacity?: number; // Пропс для прозрачности
+    defaultColor?: string;
+    opacity?: number;
+    cx?: number; // Центр по X
+    cy?: number; // Центр по Y
+    rotationDeg?: number; // Новый параметр для поворота сектора
 }
 
 const RingWithGradient: React.FC<RingWithGradientProps> = ({
@@ -25,17 +28,16 @@ const RingWithGradient: React.FC<RingWithGradientProps> = ({
                                                                segments = 200,
                                                                gradientRanges,
                                                                defaultColor = "gray",
-                                                               opacity = 1, // Значение по умолчанию 1 (полностью непрозрачный)
+                                                               opacity = 1,
+                                                               cx = 50, // По умолчанию 50
+                                                               cy = 50,
+                                                               rotationDeg = 0, // По умолчанию 0
                                                            }) => {
-    const cx = 50;
-    const cy = 50;
+    const toRad = (deg: number) => (Math.PI / 180) * deg;
 
-    // Функция для нахождения цвета на основе угла и диапазонов
     const getColor = (angle: number): string => {
         for (let range of gradientRanges) {
             const { startAngle, endAngle, colorStart, colorEnd } = range;
-
-            // Если угол находится в пределах диапазона
             if (angle >= startAngle && angle <= endAngle) {
                 const t = (angle - startAngle) / (endAngle - startAngle);
                 const r = Math.round(colorStart.r + t * (colorEnd.r - colorStart.r));
@@ -44,11 +46,8 @@ const RingWithGradient: React.FC<RingWithGradientProps> = ({
                 return `rgb(${r},${g},${b})`;
             }
         }
-
-        return defaultColor; // Если угол вне диапазона, используем стандартный цвет
+        return defaultColor;
     };
-
-    const toRad = (deg: number) => (Math.PI / 180) * deg;
 
     const describeRingSegment = (
         cx: number,
@@ -56,10 +55,14 @@ const RingWithGradient: React.FC<RingWithGradientProps> = ({
         innerRadius: number,
         outerRadius: number,
         angleStartDeg: number,
-        angleEndDeg: number
+        angleEndDeg: number,
+        rotationDeg: number
     ) => {
-        const startRad = toRad(angleStartDeg - 90);
-        const endRad = toRad(angleEndDeg - 90);
+        const adjustedStart = angleStartDeg + rotationDeg;
+        const adjustedEnd = angleEndDeg + rotationDeg;
+
+        const startRad = toRad(adjustedStart - 90);
+        const endRad = toRad(adjustedEnd - 90);
 
         const x1 = cx + outerRadius * Math.cos(startRad);
         const y1 = cy + outerRadius * Math.sin(startRad);
@@ -70,23 +73,23 @@ const RingWithGradient: React.FC<RingWithGradientProps> = ({
         const x4 = cx + innerRadius * Math.cos(startRad);
         const y4 = cy + innerRadius * Math.sin(startRad);
 
-        const largeArcFlag = angleEndDeg - angleStartDeg <= 180 ? '0' : '1';
+        const largeArcFlag = adjustedEnd - adjustedStart <= 180 ? '0' : '1';
 
         return `
-            M ${x1},${y1}
-            A ${outerRadius},${outerRadius} 0 ${largeArcFlag} 1 ${x2},${y2}
-            L ${x3},${y3}
-            A ${innerRadius},${innerRadius} 0 ${largeArcFlag} 0 ${x4},${y4}
-            Z
-        `;
+      M ${x1},${y1}
+      A ${outerRadius},${outerRadius} 0 ${largeArcFlag} 1 ${x2},${y2}
+      L ${x3},${y3}
+      A ${innerRadius},${innerRadius} 0 ${largeArcFlag} 0 ${x4},${y4}
+      Z
+    `;
     };
 
     const segmentsArray = Array.from({ length: segments }, (_, i) => {
         const angle1 = startAngle + ((endAngle - startAngle) * i) / segments;
         const angle2 = startAngle + ((endAngle - startAngle) * (i + 1)) / segments;
 
-        const path = describeRingSegment(cx, cy, radiusInner, radiusOuter, angle1, angle2);
-        const fill = getColor((angle1 + angle2) / 2); // Средний угол для цветового перехода
+        const path = describeRingSegment(cx, cy, radiusInner, radiusOuter, angle1, angle2, rotationDeg);
+        const fill = getColor((angle1 + angle2) / 2);
 
         return <Path key={i} d={path} fill={fill} opacity={opacity} />;
     });

@@ -4,7 +4,7 @@ import { SafeAreaView, Platform, ActivityIndicator, View } from 'react-native';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/i18n';
 import { HomeScreen } from "./screens/HomeScreen";
-import { useCustomFonts } from "./components/loads/fonts";
+import { useCustomFonts } from "./utils/loads/fonts";
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();

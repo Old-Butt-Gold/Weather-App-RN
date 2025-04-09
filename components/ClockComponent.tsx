@@ -17,7 +17,7 @@ import { LinearGradient as ViewGradient } from 'expo-linear-gradient';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
-import RingWithGradient from "./RingWithGradientProps";
+import RingWithGradient from "../utils/RingWithGradientProps";
 import {
     CloudyNightIcon,
     NightRainIcon,
@@ -27,6 +27,8 @@ import {
 } from "../assets/svg-icons/icon_components";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
+import { describeFullRing, describeRingSector } from '../utils/ringUtils'; // путь подкорректируй
+
 // Константы и типы
 type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
@@ -84,45 +86,6 @@ export const ClockComponent = () => {
     const segments = currentHour > 17 ? 25 : undefined;
 
     // Вспомогательные функции
-    const describeFullRing = (cx: number, cy: number, rOuter: number, rInner: number): string => {
-        return `
-      M ${cx + rOuter},${cy}
-      A ${rOuter},${rOuter} 0 1 1 ${cx - rOuter},${cy}
-      A ${rOuter},${rOuter} 0 1 1 ${cx + rOuter},${cy}
-      Z
-      M ${cx + rInner},${cy}
-      A ${rInner},${rInner} 0 1 0 ${cx - rInner},${cy}
-      A ${rInner},${rInner} 0 1 0 ${cx + rInner},${cy}
-      Z
-    `;
-    };
-
-    const describeRingSector = (
-        cx: number, cy: number, rOuter: number, rInner: number,
-        startAngleDeg: number, endAngleDeg: number
-    ): string => {
-        const startRad = (Math.PI / 180) * (startAngleDeg - 90);
-        const endRad = (Math.PI / 180) * (endAngleDeg - 90);
-
-        const x1 = cx + rOuter * Math.cos(startRad);
-        const y1 = cy + rOuter * Math.sin(startRad);
-        const x2 = cx + rOuter * Math.cos(endRad);
-        const y2 = cy + rOuter * Math.sin(endRad);
-        const x3 = cx + rInner * Math.cos(endRad);
-        const y3 = cy + rInner * Math.sin(endRad);
-        const x4 = cx + rInner * Math.cos(startRad);
-        const y4 = cy + rInner * Math.sin(startRad);
-
-        const largeArcFlag = endAngleDeg - startAngleDeg <= 180 ? "0" : "1";
-
-        return `
-      M ${x1},${y1}
-      A ${rOuter},${rOuter} 0 ${largeArcFlag} 1 ${x2},${y2}
-      L ${x3},${y3}
-      A ${rInner},${rInner} 0 ${largeArcFlag} 0 ${x4},${y4}
-      Z
-    `;
-    };
 
     // Компоненты интерфейса
     const TypeSelectorButton = ({ type, icon }: { type: WeatherDataType, icon: React.ReactNode }) => (
