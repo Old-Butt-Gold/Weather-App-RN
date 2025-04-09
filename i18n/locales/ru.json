@@ -6,7 +6,8 @@
     "humidity": "Влажность",
     "rainy": "Дождливо",
     "reload": "Обновить",
-    "temperatureRange": "Диапазон температур"
+    "temperatureRange": "Диапазон температур",
+    "nextDays": "Прогноз на 5 дней"
   },
   "date": {
     "weekdayShort": "чт.",

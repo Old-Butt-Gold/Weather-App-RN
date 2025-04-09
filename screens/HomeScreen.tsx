@@ -7,6 +7,7 @@ import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import {NextDaysWeatherWidget} from "../components/nextDaysWeatherWidget";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -82,11 +83,14 @@ type WeatherCardProps = {
 
 // Компонент фонового изображения
 const BackgroundImage = () => (
-    <Image
-        blurRadius={4}
-        source={require("../assets/bg.png")}
-        className="absolute h-full w-full"
-    />
+    <View className="absolute h-full w-full">
+        <Image
+            blurRadius={6}
+            source={require("../assets/bg.png")}
+            className="h-full w-full"
+        />
+        <View className="absolute h-full w-full bg-black/5" />
+    </View>
 );
 
 // Компонент кнопки с иконкой
@@ -310,13 +314,22 @@ export const HomeScreen = () => {
         <>
             <StatusBar style="light" />
             <BackgroundImage />
+
+            {/* Фиксированный Header */}
+            <View className="absolute top-0 left-0 right-0 z-50">
+                <Header />
+            </View>
+
             <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingTop: 100, // Добавляем отступ сверху равный высоте Header
+                }}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
             >
                 <View className="flex-1 justify-center items-center px-4 w-full relative pb-5">
-                    <Header />
+                    {/* Убираем Header отсюда, так как он теперь фиксированный */}
                     <WeatherCard
                         isNightTime={isNightTime}
                         currentAnimation={getCurrentAnimation(animationState, isNightTime)}
@@ -325,6 +338,7 @@ export const HomeScreen = () => {
                         onAnimationFinish={handleAnimationFinish}
                     />
                     <ClockComponent />
+                    <NextDaysWeatherWidget />
                 </View>
             </ScrollView>
         </>

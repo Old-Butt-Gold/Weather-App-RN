@@ -22,9 +22,11 @@ import {
     CloudyNightIcon,
     NightRainIcon,
     RainyIcon,
-    SunnyRainIcon
+    SunnyRainIcon,
+    Icon65
 } from "../assets/svg-icons/icon_components";
-
+import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
+import Feather from '@expo/vector-icons/Feather';
 // Константы и типы
 type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
@@ -32,7 +34,8 @@ const WEATHER_ICONS = [
     CloudyNightIcon,
     NightRainIcon,
     RainyIcon,
-    SunnyRainIcon
+    SunnyRainIcon,
+    Icon65
 ];
 
 const WEATHER_DESCRIPTIONS = [
@@ -55,11 +58,14 @@ export const ClockComponent = () => {
     // Данные
     const temperatures = useMemo(() => [-2, -1, 12, 0, 1, 3, 6, 10, 14, 17, 20, 22, 24, 25, 24, 22, 19, 15, 12, 9, 6, 4, 2, 0], []);
     const windSpeeds = useMemo(() => [5.0, 5.4, 4.2, 3.1, 3.5, 2.0, 2.3, 3.7, 5.1, 7.2, 10.0, 12.5, 14.3, 13.2, 12.1, 10.4, 8.2, 6.3, 5.5, 4.8, 4.0, 4.2, 5.1, 5.0], []);
-
+    const getWeatherCodeForHour = (hour: number) => {
+        const codes = ['0', '2', '3', '45', '48', '51', '53', '55', '61', '63', '65', '71', '75', '96'];
+        return codes[hour % codes.length];
+    };
     // Размеры
     const screenWidth = Dimensions.get('window').width;
     const svgSize = screenWidth;
-    const topMargin = 40;
+    const topMargin = 95;
 
     // Таймер
     useEffect(() => {
@@ -131,15 +137,18 @@ export const ClockComponent = () => {
     );
 
     const TimeDisplay = () => (
-        <View className="flex absolute top-[15px] h-[40px] rounded-[35px] z-[999] justify-center items-center flex-row">
-            <Text className="text-white font-manrope-bold text-2xl">
+        <View className="flex absolute top-[65px] h-[35px] rounded-[35px] z-[999] justify-center items-center flex-col">
+            <Text className="text-white font-manrope-bold text-2xl h-[30]">
                 {`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`}
+            </Text>
+            <Text className="text-white/50 font-manrope-bold text-sm h-[20] leading-4">
+                UTC+3
             </Text>
         </View>
     );
 
     const DateIndicator = () => (
-        <View className="absolute top-[15px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
+        <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
             <View className="flex flex-row justify-center items-center gap-x-1">
                 <View className="rounded-full bg-[rgba(229,229,234,0.4)] w-2 h-2"/>
                 <Text className="text-white/80 font-manrope-semibold text-sm">7.04</Text>
@@ -150,9 +159,14 @@ export const ClockComponent = () => {
             </View>
         </View>
     );
-
+    const Infolabel =()=> (
+        <View className="absolute top-5 left-5 flex flex-row justify-center items-center gap-x-2">
+            <Feather name="clock" size={16} color="rgba(255, 255, 255,0.4)"/>
+            <Text className="text-[16px] text-white/40 font-manrope-medium mb-1">Почасовой прогноз</Text>
+        </View>
+    );
     const TypeSelector = () => (
-        <View className="absolute top-[15px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
+        <View className="absolute top-[60px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
             <TypeSelectorButton
                 type="temperature"
                 icon={<FontAwesome6 name="temperature-three-quarters" size={16} color="white" />}
@@ -261,7 +275,10 @@ export const ClockComponent = () => {
         const angle = hour * ANGLE_PER_HOUR;
         const rad = (angle * Math.PI) / 180;
         const iconRadius = 32;
-        const IconComponent = WEATHER_ICONS[hour % WEATHER_ICONS.length];
+
+        // Пример генерации weatherCode и isDay. Ты можешь подставлять реальные данные.
+        const weatherCode = getWeatherCodeForHour(hour); // например, '63'
+        const isDay = hour >= 6 && hour < 18;
 
         return (
             <View
@@ -274,7 +291,12 @@ export const ClockComponent = () => {
                     height: 35,
                 }}
             >
-                <IconComponent width={38} height={38} fill="white" />
+                <WeatherIcon
+                    code={weatherCode}
+                    isDay={isDay}
+                    size={38}
+                    fill="white"
+                />
             </View>
         );
     };
@@ -291,7 +313,7 @@ export const ClockComponent = () => {
                 className="absolute w-full h-full z-0 overflow-hidden rounded-[35]"
             />
             <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
-
+            <Infolabel/>
             <TypeSelector />
             <TimeDisplay />
             <DateIndicator />

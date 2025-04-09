@@ -6,7 +6,8 @@
     "humidity": "Humidity",
     "rainy": "Rainy",
     "reload": "Reload",
-    "temperatureRange": "Temperature range"
+    "temperatureRange": "Temperature range",
+    "nextDays": "5-day forecast"
   },
   "date": {
     "weekdayShort": "Thu",
