@@ -83,13 +83,14 @@ type WeatherCardProps = {
 
 // Компонент фонового изображения
 const BackgroundImage = () => (
-    <View className="absolute h-full w-full">
+    <View className="absolute top-0 left-0 right-0 bottom-0">
         <Image
-            blurRadius={6}
             source={require("../assets/bg.png")}
-            className="h-full w-full"
+            style={{ flex: 1, width: '100%', height: '100%' }}
+            blurRadius={6}
+            resizeMode="cover"
         />
-        <View className="absolute h-full w-full bg-black/5" />
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/5" />
     </View>
 );
 
@@ -111,7 +112,7 @@ const LocationTitle = () => {
 
 // Компонент шапки
 const Header = () => (
-    <View className="w-full flex-row justify-between items-center mt-4 px-4 pt-10">
+    <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
         <IconButton icon={<Ionicons name="settings" size={24} color="white" />} />
         <LocationTitle />
         <IconButton icon={<FontAwesome name="search" size={24} color="white" />} />
@@ -193,8 +194,8 @@ const WeatherDetailCard = ({ item }: { item: typeof WEATHER_DETAILS[0] }) => {
     return (
         <View className="w-[48%] bg-white/20 rounded-[20px] px-3 py-4">
             <View className="absolute top-2 right-3">{item.icon}</View>
-            <View className="flex-row items-end">
-                <Text className="font-manrope-bold text-accent text-[36px] h-[60]">{item.value}</Text>
+            <View className="flex-row items-end border-2">
+                <Text className="font-manrope-bold text-accent text-[36px] h-[60] border-2">{item.value}</Text>
                 <Text className="text-accent font-manrope-bold text-[15px] mb-1 ml-1">{item.unit}</Text>
             </View>
             <Text className="font-manrope-medium text-white/60 text-[12px]">{t(`weather.${item.labelKey}`)}</Text>
@@ -242,11 +243,8 @@ const WeatherCard = ({
                          onAnimationPress,
                          onAnimationFinish
                      }: WeatherCardProps) => (
-    <LinearGradient
-        colors={['rgba(90, 139, 171, 0.2)', 'rgb(18,144,216)']}
+    <View
         className="w-full mt-6 p-6 relative overflow-hidden rounded-[35]"
-        start={{ x: 0.5, y: 0.4 }}
-        end={{ x: 1.0, y: 1.0 }}
     >
         <BlurBackground />
         <View className="w-full z-10">
@@ -259,7 +257,7 @@ const WeatherCard = ({
             />
             <WeatherDetails />
         </View>
-    </LinearGradient>
+    </View>
 );
 
 // Главный компонент экрана
@@ -323,7 +321,7 @@ export const HomeScreen = () => {
             <ScrollView
                 contentContainerStyle={{
                     flexGrow: 1,
-                    paddingTop: 100, // Добавляем отступ сверху равный высоте Header
+                    paddingTop: 80, // Добавляем отступ сверху равный высоте Header
                 }}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}

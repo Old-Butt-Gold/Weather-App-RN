@@ -41,8 +41,7 @@ const ForecastCard = ({
     const marginRight = isLast ? 12 : 0;
 
     return (
-        <ViewGradient
-            colors={['rgba(90, 139, 171, 0.1)', 'rgba(18,144,216, 0.6)']}
+        <View
             className="bg-white/30 rounded-2xl flex-col items-center justify-center px-3 py-3 w-[130] relative overflow-hidden"
             style={{ marginLeft, marginRight }}
         >
@@ -79,7 +78,7 @@ const ForecastCard = ({
 
             </View>
 
-        </ViewGradient>
+        </View>
     );
 };
 

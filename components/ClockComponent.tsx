@@ -265,8 +265,7 @@ export const ClockComponent = () => {
     };
 
     return (
-        <ViewGradient
-            colors={['rgba(90, 139, 171, 0.2)', 'rgb(18,144,216)']}
+        <View
             className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full"
             style={{ height: svgSize + topMargin }}
         >
@@ -465,6 +464,6 @@ export const ClockComponent = () => {
 
             {/* Иконки осадков */}
             {selectedType === 'precipitation' && HOUR_MARKS.map(renderPrecipitationIcon)}
-        </ViewGradient>
+        </View>
     );
 };
