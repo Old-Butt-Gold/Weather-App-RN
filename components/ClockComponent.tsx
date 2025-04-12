@@ -27,7 +27,9 @@ import {
 } from "../assets/svg-icons/icon_components";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
-import { describeFullRing, describeRingSector } from '../utils/ringUtils'; // путь подкорректируй
+import { describeFullRing, describeRingSector } from '../utils/ringUtils';
+
+import {t} from "i18next"; // путь подкорректируй
 
 // Константы и типы
 type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
@@ -122,10 +124,12 @@ export const ClockComponent = () => {
             </View>
         </View>
     );
-    const Infolabel =()=> (
+    const Infolabel = () => (
         <View className="absolute top-5 left-5 flex flex-row justify-center items-center gap-x-2">
-            <Feather name="clock" size={16} color="rgba(255, 255, 255,0.4)"/>
-            <Text className="text-[16px] text-white/40 font-manrope-medium mb-1">Почасовой прогноз</Text>
+            <Feather name="clock" size={16} color="rgba(243, 244, 246,0.6)"/>
+            <Text className="text-[16px] text-gray-100/60 font-manrope-medium mb-1">
+                {t('clock.hourlyForecast')}
+            </Text>
         </View>
     );
     const TypeSelector = () => (
@@ -187,7 +191,7 @@ export const ClockComponent = () => {
                         fontFamily="Poppins-SemiBold"
                     >
                         <TSpan fontSize="4">{windSpeeds[hour].toFixed(1)}</TSpan>
-                        <TSpan x={50 + dataRadius * Math.sin(rad)} dy={2.2} dx={0.5} fontSize="2.3">м/с</TSpan>
+                        <TSpan x={50 + dataRadius * Math.sin(rad)} dy={2.2} dx={0.5} fontSize="2.3">{t('clock.windSpeedUnit')}</TSpan>
                     </SvgText>
                 )}
             </React.Fragment>
@@ -285,7 +289,7 @@ export const ClockComponent = () => {
 
                     {/* Основные элементы */}
                     <Path d={describeFullRing(50, 50, 38, 26)} fill="rgba(17, 24, 39, 0.05)" />
-                    <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.05)" />
+                    <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.1)" />
 
                     {/* Центральная информация */}
                     <SvgText
@@ -397,8 +401,8 @@ export const ClockComponent = () => {
                                 ry="50%"
                                 gradientUnits="userSpaceOnUse"
                             >
-                                <Stop offset="0%" stopColor="#78b7d8" stopOpacity="1" />
-                                <Stop offset="100%" stopColor="black" stopOpacity="0.1" />
+                                <Stop offset="0%" stopColor="#c2c5cf" stopOpacity="0.1" />
+                                <Stop offset="100%" stopColor="black" stopOpacity="0.05" />
                             </RadialGradient>
                         </Defs>
 
@@ -410,13 +414,7 @@ export const ClockComponent = () => {
                             fill="url(#shadowGlow)"
                         />
 
-                        {/* Основной круг */}
-                        <Circle
-                            cx={50}
-                            cy={63}
-                            r={3.5}
-                            fill="#78b7d8"
-                        />
+
                     </Svg>
                     {/* Стрелка направления ветра */}
                     <Polygon
@@ -457,7 +455,7 @@ export const ClockComponent = () => {
                         fontFamily="Manrope-Bold"
                         alignmentBaseline="middle"
                     >
-                        м / с
+                        <TSpan>{t('clock.windSpeedUnit')}</TSpan>
                     </SvgText>
                 </Svg>
             </View>

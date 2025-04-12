@@ -9,6 +9,23 @@
     "temperatureRange": "Temperature range",
     "nextDays": "5-day forecast"
   },
+  "sunMoon": {
+    "daylightTime": "Daylight time",
+    "newMoon": "New Moon",
+    "firstQuarter": "First Quarter",
+    "fullMoon": "Full Moon",
+    "lastQuarter": "Last Quarter",
+    "waxingCrescent": "Waxing Crescent",
+    "waxingGibbous": "Waxing Gibbous",
+    "waningGibbous": "Waning Gibbous",
+    "waningCrescent": "Waning Crescent",
+    "uvIndex": "UV Index",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "moonrise": "Moonrise",
+    "moonset": "Moonset",
+    "noData": "No data"
+  },
   "date": {
     "weekdayShort": "Thu",
     "monthShort": "Apr"
@@ -23,6 +40,7 @@
     "directions": ["N", "E", "S", "W"],
     "windSpeedUnit": "m/s",
     "dateFormat": "M.D",
+    "hourlyForecast": "Hourly forecast",
     "today": "Today",
     "tomorrow": "Tomorrow"
   }

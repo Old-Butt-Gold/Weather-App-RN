@@ -8,6 +8,7 @@ import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import {NextDaysWeatherWidget} from "../components/nextDaysWeatherWidget";
+import {SunMoonWidget} from "../components/SunMoonWidget";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -17,7 +18,14 @@ const ANIMATIONS = [
     { source: require("../assets/svg-icons/animations/cloudyStart.json"), repeats: 1 },
     { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 }
 ];
-
+const sunMoonData = {
+    sunrise: new Date(new Date().setHours(6, 20)),
+    sunset: new Date(new Date().setHours(19, 45)),
+    moonrise: new Date(new Date().setHours(20, 10)),
+    moonset: new Date(new Date().setHours(6, 50)),
+    moonPhase:  0.65,
+    uvIndex: 6 // УФ-индекс
+};
 const CLICK_ANIMATIONS = {
     day: { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 },
     night: { source: require("../assets/svg-icons/animations/angryCloud.json"), repeats: 1 }
@@ -90,7 +98,7 @@ const BackgroundImage = () => (
             blurRadius={6}
             resizeMode="cover"
         />
-        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/5" />
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/10" />
     </View>
 );
 
@@ -130,7 +138,7 @@ const BlurBackground = () => (
             left: 0,
             right: 0,
             bottom: 0,
-            borderRadius: 35,
+            borderRadius: 25,
             overflow: 'hidden',
             zIndex: 0,
         }}
@@ -194,8 +202,8 @@ const WeatherDetailCard = ({ item }: { item: typeof WEATHER_DETAILS[0] }) => {
     return (
         <View className="w-[48%] bg-white/20 rounded-[20px] px-3 py-4">
             <View className="absolute top-2 right-3">{item.icon}</View>
-            <View className="flex-row items-end border-2">
-                <Text className="font-manrope-bold text-accent text-[36px] h-[60] border-2">{item.value}</Text>
+            <View className="flex-row items-end">
+                <Text className="font-manrope-bold text-accent text-[36px] h-[60]">{item.value}</Text>
                 <Text className="text-accent font-manrope-bold text-[15px] mb-1 ml-1">{item.unit}</Text>
             </View>
             <Text className="font-manrope-medium text-white/60 text-[12px]">{t(`weather.${item.labelKey}`)}</Text>
@@ -244,7 +252,7 @@ const WeatherCard = ({
                          onAnimationFinish
                      }: WeatherCardProps) => (
     <View
-        className="w-full mt-6 p-6 relative overflow-hidden rounded-[35]"
+        className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]"
     >
         <BlurBackground />
         <View className="w-full z-10">
@@ -337,6 +345,7 @@ export const HomeScreen = () => {
                     />
                     <ClockComponent />
                     <NextDaysWeatherWidget />
+                    <SunMoonWidget data={sunMoonData}/>
                 </View>
             </ScrollView>
         </>

@@ -11,23 +11,6 @@ type WeatherIndicatorProps = {
     value: number;
 };
 
-// Цвета по шкале Бофорта для windSpeed
-const BEAUFORT_COLORS = [
-    '#3DDC84', // 0-0.3 m/s (Calm)
-    '#8AB4F8', // 0.3-1.5 m/s (Light air)
-    '#4285F4', // 1.5-3.3 m/s (Light breeze)
-    '#34A853', // 3.3-5.5 m/s (Gentle breeze)
-    '#FBBC05', // 5.5-8 m/s (Moderate breeze)
-    '#FF9800', // 8-10.8 m/s (Fresh breeze)
-    '#F44336', // 10.8-13.9 m/s (Strong breeze)
-    '#9C27B0', // 13.9-17.2 m/s (High wind)
-    '#673AB7', // 17.2-20.7 m/s (Gale)
-    '#3F51B5', // 20.7-24.5 m/s (Strong gale)
-    '#2196F3', // 24.5-28.4 m/s (Storm)
-    '#F44336', // 28.4-32.6 m/s (Violent storm)
-    '#E91E63', // 32.6+ m/s (Hurricane)
-];
-
 const WeatherIndicator = ({ type, value }: WeatherIndicatorProps) => {
     // Функция для расчета угла сектора
     const calculateAngle = (val: number, minVal: number, maxVal: number, minAngle: number, maxAngle: number) => {
@@ -45,21 +28,7 @@ const WeatherIndicator = ({ type, value }: WeatherIndicatorProps) => {
     if (type === 'rainChance' || type === 'humidity') {
         endAngle = calculateAngle(value, 0, 100, 55, 305);
     } else if (type === 'windSpeed') {
-        if (value < 6) {
-            endAngle = calculateAngle(value, 0, 6, 55, 120);
-            fillColor = 'white';
-        } else if (value >= 35 && value <= 40) {
-            endAngle = calculateAngle(value, 35, 40, 240, 305);
-            fillColor = '#FF3A30'; // Красный для сильного ветра
-        } else {
-            // Определяем цвет по шкале Бофорта
-            const beaufortIndex = Math.min(
-                Math.floor(value / 3.3), // Упрощенное преобразование в шкалу Бофорта
-                BEAUFORT_COLORS.length - 1
-            );
-            fillColor = BEAUFORT_COLORS[beaufortIndex];
-            endAngle = calculateAngle(value, 6, 40, 120, 305);
-        }
+        endAngle = calculateAngle(value, 0, 40, 55, 305);
     }
 
     // Выбор иконки в зависимости от типа
