@@ -221,37 +221,57 @@ const WeatherDetails = () => (
     </View>
 );
 
-// Компонент контента погоды
+// Компонент контента погоды с добавленной кнопкой чата
 const WeatherContent = ({
-                            currentAnimation,
-                            animationKey,
-                            onAnimationPress,
-                            onAnimationFinish
-                        }: Omit<WeatherCardProps, 'isNightTime'>) => (
-    <View className="flex-row justify-between mt-4">
-        <TemperatureDisplay />
-        <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
-            <LottieView
-                key={animationKey}
-                source={currentAnimation}
-                autoPlay
-                loop={false}
-                style={{ width: 170, height: 170 }}
-                onAnimationFinish={onAnimationFinish}
-                colorFilters={LOTTIE_COLOR_FILTERS}
-            />
-        </TouchableOpacity>
-    </View>
+    currentAnimation,
+    animationKey,
+    onAnimationPress,
+    onAnimationFinish,
+    navigation
+}: Omit<WeatherCardProps, 'isNightTime'> & { navigation: any }) => (
+    <>
+        <View className="flex-row justify-between mt-4">
+            <TemperatureDisplay />
+            <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
+                <LottieView
+                    key={animationKey}
+                    source={currentAnimation}
+                    autoPlay
+                    loop={false}
+                    style={{ width: 170, height: 170 }}
+                    onAnimationFinish={onAnimationFinish}
+                    colorFilters={LOTTIE_COLOR_FILTERS}
+                />
+            </TouchableOpacity>
+        </View>
+        <View className="items-center mt-2">
+            <TouchableOpacity 
+                onPress={() => navigation.navigate('WeatherChat')}
+                className="bg-white/30 px-6 py-3 rounded-[20] flex-row items-center"
+                style={{
+                    shadowColor: "#fff",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 10,
+                    elevation: 5
+                }}
+            >
+                <FontAwesome6 name="cloud-bolt" size={18} color="white" style={{ marginRight: 8 }} />
+                <Text className="text-accent font-manrope-bold text-[15px]">Поболтай со мной о погоде!</Text>
+            </TouchableOpacity>
+        </View>
+    </>
 );
 
 // Основной компонент карточки погоды
 const WeatherCard = ({
-                         isNightTime,
-                         currentAnimation,
-                         animationKey,
-                         onAnimationPress,
-                         onAnimationFinish
-                     }: WeatherCardProps) => (
+    isNightTime,
+    currentAnimation,
+    animationKey,
+    onAnimationPress,
+    onAnimationFinish,
+    navigation
+}: WeatherCardProps & { navigation: any }) => (
     <View
         className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]"
     >
@@ -263,6 +283,7 @@ const WeatherCard = ({
                 animationKey={animationKey}
                 onAnimationPress={onAnimationPress}
                 onAnimationFinish={onAnimationFinish}
+                navigation={navigation}
             />
             <WeatherDetails />
         </View>
@@ -270,7 +291,7 @@ const WeatherCard = ({
 );
 
 // Главный компонент экрана
-export const HomeScreen = () => {
+export const HomeScreen = ({ navigation }) => {
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
         repeatCount: 0,
@@ -336,14 +357,13 @@ export const HomeScreen = () => {
                 showsVerticalScrollIndicator={false}
             >
                 <View className="flex-1 justify-center items-center px-4 w-full relative pb-5">
-                    {/* Убираем Header отсюда, так как он теперь фиксированный */}
-
                     <WeatherCard
                         isNightTime={isNightTime}
                         currentAnimation={getCurrentAnimation(animationState, isNightTime)}
                         animationKey={animationState.animationKey}
                         onAnimationPress={handleAnimationPress}
                         onAnimationFinish={handleAnimationFinish}
+                        navigation={navigation}
                     />
                     <ClockComponent />
                     <NextDaysWeatherWidget />
