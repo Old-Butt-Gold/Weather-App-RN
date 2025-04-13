@@ -233,7 +233,7 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> = ({
                             <Stop offset="100%" stopColor="#a0a0a0" stopOpacity="0" />
                         </LinearGradient>
 
-                        <ClipPath id={clipPathId}>
+                        <ClipPath id={clipPathId} key={`${sunCurrentPos.x}-${sunCurrentPos.y}`}>
                             <Path d={`M ${centerX - radius} ${centerY - radius} L ${sunCurrentPos.x} ${centerY - radius} L ${sunCurrentPos.x} ${centerY + radius} L ${centerX - radius} ${centerY + radius} Z`} />
                         </ClipPath>
                         <ClipPath id={`clip-dash-${clipPathId}`}>
@@ -248,7 +248,7 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> = ({
                             />
                         </ClipPath>
 
-                        <ClipPath id={moonClipPathId}>
+                        <ClipPath id={moonClipPathId} key={`${moonCurrentPos.x}-${moonCurrentPos.y}`}>
                             <Path d={`M ${centerX - radius} ${centerY - radius} L ${moonCurrentPos.x} ${centerY - radius} L ${moonCurrentPos.x} ${centerY + radius} L ${centerX - radius} ${centerY + radius} Z`} />
                         </ClipPath>
                         <ClipPath id={`moon-clip-dash-${moonClipPathId}`}>
