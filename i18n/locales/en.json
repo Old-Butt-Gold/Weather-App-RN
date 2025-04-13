@@ -1,0 +1,50 @@
+{
+  "weather": {
+    "feelsLike": "Feels like",
+    "windSpeed": "Wind speed",
+    "rainChance": "Rain chance",
+    "humidity": "Humidity",
+    "rainy": "Rainy",
+    "reload": "Reload",
+    "temperatureRange": "Temperature range",
+    "nextDays": "5-day forecast"
+  },
+  "sunMoon": {
+    "daylightTime": "Daylight time",
+    "newMoon": "New Moon",
+    "firstQuarter": "First Quarter",
+    "fullMoon": "Full Moon",
+    "lastQuarter": "Last Quarter",
+    "waxingCrescent": "Waxing Crescent",
+    "waxingGibbous": "Waxing Gibbous",
+    "waningGibbous": "Waning Gibbous",
+    "waningCrescent": "Waning Crescent",
+    "uvIndex": "UV Index",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "moonrise": "Moonrise",
+    "moonset": "Moonset",
+    "noData": "No data"
+  },
+  "date": {
+    "weekdayShort": "Thu",
+    "monthShort": "Apr"
+  },
+  "city": "Minsk",
+  "clock": {
+    "weatherDescriptions": [
+      "Clear", "Cloudy", "Light rain", "Heavy rain",
+      "Thunderstorm", "Snow", "Fog", "Overcast",
+      "Partly cloudy", "Drizzle", "Hail", "Blizzard"
+    ],
+    "directions": ["N", "E", "S", "W"],
+    "windSpeedUnit": "m/s",
+    "dateFormat": "M.D",
+    "hourlyForecast": "Hourly forecast",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
+  "airComposition": {
+    "labelName": "Air Cleanliness"
+  }
+}
