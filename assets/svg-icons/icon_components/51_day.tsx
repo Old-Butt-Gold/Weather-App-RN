@@ -1,12 +1,9 @@
 import { memo } from "react";
 import Svg, { Path } from "react-native-svg";
 import type { SvgProps } from "react-native-svg";
+import {WeatherIconProps} from "./weather_icon_props";
 
-type MyIconProps = SvgProps & {
-  fill?: string;
-};
-
-const Svg51Day = (props: MyIconProps) => {
+const Svg51Day = (props: WeatherIconProps) => {
   const { fill = "#000", ...rest } = props;
   return (
       <Svg
