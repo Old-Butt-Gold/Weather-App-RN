@@ -1,46 +1,19 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { View, Dimensions, Text, TouchableOpacity } from 'react-native';
-import Svg, {
-    Circle,
-    Text as SvgText,
-    Line,
-    Path,
-    TSpan,
-    Polygon,
-    Defs,
-    Stop,
-    LinearGradient,
-    RadialGradient
-} from 'react-native-svg';
-import { BlurView } from "expo-blur";
-import { LinearGradient as ViewGradient } from 'expo-linear-gradient';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
+import Svg, {Circle, Defs, Line, Path, Polygon, RadialGradient, Stop, Text as SvgText, TSpan} from 'react-native-svg';
+import {BlurView} from "expo-blur";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
 import RingWithGradient from "../utils/RingWithGradientProps";
-import {
-    CloudyNightIcon,
-    NightRainIcon,
-    RainyIcon,
-    SunnyRainIcon,
-    Icon65
-} from "../assets/svg-icons/icon_components";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
-import { describeFullRing, describeRingSector } from '../utils/ringUtils';
+import {describeFullRing, describeRingSector} from '../utils/ringUtils';
 
 import {t} from "i18next"; // путь подкорректируй
 
 // Константы и типы
 type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
-
-const WEATHER_ICONS = [
-    CloudyNightIcon,
-    NightRainIcon,
-    RainyIcon,
-    SunnyRainIcon,
-    Icon65
-];
 
 const WEATHER_DESCRIPTIONS = [
     "Ясно", "Облачно", "Небольшой дождь", "Ливень",
@@ -66,9 +39,9 @@ export const ClockComponent = () => {
         const codes = ['0', '2', '3', '45', '48', '51', '53', '55', '61', '63', '65', '71', '75', '96'];
         return codes[hour % codes.length];
     };
+
     // Размеры
-    const screenWidth = Dimensions.get('window').width;
-    const svgSize = screenWidth;
+    const svgSize = Dimensions.get('window').width;
     const topMargin = 95;
 
     // Таймер
@@ -80,6 +53,7 @@ export const ClockComponent = () => {
     // Текущие значения
     const currentHour = time.getHours();
     const currentMinute = time.getMinutes();
+    const currentSeconds = time.getSeconds();
     const currentTemperature = temperatures[currentHour];
     const currentWindSpeed = windSpeeds[currentHour];
     const currentWeatherDescription = WEATHER_DESCRIPTIONS[currentHour % WEATHER_DESCRIPTIONS.length];
@@ -104,7 +78,7 @@ export const ClockComponent = () => {
     const TimeDisplay = () => (
         <View className="flex absolute top-[65px] h-[35px] rounded-[35px] z-[999] justify-center items-center flex-col">
             <Text className="text-white font-manrope-bold text-2xl h-[30]">
-                {`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`}
+                {`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSeconds.toString().padStart(2, '0')}`}
             </Text>
             <Text className="text-white/50 font-manrope-bold text-sm h-[20] leading-4">
                 UTC+3

@@ -2,11 +2,10 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 import {NextDaysWeatherWidget} from "../components/nextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
@@ -110,7 +109,6 @@ const IconButton = ({ icon }: { icon: React.ReactNode }) => (
 
 // Компонент заголовка местоположения
 const LocationTitle = () => {
-    const { t } = useTranslation();
     return (
         <View className="flex-col items-center">
             <Text className="font-manrope-extrabold text-2xl text-accent">{t('city')}</Text>
@@ -148,7 +146,6 @@ const BlurBackground = () => (
 
 // Компонент заголовка погоды
 const WeatherHeader = () => {
-    const { t } = useTranslation();
     const date = new Date();
 
     return (
@@ -183,8 +180,6 @@ const TemperatureRange = () => (
 );
 
 const TemperatureDisplay = () => {
-    const { t } = useTranslation();
-
     return (
         <View className="flex-row items-start">
             <View className="flex-col flex border-accent">
@@ -198,8 +193,6 @@ const TemperatureDisplay = () => {
 };
 // Компонент карточки деталей погоды
 const WeatherDetailCard = ({ item }: { item: typeof WEATHER_DETAILS[0] }) => {
-    const { t } = useTranslation();
-
     return (
         <View className="w-[48%] bg-white/20 rounded-[20px] px-3 py-4">
             <View className="absolute top-2 right-3">{item.icon}</View>
@@ -277,7 +270,6 @@ export const HomeScreen = () => {
         animationKey: 0,
         clickAnimation: null
     });
-    const { t } = useTranslation();
     const [currentTime] = useState(new Date());
     const isNightTime = currentTime.getHours() >= 0 && currentTime.getHours() < 6;
 

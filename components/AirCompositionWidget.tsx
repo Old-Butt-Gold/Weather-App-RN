@@ -2,12 +2,12 @@
 import React from 'react';
 import {View, Text, Dimensions} from 'react-native';
 import { FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import i18n from "i18next";
+import {t} from "i18next";
 import {BlurView} from "expo-blur";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Svg, { Text as SvgText, Path} from "react-native-svg";
 import {describeRingSector} from "../utils/ringUtils";
+
 const AIR_COMPOSITION = [
     {
         icon: <FontAwesome5 name="cloud" size={20} color="white" />,
@@ -30,7 +30,7 @@ const Infolabel = () => (
     <View className="absolute top-5 left-5 flex flex-row justify-center items-center gap-x-2">
         <FontAwesome name="leaf" size={16} color="rgba(243, 244, 246,0.6)" />
         <Text className="text-[16px] text-gray-100/60 font-manrope-medium mb-1">
-            {i18n.t('airComposition.labelName')}
+            {t('airComposition.labelName')}
         </Text>
     </View>
 );

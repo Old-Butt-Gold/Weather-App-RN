@@ -1,10 +1,8 @@
 import React from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import { BlurView } from "expo-blur";
-import { LinearGradient as ViewGradient } from 'expo-linear-gradient';
-import { describeRingSector } from "../utils/ringUtils";
 import WeatherIndicator from "./WeatherIndicator";
 
 type ForecastItem = {
@@ -70,12 +68,10 @@ const ForecastCard = ({
                 </View>
             </View>
 
-            {/* Новые компоненты WeatherIndicator */}
             <View className="absolute bottom-2 left-3 flex-row gap-1">
                 <WeatherIndicator type="rainChance" value={item.rainChance} />
                 <WeatherIndicator type="humidity" value={item.humidity} />
                 <WeatherIndicator type="windSpeed" value={item.windSpeed} />
-
             </View>
 
         </View>
@@ -83,8 +79,6 @@ const ForecastCard = ({
 };
 
 export const NextDaysWeatherWidget = () => {
-    const { t } = useTranslation();
-
     return (
         <View className="w-full mt-4">
             <Text className="text-accent font-manrope-extrabold text-xl mb-2">

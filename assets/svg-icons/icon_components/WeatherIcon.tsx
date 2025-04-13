@@ -1,11 +1,9 @@
 import React, { memo, forwardRef } from 'react';
-import { View } from 'react-native';
-import type { ComponentType, ForwardedRef } from 'react';
+import {View} from 'react-native';
+import type { ComponentType } from 'react';
 import type { SvgProps } from 'react-native-svg';
 import Svg from 'react-native-svg';
 
-// Обновляем тип для компонентов иконок, чтобы поддерживать ref
-type IconComponentType = ComponentType<SvgProps & { fill?: string }>;
 // Импорт всех иконок
 import Svg0Day from './0_day';
 import Svg0Night from './0_night';
@@ -36,8 +34,11 @@ import Svg75Night from './75_night';
 import Svg96Day from './96_day';
 import Svg96Night from './96_night';
 
+// Обновляем тип для компонентов иконок, чтобы поддерживать ref
+type WeatherIconComponent = ComponentType<WeatherIconProps>;
+
 // Карта соответствий кодов погод и компонент
-const iconMap: Record<string, IconComponentType> = {
+const WEATHER_ICONS_MAP: Record<string, WeatherIconComponent> = {
     '0-day': Svg0Day,
     '0-night': Svg0Night,
     '2-day': Svg2Day,
@@ -68,7 +69,6 @@ const iconMap: Record<string, IconComponentType> = {
     '96-night': Svg96Night,
 };
 
-
 type WeatherIconProps = {
     code: string;
     isDay?: boolean;
@@ -76,21 +76,19 @@ type WeatherIconProps = {
     fill?: string;
 } & Omit<SvgProps, 'width' | 'height' | 'fill'>;
 
+
 const WeatherIcon = forwardRef<Svg, WeatherIconProps>(
-    (
-        { code, isDay = true, size = 96, fill, ...props },
-        ref
-    ) => {
-        const iconKey = `${code}-${isDay ? 'day' : 'night'}`;
-        const IconComponent = iconMap[iconKey];
+    (props : WeatherIconProps, ref) => {
+        const iconKey = `${props.code}-${props.isDay ? 'day' : 'night'}`;
+        const IconComponent = WEATHER_ICONS_MAP[iconKey];
 
         if (!IconComponent) {
             console.warn(`Icon not found: ${iconKey}`);
             return (
                 <View
                     style={{
-                        width: size,
-                        height: size,
+                        width: props.size,
+                        height: props.size,
                         backgroundColor: '#ff000020',
                         borderWidth: 1,
                         borderColor: '#ff0000',
@@ -99,14 +97,15 @@ const WeatherIcon = forwardRef<Svg, WeatherIconProps>(
             );
         }
 
+
         const svgProps = {
             ...props,
-            width: size,
-            height: size,
-            fill,
+            width: props.size,
+            height: props.size,
+            fill: props.fill,
+            ref: ref,
         };
 
-        // Убедитесь, что передаете ref как ForwardedRef<Svg>
         return (
             <IconComponent
                 {...svgProps}
