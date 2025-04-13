@@ -43,5 +43,8 @@
     "hourlyForecast": "Hourly forecast",
     "today": "Today",
     "tomorrow": "Tomorrow"
+  },
+  "airComposition": {
+    "labelName": "Air Cleanliness"
   }
 }

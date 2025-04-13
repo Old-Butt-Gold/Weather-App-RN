@@ -9,6 +9,7 @@ import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons }
 import { useTranslation } from 'react-i18next';
 import {NextDaysWeatherWidget} from "../components/nextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
+import {AirCompositionWidget} from "../components/AirCompositionWidget";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -336,6 +337,7 @@ export const HomeScreen = () => {
             >
                 <View className="flex-1 justify-center items-center px-4 w-full relative pb-5">
                     {/* Убираем Header отсюда, так как он теперь фиксированный */}
+
                     <WeatherCard
                         isNightTime={isNightTime}
                         currentAnimation={getCurrentAnimation(animationState, isNightTime)}
@@ -346,6 +348,7 @@ export const HomeScreen = () => {
                     <ClockComponent />
                     <NextDaysWeatherWidget />
                     <SunMoonWidget data={sunMoonData}/>
+                    <AirCompositionWidget />
                 </View>
             </ScrollView>
         </>
