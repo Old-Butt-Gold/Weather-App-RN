@@ -1,8 +1,8 @@
 // src/redux/slices/weatherSlice.ts
 
 import { createSlice } from '@reduxjs/toolkit';
+import {Status} from "../types";
 
-export type Status = "idle" | "loading" | "succeeded" | "failed";
 
 interface WeatherState {
     data: any;

@@ -9,16 +9,12 @@ import RingWithGradient from "../utils/RingWithGradientProps";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
-import {t} from "i18next";
+import i18next, {t} from "i18next";
+import {WeatherDataType} from "../store/types";
+import i18n from "../i18n/i18n";
 
 // Константы и типы
-type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
-const WEATHER_DESCRIPTIONS = [
-    "Ясно", "Облачно", "Небольшой дождь", "Ливень",
-    "Гроза", "Снег", "Туман", "Пасмурно",
-    "Переменная облачность", "Морось", "Град", "Метель"
-];
 
 const DIRECTIONS = ["C", "В", "Ю", "З"];
 const LINE_PATTERN = [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];
@@ -26,45 +22,27 @@ const HOUR_MARKS = Array.from({ length: 24 }, (_, i) => i);
 const ANGLE_PER_HOUR = 15;
 const ANGLE_OFFSET = 7.5;
 
+const getWeatherCodeForHour = (hour: number) => {
+    const codes = ['0', '2', '3', '45', '48', '51', '53', '55', '61', '63', '65', '71', '75', '96'];
+    return codes[hour % codes.length];
+};
+
+function formatDate(date: Date): string {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${day}.${month}`;
+}
+
 export const ClockComponent = () => {
 
-    const [time, setTime] = useState(new Date());
+    // TODO надо работать будет с возвращаемыми часами, поскольку возвращает ровно 24 часа
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const [time, setTime] = useState(today);
     const [selectedType, setSelectedType] = useState<WeatherDataType>('temperature');
 
-    //TODO Температуру будем брать из store
-    const temperatures = useMemo(() => [-2, -1, 12, 0, 1, 3, 6, 10, 14, 17, 20, 22, 24, 25, 24, 22, 19, 15, 12, 9, 6, 4, 2, 0], []);
-    //TODO скорость ветра также из store
-    const windSpeeds = useMemo(() => [5.0, 5.4, 4.2, 3.1, 3.5, 2.0, 2.3, 3.7, 5.1, 7.2, 10.0, 12.5, 14.3, 13.2, 12.1, 10.4, 8.2, 6.3, 5.5, 4.8, 4.0, 4.2, 5.1, 5.0], []);
-
-    const getWeatherCodeForHour = (hour: number) => {
-        const codes = ['0', '2', '3', '45', '48', '51', '53', '55', '61', '63', '65', '71', '75', '96'];
-        return codes[hour % codes.length];
-    };
-
-    // Размеры
-    const svgSize = Dimensions.get('window').width;
-    const topMargin = 95;
-
-    // Таймер
-    useEffect(() => {
-        const timer = setInterval(() => setTime(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
-
-    // Текущие значения
-    const currentHour = time.getHours();
-    const currentMinute = time.getMinutes();
-    const currentSeconds = time.getSeconds();
-    const currentTemperature = temperatures[currentHour];
-    const currentWindSpeed = windSpeeds[currentHour];
-    const currentWeatherDescription = WEATHER_DESCRIPTIONS[currentHour % WEATHER_DESCRIPTIONS.length];
-    const currentWindDirection = 60;
-    const angleRad = useMemo(() => ((currentWindDirection - 90) * Math.PI) / 180, [currentWindDirection]);
-    const segments = currentHour > 17 ? 25 : undefined;
-
-    // Вспомогательные функции
-
-    // Компоненты интерфейса
     const TypeSelectorButton = ({ type, icon }: { type: WeatherDataType, icon: React.ReactNode }) => (
         <TouchableOpacity
             onPress={() => setSelectedType(type)}
@@ -82,20 +60,55 @@ export const ClockComponent = () => {
                 {`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSeconds.toString().padStart(2, '0')}`}
             </Text>
             <Text className="text-white/50 font-manrope-bold text-sm h-[20] leading-4">
-                UTC+3
+                {utc}
             </Text>
         </View>
     );
+
+    //TODO Температуру будем брать из store
+    const temperatures = useMemo(() => [-2, -1, 12, 0, 1, 3, 6, 10, 14, 17, 20, 22, 24, 25, 24, 22, 19, 15, 12, 9, 6, 4, 2, 0], []);
+    //TODO скорость ветра также из store
+    const windSpeeds = useMemo(() => [5.0, 5.4, 4.2, 3.1, 3.5, 2.0, 2.3, 3.7, 5.1, 7.2, 10.0, 12.5, 14.3, 13.2, 12.1, 10.4, 8.2, 6.3, 5.5, 4.8, 4.0, 4.2, 5.1, 5.0], []);
+
+    // Размеры
+    const svgSize = Dimensions.get('window').width;
+    const topMargin = 95;
+
+    // Таймер
+    useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Текущие значения
+    const currentHour = time.getHours();
+    const currentMinute = time.getMinutes();
+    const currentSeconds = time.getSeconds();
+
+    const currentTemperature = temperatures[currentHour];
+
+    const currentWindSpeed = windSpeeds[currentHour];
+
+    //TODO Получить по коду состояние температуры
+    const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(currentHour));
+
+    // TODO получить направление ветра из store
+    const currentWindDirection = 60;
+    const angleRad = useMemo(() => ((currentWindDirection - 90) * Math.PI) / 180, [currentWindDirection]);
+    const segments = currentHour > 17 ? 25 : undefined;
+
+    // TODO добавить utc_offset_seconds в data_type
+    const utc : string = "UTC+" + 10800 / 3600;
 
     const DateIndicator = () => (
         <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
             <View className="flex flex-row justify-center items-center gap-x-1">
                 <View className="rounded-full bg-[rgba(229,229,234,0.4)] w-2 h-2"/>
-                <Text className="text-white/80 font-manrope-semibold text-sm">7.04</Text>
+                <Text className="text-white/80 font-manrope-semibold text-sm">{formatDate(today)}</Text>
             </View>
             <View className="flex flex-row justify-center items-center gap-x-1">
                 <View className="rounded-full bg-[rgba(18,144,216,0.4)] w-2 h-2"/>
-                <Text className="text-white/80 font-manrope-semibold text-sm">8.04</Text>
+                <Text className="text-white/80 font-manrope-semibold text-sm">{formatDate(tomorrow)}</Text>
             </View>
         </View>
     );
