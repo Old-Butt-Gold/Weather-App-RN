@@ -1,32 +1,70 @@
 // src/redux/slices/weatherSlice.ts
 
-import { createSlice } from '@reduxjs/toolkit';
-import {Status} from "../types";
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {
+    Coordinates,
+    Status,
+    TemperatureUnit,
+    WeatherData,
+    WindSpeedUnit
+} from "../types/types";
+import {fetchWeather} from "../actions/fetchWeather";
 
 interface WeatherState {
-    data: any;
+    data: WeatherData | null;
     loading: boolean;
     error: string | null;
-    status: Status
+    status: Status;
+    location: Coordinates | null;
+    temperatureUnit: TemperatureUnit;
+    windSpeedUnit: WindSpeedUnit;
 }
 
 const initialState: WeatherState = {
     data: null,
     loading: false,
     error: null,
-    status: "idle"
+    status: 'idle',
+    location: null,
+    temperatureUnit: '°C',
+    windSpeedUnit: 'km/h',
 };
 
 const weatherSlice = createSlice({
     name: 'weather',
     initialState,
     reducers: {
+        setTemperatureUnit(state, action: PayloadAction<TemperatureUnit>) {
+            state.temperatureUnit = action.payload;
+        },
+        setWindSpeedUnit(state, action: PayloadAction<WindSpeedUnit>) {
+            state.windSpeedUnit = action.payload;
+        },
+        setLocation(state, action: PayloadAction<Coordinates>) {
+            state.location = action.payload;
+        },
+
     },
     extraReducers: (builder) => {
-
+        builder
+            // Обработка fetchWeather
+            .addCase(fetchWeather.pending, (state) => {
+                state.status = 'loading';
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchWeather.fulfilled, (state, action: PayloadAction<WeatherData>) => {
+                state.status = 'succeeded';
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(fetchWeather.rejected, (state, action) => {
+                state.status = 'failed';
+                state.loading = false;
+                state.error = action.payload ? action.payload.message : 'Ошибка запроса';
+            })
     },
 });
 
-export const { } = weatherSlice.actions;
-
+export const { setTemperatureUnit, setWindSpeedUnit, setLocation } = weatherSlice.actions;
 export const weatherReducer = weatherSlice.reducer;
