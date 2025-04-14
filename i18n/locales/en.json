@@ -1,4 +1,7 @@
 {
+  "buttons": {
+    "chatWithMe": "Chat with me about weather!"
+  },
   "weather": {
     "feelsLike": "Feels like",
     "windSpeed": "Wind speed",
@@ -108,6 +111,17 @@
       "unhealthy": "Sensitive individuals may feel unwell immediately. Prolonged outdoor exposure may cause breathing issues or throat irritation even in healthy individuals. Limit outdoor activities.",
       "veryUnhealthy": "Sensitive individuals should avoid going outside. Healthy individuals may also experience symptoms like breathing difficulty or throat irritation. It's recommended to stay indoors and reschedule outdoor activities.",
       "hazardous": "Any time spent outdoors, even for a few minutes, can cause serious health issues for everyone. Try to remain indoors."
+    }
+  },
+  "chat": {
+    "title": "Weather Chat",
+    "emptyStateMessage": "This is where your weather conversation will appear. Start chatting!",
+    "suggestedQuestions": "Suggested Questions",
+    "questions": {
+      "whatToWear": "What should I wear today?",
+      "suggestMusic": "Suggest music for this weather",
+      "interestingFact": "Tell me an interesting weather fact",
+      "outdoorActivities": "What outdoor activities would you recommend?"
     }
   }
 }

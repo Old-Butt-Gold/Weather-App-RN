@@ -1,391 +1,144 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Dimensions,
-  Animated,
-  Image,
-  StatusBar,
-  ListRenderItemInfo,
-} from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, Image, ScrollView } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { Ionicons, MaterialCommunityIcons, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { sendMessage, resetMessages } from '../store/slices/chatSlice';
-import TypingIndicator from './TypingIndicator';
-import { RootState } from '../store/store';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { t } from 'i18next';
 
-// Типы для навигации
-type RootStackParamList = {
-  Home: undefined;
-  WeatherChat: undefined;
-};
-
-type ChatScreenNavigationProp = StackNavigationProp<RootStackParamList, 'WeatherChat'>;
-
-interface ChatScreenProps {
-  navigation: ChatScreenNavigationProp;
-}
-
-// Интерфейс для сообщения
-interface Message {
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: string;
-  isError?: boolean;
-}
-
-// Предустановленные вопросы о погоде
-const weatherQuestions = [
-  'Какая погода сегодня?',
-  'Будет ли дождь завтра?',
-  'Какая температура ожидается на выходных?',
-  'Прогноз погоды на неделю',
-  'Ожидаются ли штормовые предупреждения?',
-];
-
-// Компонент фонового изображения
-const BackgroundImage: React.FC = () => (
-  <View style={StyleSheet.absoluteFill}>
-    <Image
-      source={require("../assets/bg.png")}
-      style={{ flex: 1, width: '100%', height: '100%' }}
-      blurRadius={6}
-      resizeMode="cover"
-    />
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.1)' }]} />
-  </View>
-);
-
-// Компонент размытого фона для карточек
-const BlurBackground: React.FC = () => (
-  <BlurView
-    intensity={44}
-    tint="light"
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      borderRadius: 25,
-      overflow: 'hidden',
-      zIndex: 0,
-    }}
-  />
-);
-
-const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const { messages, loading } = useSelector((state: RootState) => state.chat);
-  const flatListRef = useRef<FlatList<Message>>(null);
-
-  // Анимационные значения для сообщений
-  const [messageAnimations] = useState<{[key: string]: Animated.Value}>({});
-  
-  useEffect(() => {
-    // Сброс чата при загрузке компонента
-    dispatch(resetMessages());
-  }, [dispatch]);
-
-  // Автоматическая прокрутка к последнему сообщению
-  useEffect(() => {
-    if (messages.length > 0 && flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: true });
-    }
-  }, [messages]);
-
-  // Обработчик нажатия на предустановленный вопрос
-  const handleQuestionPress = (question: string) => {
-    dispatch(sendMessage(question));
-  };
-  
-  // Получаем анимацию для сообщения
-  const getMessageAnimation = (messageId: string): Animated.Value => {
-    if (!messageAnimations[messageId]) {
-      messageAnimations[messageId] = new Animated.Value(0);
-      
-      // Запуск анимации появления
-      Animated.timing(messageAnimations[messageId], {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-    
-    return messageAnimations[messageId];
-  };
-
-  // Рендер каждого сообщения
-  const renderMessage = ({ item, index }: ListRenderItemInfo<Message>) => {
-    const isUserMessage = item.sender === 'user';
-    const messageId = `message-${index}`;
-    const animation = getMessageAnimation(messageId);
-    
-    // Анимации для сообщений
-    const animatedStyle = {
-      opacity: animation,
-      transform: [
-        {
-          translateY: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [20, 0],
-          }),
-        },
-      ],
-    };
-    
-    return (
-      <Animated.View style={[
-        styles.messageContainer,
-        isUserMessage ? styles.userMessageContainer : styles.botMessageContainer,
-        animatedStyle
-      ]}>
-        <View style={[
-          styles.messageBubble,
-          isUserMessage ? styles.userMessageBubble : styles.botMessageBubble,
-          item.isError && styles.errorMessageBubble
-        ]}>
-          <Text style={[
-            styles.messageText,
-            isUserMessage ? styles.userMessageText : styles.botMessageText,
-            item.isError && styles.errorMessageText
-          ]}>
-            {item.text}
-          </Text>
-        </View>
-      </Animated.View>
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <BackgroundImage />
-      
-      {/* Верхняя панель с кнопкой возврата */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Чат с облачком</Text>
-        <View style={{width: 40}} /> {/* Пустое место для симметрии */}
-      </View>
-
-      <View style={styles.chatContainer}>
-        {/* Область сообщений */}
-        <View style={styles.messagesWrapper}>
-          <BlurBackground />
-          <FlatList
-            ref={flatListRef}
-            data={messages}
-            renderItem={renderMessage}
-            keyExtractor={(item, index) => `message-${index}`}
-            contentContainerStyle={styles.messagesContainer}
-            ListEmptyComponent={() => (
-              <View style={styles.emptyContainer}>
-                <FontAwesome6 name="cloud-sun" size={50} color="white" style={styles.emptyIcon} />
-                <Text style={styles.emptyText}>Спроси меня о погоде!</Text>
-              </View>
-            )}
-          />
-
-          {/* Индикатор печатания */}
-          {loading && (
-            <View style={styles.typingContainer}>
-              <View style={styles.typingBubble}>
-                <TypingIndicator />
-              </View>
-            </View>
-          )}
-        </View>
-
-        {/* Панель с предустановленными вопросами */}
-        <View style={styles.questionPanelContainer}>
-          <BlurBackground />
-          <View style={styles.questionPanel}>
-            <FlatList
-              data={weatherQuestions}
-              horizontal={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.questionButton}
-                  onPress={() => handleQuestionPress(item)}
-                  disabled={loading}
-                >
-                  <FontAwesome6 name="cloud" size={16} color="#007AFF" style={styles.questionIcon} />
-                  <Text style={styles.questionButtonText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item, index) => `question-${index}`}
-            />
-          </View>
-        </View>
-      </View>
+// Компонент для фонового изображения
+const BackgroundImage = () => (
+    <View className="absolute top-0 left-0 right-0 bottom-0">
+        <Image
+            source={require("../assets/bg.png")}
+            style={{ flex: 1, width: '100%', height: '100%' }}
+            blurRadius={6}
+            resizeMode="cover"
+        />
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/10" />
     </View>
-  );
+);
+
+// Компонент размытого фона
+const BlurBackground = () => (
+    <BlurView
+        intensity={44}
+        tint="light"
+        style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 25,
+            overflow: 'hidden',
+            zIndex: 0,
+        }}
+    />
+);
+
+// Компонент для предлагаемых вопросов
+const SuggestedQuestion = ({ 
+    icon, 
+    question, 
+    onPress 
+}: { 
+    icon: React.ReactNode, 
+    question: string, 
+    onPress: () => void 
+}) => (
+    <TouchableOpacity 
+        onPress={onPress}
+        className="flex-row items-center bg-white/20 rounded-[15] p-4 mb-3"
+    >
+        <View className="bg-white/30 rounded-full p-2 mr-3">
+            {icon}
+        </View>
+        <Text className="flex-1 font-manrope-semibold text-accent text-[14px]">
+            {question}
+        </Text>
+        <Ionicons name="chevron-forward" size={20} color="white" />
+    </TouchableOpacity>
+);
+
+type ChatScreenProps = {
+    navigation: any; 
 };
 
-const { width } = Dimensions.get('window');
+export const ChatScreen = ({ navigation }: ChatScreenProps) => {
+    // Функция для обработки нажатия на предлагаемый вопрос
+    const handleQuestionPress = (question: string) => {
+        // Здесь будет логика обработки выбранного вопроса
+        console.log('Selected question:', question);
+        // В будущем можно добавить логику отправки вопроса в чат
+    };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    zIndex: 10,
-  },
-  backButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 15,
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  chatContainer: {
-    flex: 1,
-    position: 'relative',
-    paddingHorizontal: 16,
-  },
-  messagesWrapper: {
-    flex: 1,
-    borderRadius: 25,
-    overflow: 'hidden',
-    marginBottom: 16,
-  },
-  messagesContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  messageContainer: {
-    marginBottom: 12,
-    flexDirection: 'row',
-    width: width - 64, // Учитываем отступы
-  },
-  userMessageContainer: {
-    justifyContent: 'flex-end',
-  },
-  botMessageContainer: {
-    justifyContent: 'flex-start',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-  },
-  userMessageBubble: {
-    backgroundColor: 'rgba(0, 122, 255, 0.8)',
-    borderBottomRightRadius: 4,
-  },
-  botMessageBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderBottomLeftRadius: 4,
-  },
-  errorMessageBubble: {
-    backgroundColor: 'rgba(255, 229, 229, 0.8)',
-    borderColor: '#FF6B6B',
-    borderWidth: 1,
-  },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  userMessageText: {
-    color: '#FFFFFF',
-  },
-  botMessageText: {
-    color: '#000000',
-  },
-  errorMessageText: {
-    color: '#D32F2F',
-  },
-  typingContainer: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    alignItems: 'flex-start',
-  },
-  typingBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 20,
-    borderBottomLeftRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-  },
-  questionPanelContainer: {
-    marginBottom: 16,
-    borderRadius: 25,
-    overflow: 'hidden',
-  },
-  questionPanel: {
-    padding: 16,
-  },
-  questionButton: {
-    backgroundColor: 'rgba(242, 247, 255, 0.3)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(223, 236, 255, 0.3)',
-    elevation: 1,
-    shadowColor: '#8EB3FF',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  questionIcon: {
-    marginRight: 10,
-  },
-  questionButtonText: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  emptyIcon: {
-    marginBottom: 15,
-  },
-  emptyText: {
-    color: 'white',
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-});
-
-export default ChatScreen;
+    return (
+        <>
+            <StatusBar style="light" />
+            <BackgroundImage />
+            
+            <SafeAreaView className="flex-1">
+                <View className="flex-1">
+                    {/* Header с кнопкой назад */}
+                    <View className="flex-row items-center mb-6 mt-10 px-4 pt-10">
+                        <TouchableOpacity 
+                            onPress={() => navigation.goBack()} 
+                            className="p-3 rounded-[15] bg-white/20 mr-3"
+                        >
+                            <Ionicons name="arrow-back" size={24} color="white" />
+                        </TouchableOpacity>
+                        <Text className="font-manrope-extrabold text-2xl text-accent">
+                            {t('chat.title')}
+                        </Text>
+                    </View>
+                    
+                    {/* Основной контент */}
+                    <View className="flex-1 px-4">
+                        {/* Контейнер чата */}
+                        <View className="flex-1 rounded-[25] overflow-hidden relative mb-4">
+                            <BlurBackground />
+                            <ScrollView className="p-4">
+                                <View className="flex-1 justify-center items-center min-h-[200]">
+                                    <Text className="text-accent font-manrope-medium text-lg text-center">
+                                        {t('chat.emptyStateMessage')}
+                                    </Text>
+                                </View>
+                            </ScrollView>
+                        </View>
+                        
+                        {/* Раздел предлагаемых вопросов */}
+                        <View className="mb-6">
+                            <Text className="font-manrope-bold text-accent text-[16px] mb-3 px-1">
+                                {t('chat.suggestedQuestions')}
+                            </Text>
+                            
+                            <SuggestedQuestion 
+                                icon={<MaterialCommunityIcons name="hanger" size={22} color="white" />}
+                                question={t('chat.questions.whatToWear')}
+                                onPress={() => handleQuestionPress(t('chat.questions.whatToWear'))}
+                            />
+                            
+                            <SuggestedQuestion 
+                                icon={<Ionicons name="musical-notes" size={22} color="white" />}
+                                question={t('chat.questions.suggestMusic')}
+                                onPress={() => handleQuestionPress(t('chat.questions.suggestMusic'))}
+                            />
+                            
+                            <SuggestedQuestion 
+                                icon={<Feather name="info" size={22} color="white" />}
+                                question={t('chat.questions.interestingFact')}
+                                onPress={() => handleQuestionPress(t('chat.questions.interestingFact'))}
+                            />
+                            
+                            <SuggestedQuestion 
+                                icon={<FontAwesome5 name="running" size={22} color="white" />}
+                                question={t('chat.questions.outdoorActivities')}
+                                onPress={() => handleQuestionPress(t('chat.questions.outdoorActivities'))}
+                            />
+                        </View>
+                    </View>
+                </View>
+            </SafeAreaView>
+        </>
+    );
+};

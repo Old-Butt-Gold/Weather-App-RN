@@ -6,9 +6,9 @@ import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { t } from 'i18next';
-import {NextDaysWeatherWidget} from "../components/nextDaysWeatherWidget";
-import {SunMoonWidget} from "../components/SunMoonWidget";
-import {AirCompositionWidget} from "../components/AirCompositionWidget";
+import { NextDaysWeatherWidget } from "../components/NextDaysWeatherWidget";
+import { SunMoonWidget } from "../components/SunMoonWidget";
+import { AirCompositionWidget } from "../components/AirCompositionWidget";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -69,6 +69,11 @@ type WeatherCardProps = {
     animationKey: number;
     onAnimationPress: () => void;
     onAnimationFinish: () => void;
+    onChatPress: () => void; // Добавлен новый prop для обработки нажатия на кнопку чата
+};
+
+type HomeScreenProps = {
+    navigation: any; // Добавлен тип для навигации
 };
 
 // Компонент фонового изображения
@@ -148,22 +153,7 @@ const WeatherHeader = () => {
     );
 };
 
-// Компонент диапазона температур
-const TemperatureRange = () => (
-    <View className="flex-row justify-center mt-2">
-        <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
-            <View className="flex-row items-center">
-                <AntDesign name="arrowup" size={18} color="white" />
-                <Text className="font-poppins-medium text-accent text-[13px] ml-1">25&deg;</Text>
-            </View>
-            <View className="flex-row items-center">
-                <AntDesign name="arrowdown" size={18} color="white" />
-                <Text className="font-poppins-medium text-accent text-[13px] ml-1">9&deg;</Text>
-            </View>
-        </View>
-    </View>
-);
-
+// Обновленный компонент отображения температуры без диапазона температур
 const TemperatureDisplay = () => {
     // TODO Получить по коду состояние температуры
     // const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(currentHour));
@@ -173,12 +163,12 @@ const TemperatureDisplay = () => {
             <View className="flex-col flex border-accent">
                 <Text className="text-accent text-[20px] font-manrope-extrabold">{t('weather.rainy')}</Text>
                 <Text className="font-poppins-medium text-primary text-[90px] h-[90] leading-[100px]">25</Text>
-                <TemperatureRange />
             </View>
             <Text className="text-primary font-poppins-bold text-[25px] mt-8">&deg;C</Text>
         </View>
     );
 };
+
 // Компонент карточки деталей погоды
 const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
     return (
@@ -231,59 +221,66 @@ const WeatherDetails = () => {
     </View>
 };
 
-// Компонент контента погоды с добавленной кнопкой чата
+// Обновленный компонент контента погоды с кнопкой чата рядом с диапазоном температур
 const WeatherContent = ({
     currentAnimation,
     animationKey,
     onAnimationPress,
     onAnimationFinish,
-    navigation
-}: Omit<WeatherCardProps, 'isNightTime'> & { navigation: any }) => (
-    <>
-        <View className="flex-row justify-between mt-4">
+    onChatPress
+}: Omit<WeatherCardProps, 'isNightTime'>) => (
+    <View className="flex-col">
+        <View className="flex-row justify-between">
             <TemperatureDisplay />
-            <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
-                <LottieView
-                    key={animationKey}
-                    source={currentAnimation}
-                    autoPlay
-                    loop={false}
-                    style={{ width: 170, height: 170 }}
-                    onAnimationFinish={onAnimationFinish}
-                    colorFilters={LOTTIE_COLOR_FILTERS}
-                />
-            </TouchableOpacity>
+            <View>
+                <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
+                    <LottieView
+                        key={animationKey}
+                        source={currentAnimation}
+                        autoPlay
+                        loop={false}
+                        style={{ width: 170, height: 170 }}
+                        onAnimationFinish={onAnimationFinish}
+                        colorFilters={LOTTIE_COLOR_FILTERS}
+                    />
+                </TouchableOpacity>
+            </View>
         </View>
-        <View className="items-center mt-2 mb-2">
+        
+        <View className="flex-row justify-center items-center -mt-4">
+            <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
+                <View className="flex-row items-center">
+                    <AntDesign name="arrowup" size={18} color="white" />
+                    <Text className="font-poppins-medium text-accent text-[13px] ml-1">25&deg;</Text>
+                </View>
+                <View className="flex-row items-center">
+                    <AntDesign name="arrowdown" size={18} color="white" />
+                    <Text className="font-poppins-medium text-accent text-[13px] ml-1">9&deg;</Text>
+                </View>
+            </View>
+            
             <TouchableOpacity 
-                onPress={() => navigation.navigate('WeatherChat')}
-                className="bg-white/30 px-6 py-3 rounded-[20] flex-row items-center"
-                style={{
-                    shadowColor: "#fff",
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 10,
-                    elevation: 5
-                }}
+                onPress={onChatPress} 
+                className="px-3 py-2 bg-white/30 rounded-[35] ml-3"
             >
-                <FontAwesome6 name="cloud-bolt" size={18} color="white" style={{ marginRight: 8 }} />
-                <Text className="text-accent font-manrope-bold text-[15px]">Поболтай со мной о погоде!</Text>
+                <Text className="font-manrope-semibold text-accent text-[12px]">
+                    {t('buttons.chatWithMe')}
+                </Text>
             </TouchableOpacity>
         </View>
-    </>
+    </View>
 );
 
 // Основной компонент карточки погоды
 const WeatherCard = ({
-                         isNightTime,
-                         currentAnimation,
-                         animationKey,
-                         onAnimationPress,
-                         onAnimationFinish
+    isNightTime,
+    currentAnimation,
+    animationKey,
+    onAnimationPress,
+    onAnimationFinish,
+    onChatPress
 }: WeatherCardProps) => (
-    <View
-        className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]"
-    >
+    <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]">
         <BlurBackground />
         <View className="w-full z-10">
             <WeatherHeader />
@@ -292,7 +289,7 @@ const WeatherCard = ({
                 animationKey={animationKey}
                 onAnimationPress={onAnimationPress}
                 onAnimationFinish={onAnimationFinish}
-                navigation={navigation}
+                onChatPress={onChatPress}
             />
             <WeatherDetails />
         </View>
@@ -300,7 +297,7 @@ const WeatherCard = ({
 );
 
 // Главный компонент экрана
-export const HomeScreen = ({ navigation }) => {
+export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
         repeatCount: 0,
@@ -346,6 +343,10 @@ export const HomeScreen = ({ navigation }) => {
         });
     }, [isNightTime]);
 
+    // Обработчик нажатия на кнопку чата
+    const handleChatPress = useCallback(() => {
+        navigation.navigate('Chat');
+    }, [navigation]);
 
     return (
         <>
@@ -372,7 +373,7 @@ export const HomeScreen = ({ navigation }) => {
                         animationKey={animationState.animationKey}
                         onAnimationPress={handleAnimationPress}
                         onAnimationFinish={handleAnimationFinish}
-                        navigation={navigation}
+                        onChatPress={handleChatPress}
                     />
                     <ClockComponent />
                     <NextDaysWeatherWidget />

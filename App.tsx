@@ -8,14 +8,13 @@ import {useCustomFonts} from "./utils/loads/fonts";
 import * as SplashScreen from 'expo-splash-screen';
 import {Provider} from "react-redux";
 import {store} from "./store/store";
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import ChatScreen from './components/ChatScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {ChatScreen} from "./components/ChatScreen";
 
 SplashScreen.preventAutoHideAsync();
 
-// Создаем навигатор Stack
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
     // Правильное использование хука для загрузки шрифтов
@@ -51,35 +50,17 @@ export default function App() {
     return (
         <Provider store={store}>
             <I18nextProvider i18n={i18n}>
-                <SafeAreaView className="flex-1" style={{paddingTop: Platform.OS === 'ios' ? 0 : 0}}>
-                    <NavigationContainer>
-                        <Stack.Navigator
-                            screenOptions={{
-                                headerShown: false,
-                                cardStyle: { backgroundColor: 'transparent' },
-                                cardOverlayEnabled: true,
-                                cardStyleInterpolator: ({ current: { progress } }) => ({
-                                    cardStyle: {
-                                        opacity: progress.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [0, 1],
-                                        }),
-                                    },
-                                    overlayStyle: {
-                                        opacity: progress.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [0, 0.5],
-                                            extrapolate: 'clamp',
-                                        }),
-                                    },
-                                }),
-                            }}
-                        >
-                            <Stack.Screen name="Home" component={HomeScreen} />
-                            <Stack.Screen name="WeatherChat" component={ChatScreen} />
-                        </Stack.Navigator>
-                    </NavigationContainer>
-                </SafeAreaView>
+                <NavigationContainer>
+                    <Stack.Navigator
+                        screenOptions={{
+                            headerShown: false,
+                            animation: 'slide_from_right',
+                        }}
+                    >
+                        <Stack.Screen name="Home" component={HomeScreen} />
+                        <Stack.Screen name="Chat" component={ChatScreen} />
+                    </Stack.Navigator>
+                </NavigationContainer>
             </I18nextProvider>
         </Provider>
     );
