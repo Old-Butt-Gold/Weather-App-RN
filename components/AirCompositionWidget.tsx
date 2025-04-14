@@ -7,25 +7,41 @@ import {BlurView} from "expo-blur";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Svg, { Text as SvgText, Path} from "react-native-svg";
 import {describeRingSector} from "../utils/ringUtils";
-
+import {VerticalBar} from "./VerticalBar";
+import { useTranslation } from "react-i18next";
 const AIR_COMPOSITION = [
     {
-        icon: <FontAwesome5 name="cloud" size={20} color="white" />,
         label: "CO₂",
-        value: "420",
+        value: "70",
+        max: "250",
     },
     {
-        icon: <MaterialCommunityIcons name="weather-hazy" size={20} color="white" />,
         label: "PM2.5",
         value: "35",
+        max: "250",
     },
     {
-        icon: <Ionicons name="leaf-outline" size={20} color="white" />,
         label: "O₃",
         value: "120",
+        max: "250",
+    },
+    {
+        label: "SO₂",
+        value: "10",
+        max: "250",
+    },
+    {
+        label: "NO₂",
+        value: "35",
+        max: "250",
+    },
+    {
+        label: "PM₁₀",
+        value: "120",
+        max: "250",
     }
 ];
-
+const MAX_AQI = 500;
 const Infolabel = () => (
     <View className="absolute top-5 left-5 flex flex-row justify-center items-center gap-x-2">
         <FontAwesome name="leaf" size={16} color="rgba(243, 244, 246,0.6)" />
@@ -35,20 +51,31 @@ const Infolabel = () => (
     </View>
 );
 
-const getAngleFromAQI = (aqi: number): number => {
-    const clampedAQI = Math.min(500, Math.max(0, aqi)); // защита от выхода за диапазон
-    return 45 + (clampedAQI / 500) * (315 - 45);
+const getAngleFromAQI = (aqi: number, max_aqi :number): number => {
+    const clampedAQI = Math.min(max_aqi, Math.max(0, aqi)); // защита от выхода за диапазон
+    return 45 + (clampedAQI / max_aqi) * (315 - 45);
 };
 
+const getAirQualityLevelKey = (aqi: number): string => {
+    if (aqi <= 19) return "excellent";
+    if (aqi <= 49) return "moderate";
+    if (aqi <= 99) return "poor";
+    if (aqi <= 149) return "unhealthy";
+    if (aqi <= 249) return "veryUnhealthy";
+    return "hazardous";
+};
 
 export const AirCompositionWidget = () => {
+    const { t } = useTranslation();
+    const AIR_QUALITY_INDEX = 170;
+    const levelKey = getAirQualityLevelKey(AIR_QUALITY_INDEX);
     const screenWidth = Dimensions.get('window').width;
     const svgWidth = screenWidth /1.7;
     const radius = svgWidth / 2;
     const topMargin = 65;
     const cx = svgWidth / 2;
     const cy = svgWidth / 2;
-    const AIR_QUALITY_INDEX = 194; // любое значение от 0 до 500
+
     return (
 
     <View className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full">
@@ -61,8 +88,7 @@ export const AirCompositionWidget = () => {
         <Infolabel />
 
         <View
-              style={{ height: screenWidth + 35 }}
-
+              style={{ height: svgWidth + 35 }}
         >
 
             <View style={{ marginTop: topMargin }}>
@@ -73,7 +99,7 @@ export const AirCompositionWidget = () => {
                         fillOpacity={0.3}
                     />
                     <Path
-                        d={describeRingSector(cx, cy, cx, cx-13, 45, getAngleFromAQI(AIR_QUALITY_INDEX), 180, true)}
+                        d={describeRingSector(cx, cy, cx, cx-13, 45, getAngleFromAQI(AIR_QUALITY_INDEX, MAX_AQI), 180, true)}
                         fill="white"
                     />
                     <SvgText
@@ -96,18 +122,18 @@ export const AirCompositionWidget = () => {
                         fillOpacity={0.5}
                         fontFamily="Manrope-Bold"
                     >
-                        ИКВ
+                        {t(`airComposition.AQI`)}
                     </SvgText>
                     <SvgText
                         x={cx}
-                        y={cy+47}
+                        y={cy + 47}
                         textAnchor="middle"
                         fill="#FFFFFF"
-                        fontSize="23"
+                        fontSize="20"
                         fillOpacity={1}
                         fontFamily="Manrope-ExtraBold"
                     >
-                        Хороший
+                        {t(`airComposition.level.${levelKey}`)}
                     </SvgText>
                     <SvgText
                         x={cx-75}
@@ -129,14 +155,43 @@ export const AirCompositionWidget = () => {
                         fillOpacity={0.4}
                         fontFamily="Poppins-Medium"
                     >
-                        500
+                        {MAX_AQI}
                     </SvgText>
                 </Svg>
             </View>
 
         </View>
-        <View className="p-4 bg-[#004b5830] w-full rounded-[35]" >
+        <Text className="text-white/70 font-manrope-semibold text-xs text-center mt-10 w-[80%]">
+            {t(`airComposition.description.${levelKey}`)}
+        </Text>
+        <View className="p-4 bg-white/20 w-[85%] rounded-[35] mt-6 mb-8 flex-row flex-wrap justify-between gap-y-6">
+            {AIR_COMPOSITION.map((item, index) => (
+                <View
+                    key={index}
+                    className="w-[30%] flex-row items-end"
+                >
+                    <View className="flex flex-col mr-2 justify-between items-end w-[60%]">
+                        <Text className="text-white font-poppins-medium text-2xl leading-9 h-10">
+                            {item.value}
+                        </Text>
+                        <Text className="text-[#004b5870]/40 font-poppins-medium text-[12px] leading-5">
+                            {item.label}
+                        </Text>
+                    </View>
 
+                    <VerticalBar
+                        width={5}
+                        height={50}
+                        value={parseFloat(item.value)}
+                        maxValue={parseFloat(item.max)}
+                        color="white"
+                        backgroundColor="#004b5870"
+                        backgroundOpacity={0.3}
+                        fillOpacity={1}
+                    />
+                </View>
+            ))}
         </View>
+
     </View>
 )};

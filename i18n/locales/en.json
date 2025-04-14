@@ -49,53 +49,65 @@
       "9": "Oct",
       "10": "Nov",
       "11": "Dec"
+    }
+  },
+  "city": "Minsk",
+  "clock": {
+    "weather_code_descriptions": {
+      "0": "Clear sky",
+      "1": "Mainly clear",
+      "2": "Partly cloudy",
+      "3": "Overcast",
+      "45": "Fog",
+      "48": "Frosty fog",
+      "51": "Light drizzle",
+      "53": "Moderate drizzle",
+      "55": "Heavy drizzle",
+      "56": "Light freezing drizzle",
+      "57": "Heavy freezing drizzle",
+      "61": "Light rain",
+      "63": "Moderate rain",
+      "65": "Heavy rain",
+      "66": "Light freezing rain",
+      "67": "Heavy freezing rain",
+      "71": "Light snow",
+      "73": "Moderate snow",
+      "75": "Heavy snow",
+      "77": "Snow grains",
+      "80": "Light rain showers",
+      "81": "Moderate rain showers",
+      "82": "Torrential rain showers",
+      "85": "Light snow showers",
+      "86": "Heavy snow showers",
+      "95": "Thunderstorm",
+      "96": "Thunderstorm with light hail",
+      "99": "Thunderstorm with heavy hail"
     },
-    "city": "Minsk",
-    "clock": {
-      "weather_code_descriptions": {
-        "0": "Clear sky",
-        "1": "Mainly clear",
-        "2": "Partly cloudy",
-        "3": "Overcast",
-        "45": "Fog",
-        "48": "Frosty fog",
-        "51": "Light drizzle",
-        "53": "Moderate drizzle",
-        "55": "Heavy drizzle",
-        "56": "Light freezing drizzle",
-        "57": "Heavy freezing drizzle",
-        "61": "Light rain",
-        "63": "Moderate rain",
-        "65": "Heavy rain",
-        "66": "Light freezing rain",
-        "67": "Heavy freezing rain",
-        "71": "Light snow",
-        "73": "Moderate snow",
-        "75": "Heavy snow",
-        "77": "Snow grains",
-        "80": "Light rain showers",
-        "81": "Moderate rain showers",
-        "82": "Torrential rain showers",
-        "85": "Light snow showers",
-        "86": "Heavy snow showers",
-        "95": "Thunderstorm",
-        "96": "Thunderstorm with light hail",
-        "99": "Thunderstorm with heavy hail"
-      },
-      "directions": [
-        "N",
-        "E",
-        "S",
-        "W"
-      ],
-      "windSpeedUnit": "m/s",
-      "dateFormat": "M.D",
-      "hourlyForecast": "Hourly forecast",
-      "today": "Today",
-      "tomorrow": "Tomorrow"
+    "directions": ["N", "E", "S", "W"],
+    "windSpeedUnit": "m/s",
+    "dateFormat": "M.D",
+    "hourlyForecast": "Hourly forecast",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
+  "airComposition": {
+    "AQI": "AQI",
+    "labelName": "Air Quality",
+    "level": {
+      "excellent": "Excellent",
+      "moderate": "Moderate",
+      "poor": "Poor",
+      "unhealthy": "Unhealthy",
+      "veryUnhealthy": "Very Unhealthy",
+      "hazardous": "Hazardous"
     },
-    "airComposition": {
-      "labelName": "Air Cleanliness"
+    "description": {
+      "excellent": "Air quality is ideal for most people; it's safe to spend time outdoors without restrictions.",
+      "moderate": "Air quality is generally acceptable for most people. However, those who are more sensitive may experience mild or moderate symptoms after prolonged outdoor exposure.",
+      "poor": "Air pollution has reached a high level and may be unsafe for sensitive individuals. If you experience breathing difficulties or throat irritation, reduce your time outdoors.",
+      "unhealthy": "Sensitive individuals may feel unwell immediately. Prolonged outdoor exposure may cause breathing issues or throat irritation even in healthy individuals. Limit outdoor activities.",
+      "veryUnhealthy": "Sensitive individuals should avoid going outside. Healthy individuals may also experience symptoms like breathing difficulty or throat irritation. It's recommended to stay indoors and reschedule outdoor activities.",
+      "hazardous": "Any time spent outdoors, even for a few minutes, can cause serious health issues for everyone. Try to remain indoors."
     }
   }
 }
