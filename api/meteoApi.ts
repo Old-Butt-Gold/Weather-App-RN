@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 const meteoApi = axios.create({
     baseURL: process.env.EXPO_PUBLIC_FORECAST_API_URL,
