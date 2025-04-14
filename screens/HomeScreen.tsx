@@ -244,7 +244,7 @@ const WeatherContent = ({
                 />
             </TouchableOpacity>
         </View>
-        <View className="items-center mt-2">
+        <View className="items-center mt-2 mb-2">
             <TouchableOpacity 
                 onPress={() => navigation.navigate('WeatherChat')}
                 className="bg-white/30 px-6 py-3 rounded-[20] flex-row items-center"
@@ -272,9 +272,7 @@ const WeatherCard = ({
     onAnimationFinish,
     navigation
 }: WeatherCardProps & { navigation: any }) => (
-    <View
-        className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]"
-    >
+    <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]">
         <BlurBackground />
         <View className="w-full z-10">
             <WeatherHeader />
