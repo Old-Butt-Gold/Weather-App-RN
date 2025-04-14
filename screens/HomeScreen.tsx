@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
@@ -6,7 +6,7 @@ import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { t } from 'i18next';
-import {NextDaysWeatherWidget} from "../components/nextDaysWeatherWidget";
+import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
 
@@ -18,6 +18,7 @@ const ANIMATIONS = [
     { source: require("../assets/svg-icons/animations/cloudyStart.json"), repeats: 1 },
     { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 }
 ];
+
 const sunMoonData = {
     sunrise: new Date(new Date().setHours(6, 20)),
     sunset: new Date(new Date().setHours(19, 45)),
@@ -26,6 +27,7 @@ const sunMoonData = {
     moonPhase:  0.65,
     uvIndex: 6 // УФ-индекс
 };
+
 const CLICK_ANIMATIONS = {
     day: { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 },
     night: { source: require("../assets/svg-icons/animations/angryCloud.json"), repeats: 1 }
@@ -36,33 +38,13 @@ const NIGHT_ANIMATION = {
     repeats: 1
 };
 
-// Данные о погоде
-const WEATHER_DETAILS = [
-    {
-        icon: <FontAwesome6 name="temperature-three-quarters" size={24} color="white" />,
-        value: "12",
-        unit: "°C",
-        labelKey: "feelsLike"
-    },
-    {
-        icon: <FontAwesome6 name="wind" size={24} color="white" />,
-        value: "5",
-        unit: "м/c",
-        labelKey: "windSpeed"
-    },
-    {
-        icon: <Ionicons name="rainy-sharp" size={24} color="white" />,
-        value: "68",
-        unit: "%",
-        labelKey: "rainChance"
-    },
-    {
-        icon: <MaterialIcons name="water-drop" size={24} color="white" />,
-        value: "4",
-        unit: "%",
-        labelKey: "humidity"
-    }
-];
+type WeatherDetailsItem = {
+    icon: any,
+    value: string,
+    unit: string,
+    labelKey: string,
+}
+
 // Фильтры цветов для Lottie
 const LOTTIE_COLOR_FILTERS = [
     { keypath: "mouth", color: "#2B3F56" },
@@ -148,12 +130,15 @@ const BlurBackground = () => (
 const WeatherHeader = () => {
     const date = new Date();
 
+    const weekdayShort = t(`date.weekdayShort.${date.getDay()}`);
+    const monthShort = t(`date.monthShort.${date.getMonth()}`);
+
     return (
         <View className="flex-row justify-between items-start">
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row items-center gap-2">
                 <Entypo name="calendar" size={20} color="white" />
                 <Text className="text-primary font-manrope-semibold text-[14px]">
-                    {t('date.weekdayShort')} {date.getDate()} {t('date.monthShort')} {date.getFullYear()}
+                    {weekdayShort} {date.getDate()} {monthShort} {date.getFullYear()}
                 </Text>
             </View>
             <TouchableOpacity className="p-2 rounded-[15] bg-white/20">
@@ -180,6 +165,9 @@ const TemperatureRange = () => (
 );
 
 const TemperatureDisplay = () => {
+    // TODO Получить по коду состояние температуры
+    // const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(currentHour));
+
     return (
         <View className="flex-row items-start">
             <View className="flex-col flex border-accent">
@@ -192,7 +180,7 @@ const TemperatureDisplay = () => {
     );
 };
 // Компонент карточки деталей погоды
-const WeatherDetailCard = ({ item }: { item: typeof WEATHER_DETAILS[0] }) => {
+const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
     return (
         <View className="w-[48%] bg-white/20 rounded-[20px] px-3 py-4">
             <View className="absolute top-2 right-3">{item.icon}</View>
@@ -206,13 +194,42 @@ const WeatherDetailCard = ({ item }: { item: typeof WEATHER_DETAILS[0] }) => {
 };
 
 // Компонент деталей погоды
-const WeatherDetails = () => (
-    <View className="flex-row flex-wrap justify-between mt-6 gap-3">
+const WeatherDetails = () => {
+
+    // TODO расфасовать данные по апишке
+    const WEATHER_DETAILS : WeatherDetailsItem[] = [
+        {
+            icon: <FontAwesome6 name="temperature-three-quarters" size={24} color="white" />,
+            value: "12",
+            unit: "°C",
+            labelKey: "feelsLike"
+        },
+        {
+            icon: <FontAwesome6 name="wind" size={24} color="white" />,
+            value: "5",
+            unit: "м/c",
+            labelKey: "windSpeed"
+        },
+        {
+            icon: <Ionicons name="rainy-sharp" size={24} color="white" />,
+            value: "68",
+            unit: "%",
+            labelKey: "rainChance"
+        },
+        {
+            icon: <MaterialIcons name="water-drop" size={24} color="white" />,
+            value: "4",
+            unit: "%",
+            labelKey: "humidity"
+        }
+    ];
+
+    return <View className="flex-row flex-wrap justify-between mt-6 gap-3">
         {WEATHER_DETAILS.map((item, index) => (
             <WeatherDetailCard key={index} item={item} />
         ))}
     </View>
-);
+};
 
 // Компонент контента погоды
 const WeatherContent = ({
@@ -244,7 +261,7 @@ const WeatherCard = ({
                          animationKey,
                          onAnimationPress,
                          onAnimationFinish
-                     }: WeatherCardProps) => (
+}: WeatherCardProps) => (
     <View
         className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]"
     >
@@ -270,8 +287,9 @@ export const HomeScreen = () => {
         animationKey: 0,
         clickAnimation: null
     });
-    const [currentTime] = useState(new Date());
-    const isNightTime = currentTime.getHours() >= 0 && currentTime.getHours() < 6;
+
+    //TODO Брать из Апишки IsDayOrNight
+    const isNightTime = false;
 
     const handleAnimationPress = useCallback(() => {
         setAnimationState(prev => ({

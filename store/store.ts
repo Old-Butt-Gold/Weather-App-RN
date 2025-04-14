@@ -11,6 +11,6 @@ export const store = configureStore({
         }),
 });
 
-// Типы для использования в хуках
+// Выведение типов RootState и AppDispatch из хранилища
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

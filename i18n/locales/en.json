@@ -27,24 +27,75 @@
     "noData": "No data"
   },
   "date": {
-    "weekdayShort": "Thu",
-    "monthShort": "Apr"
-  },
-  "city": "Minsk",
-  "clock": {
-    "weatherDescriptions": [
-      "Clear", "Cloudy", "Light rain", "Heavy rain",
-      "Thunderstorm", "Snow", "Fog", "Overcast",
-      "Partly cloudy", "Drizzle", "Hail", "Blizzard"
-    ],
-    "directions": ["N", "E", "S", "W"],
-    "windSpeedUnit": "m/s",
-    "dateFormat": "M.D",
-    "hourlyForecast": "Hourly forecast",
-    "today": "Today",
-    "tomorrow": "Tomorrow"
-  },
-  "airComposition": {
-    "labelName": "Air Cleanliness"
+    "weekdayShort": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "monthShort": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    },
+    "city": "Minsk",
+    "clock": {
+      "weather_code_descriptions": {
+        "0": "Clear sky",
+        "1": "Mainly clear",
+        "2": "Partly cloudy",
+        "3": "Overcast",
+        "45": "Fog",
+        "48": "Frosty fog",
+        "51": "Light drizzle",
+        "53": "Moderate drizzle",
+        "55": "Heavy drizzle",
+        "56": "Light freezing drizzle",
+        "57": "Heavy freezing drizzle",
+        "61": "Light rain",
+        "63": "Moderate rain",
+        "65": "Heavy rain",
+        "66": "Light freezing rain",
+        "67": "Heavy freezing rain",
+        "71": "Light snow",
+        "73": "Moderate snow",
+        "75": "Heavy snow",
+        "77": "Snow grains",
+        "80": "Light rain showers",
+        "81": "Moderate rain showers",
+        "82": "Torrential rain showers",
+        "85": "Light snow showers",
+        "86": "Heavy snow showers",
+        "95": "Thunderstorm",
+        "96": "Thunderstorm with light hail",
+        "99": "Thunderstorm with heavy hail"
+      },
+      "directions": [
+        "N",
+        "E",
+        "S",
+        "W"
+      ],
+      "windSpeedUnit": "m/s",
+      "dateFormat": "M.D",
+      "hourlyForecast": "Hourly forecast",
+      "today": "Today",
+      "tomorrow": "Tomorrow"
+    },
+    "airComposition": {
+      "labelName": "Air Cleanliness"
+    }
   }
 }

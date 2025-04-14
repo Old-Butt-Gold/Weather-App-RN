@@ -26,17 +26,17 @@ const MOCK_FORECAST: ForecastItem[] = [
     { dayOfWeek: 'ПТ', date: '12.04', temperature: 20, dayTemp: 22, nightTemp: 15, code: '0', isDay: true, windSpeed: 1, rainChance: 11, humidity: 50 }
 ];
 
-const ForecastCard = ({
-                          item,
-                          isFirst = false,
-                          isLast = false
-                      }: {
-    item: ForecastItem;
-    isFirst?: boolean;
-    isLast?: boolean;
-}) => {
-    const marginLeft = isFirst ? 0 : 10;
-    const marginRight = isLast ? 12 : 0;
+type ForecastProps = {
+    item: ForecastItem,
+    isFirst: boolean,
+    isLast: boolean,
+}
+
+const ForecastCard = (props: ForecastProps) => {
+    const marginLeft = props.isFirst ? 0 : 10;
+    const marginRight = props.isLast ? 12 : 0;
+
+    const { item } = props;
 
     return (
         <View
@@ -49,7 +49,7 @@ const ForecastCard = ({
                 className="absolute w-80 h-80 z-0 overflow-hidden"
             />
             <View className="absolute w-[40] justify-center items-center top-[50px] left-3">
-                <WeatherIcon code={item.code} isDay={item.isDay} size={60} fill="white" />
+                <WeatherIcon code={item.code} isDay={true} size={60} fill="white" />
             </View>
             <Text className="absolute top-0 right-1 text-white font-manrope-bold text-[32px] leading-11">
                 {item.temperature}&deg;
@@ -79,6 +79,7 @@ const ForecastCard = ({
 };
 
 export const NextDaysWeatherWidget = () => {
+    // TODO из store брать данные как в MOCK_FORECAST и вычислять dayOfWeek
     return (
         <View className="w-full mt-4">
             <Text className="text-accent font-manrope-extrabold text-xl mb-2">
