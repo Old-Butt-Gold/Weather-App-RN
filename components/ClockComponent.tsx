@@ -9,8 +9,7 @@ import RingWithGradient from "../utils/RingWithGradientProps";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
-
-import {t} from "i18next"; // путь подкорректируй
+import {t} from "i18next";
 
 // Константы и типы
 type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
@@ -28,13 +27,15 @@ const ANGLE_PER_HOUR = 15;
 const ANGLE_OFFSET = 7.5;
 
 export const ClockComponent = () => {
-    // Состояния
+
     const [time, setTime] = useState(new Date());
     const [selectedType, setSelectedType] = useState<WeatherDataType>('temperature');
 
-    // Данные
+    //TODO Температуру будем брать из store
     const temperatures = useMemo(() => [-2, -1, 12, 0, 1, 3, 6, 10, 14, 17, 20, 22, 24, 25, 24, 22, 19, 15, 12, 9, 6, 4, 2, 0], []);
+    //TODO скорость ветра также из store
     const windSpeeds = useMemo(() => [5.0, 5.4, 4.2, 3.1, 3.5, 2.0, 2.3, 3.7, 5.1, 7.2, 10.0, 12.5, 14.3, 13.2, 12.1, 10.4, 8.2, 6.3, 5.5, 4.8, 4.0, 4.2, 5.1, 5.0], []);
+
     const getWeatherCodeForHour = (hour: number) => {
         const codes = ['0', '2', '3', '45', '48', '51', '53', '55', '61', '63', '65', '71', '75', '96'];
         return codes[hour % codes.length];
