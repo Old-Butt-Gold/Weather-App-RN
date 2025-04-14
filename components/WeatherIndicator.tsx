@@ -4,7 +4,7 @@ import Svg, { Path, Text } from 'react-native-svg';
 import { describeRingSector } from "../utils/ringUtils";
 import { Ionicons } from '@expo/vector-icons'; // Для иконки дождя
 import { MaterialIcons } from '@expo/vector-icons'; // Для иконки воды
-import { FontAwesome6 } from '@expo/vector-icons'; // Для иконки ветра
+import { FontAwesome6 } from '@expo/vector-icons';
 
 type WeatherIndicatorProps = {
     type: 'windSpeed' | 'rainChance' | 'humidity';

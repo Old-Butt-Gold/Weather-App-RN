@@ -10,11 +10,8 @@ import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
 import i18next, {t} from "i18next";
-import {WeatherDataType} from "../store/types";
-import i18n from "../i18n/i18n";
 
-// Константы и типы
-
+export type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
 const DIRECTIONS = ["C", "В", "Ю", "З"];
 const LINE_PATTERN = [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];

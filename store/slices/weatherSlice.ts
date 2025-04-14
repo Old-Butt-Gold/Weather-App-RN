@@ -3,7 +3,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {Status} from "../types";
 
-
 interface WeatherState {
     data: any;
     loading: boolean;
