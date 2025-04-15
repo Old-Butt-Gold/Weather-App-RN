@@ -7,7 +7,12 @@
     "rainy": "Rainy",
     "reload": "Reload",
     "temperatureRange": "Temperature range",
-    "nextDays": "5-day forecast"
+    "nextDays": "7-day forecast"
+  },
+  "windUnit": {
+    "km/h":  "km/h",
+    "m/s": "m/s",
+    "mph": "mph"
   },
   "sunMoon": {
     "daylightTime": "Daylight time",
@@ -83,7 +88,6 @@
       "99": "Thunderstorm with heavy hail"
     },
     "directions": ["N", "E", "S", "W"],
-    "windSpeedUnit": "m/s",
     "dateFormat": "M.D",
     "hourlyForecast": "Hourly forecast",
     "today": "Today",

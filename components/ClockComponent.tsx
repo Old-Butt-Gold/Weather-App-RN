@@ -15,7 +15,6 @@ import {formatDate, getCurrentWindUnit, getWeatherCodeForHour} from "../store/ut
 
 export type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
-const DIRECTIONS = ["C", "В", "Ю", "З"];
 const LINE_PATTERN = [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];
 const ANGLE_PER_HOUR = 15;
 const ANGLE_OFFSET = 7.5;
@@ -76,7 +75,7 @@ export const ClockComponent = () => {
 
     const currentWindSpeed = windSpeeds[0];
 
-    const windSpeedUnit = getCurrentWindUnit(weatherState);
+    const windSpeedUnit = t(`windUnit.${getCurrentWindUnit(weatherState)}`);
 
     // 0 – текущий час
     const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(weatherState, 0));
@@ -166,7 +165,7 @@ export const ClockComponent = () => {
                         fontFamily="Poppins-SemiBold"
                     >
                         <TSpan fontSize="4">{windSpeeds[index].toFixed(1)}</TSpan>
-                        <TSpan x={50 + dataRadius * Math.sin(rad)} dy={2.2} dx={0.5} fontSize="2.3">{t('clock.windSpeedUnit')}</TSpan>
+                        <TSpan x={50 + dataRadius * Math.sin(rad)} dy={2.2} dx={0.5} fontSize="2.3">{windSpeedUnit}</TSpan>
                     </SvgText>
                 )}
             </React.Fragment>
@@ -189,7 +188,7 @@ export const ClockComponent = () => {
                     fontFamily="Manrope-ExtraBold"
                     alignmentBaseline="middle"
                 >
-                    {DIRECTIONS[quarterIndex]}
+                    {t(`clock.directions.${quarterIndex}`)}
                 </SvgText>
 
                 {LINE_PATTERN.map((isWhite, lineIndex) => {

@@ -9,7 +9,7 @@ import { t } from 'i18next';
 import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
-import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {useAppSelector} from "../store/hooks";
 import {
     getCurrentHumidity,
     getCurrentRainChance,
@@ -18,7 +18,6 @@ import {
     getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
-import {WeatherState} from "../store/slices/weatherSlice";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -233,7 +232,7 @@ const WeatherDetails = () => {
     weatherDetails.push({
         icon: <FontAwesome6 name="wind" size={24} color="white" />,
         value: getCurrentWindSpeed(weatherState),
-        unit: getCurrentWindUnit(weatherState),
+        unit: t(`windUnit.${getCurrentWindUnit(weatherState)}`),
         labelKey: "windSpeed",
     });
 

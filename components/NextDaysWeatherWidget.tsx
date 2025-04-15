@@ -18,7 +18,6 @@ type ForecastItem = {
     wind_speed_10m_mean: number;  // Добавим скорость ветра для примера
     precipitation_probability_mean: number; // Добавим шанс осадков для примера
     relative_humidity_2m_mean: number;   // Добавим влажность для примера
-    temperatureUnit: TemperatureUnit,
 };
 
 type ForecastProps = {
@@ -47,10 +46,10 @@ const ForecastCard = (props: ForecastProps) => {
                 <WeatherIcon code={item.weather_code} isDay={true} size={60} fill="white" />
             </View>
             <Text className="absolute top-0 right-1 text-white font-manrope-bold text-[32px] leading-11">
-                {item.temperature_2m_mean}{item.temperatureUnit};
+                {item.temperature_2m_mean}&deg;
             </Text>
             <Text className="absolute top-20 right-1 text-white/60 font-manrope-bold text-[12px] leading-11">
-                {item.temperature_2m_max}{item.temperatureUnit}/ {item.temperature_2m_min}{item.temperatureUnit}
+                {item.temperature_2m_max}&deg; / {item.temperature_2m_min}&deg;
             </Text>
             <View className="flex-row w-full">
                 <View className="flex-col items-start h-36 w-[50%]">
@@ -84,14 +83,13 @@ export const NextDaysWeatherWidget = () => {
         let dayItem : ForecastItem = {
             dayOfWeek: t(`date.weekdayShort.${dayWeek}`),
             date: formatDate(date),
-            temperature_2m_mean: weatherState.data!.daily.temperature_2m_mean[i],
+            temperature_2m_mean: ~~weatherState.data!.daily.temperature_2m_mean[i],
             temperature_2m_max: weatherState.data!.daily.temperature_2m_max[i],
             temperature_2m_min: weatherState.data!.daily.temperature_2m_min[i],
             weather_code: weatherState.data!.daily.weather_code[i].toString(),
             wind_speed_10m_mean: weatherState.data!.daily.wind_speed_10m_mean[i],
             precipitation_probability_mean: weatherState.data!.daily.precipitation_probability_mean[i],
             relative_humidity_2m_mean: weatherState.data!.daily.relative_humidity_2m_mean[i],
-            temperatureUnit: getCurrentTemperatureUnit(weatherState),
         };
 
         dayForecastInfo.push(dayItem);

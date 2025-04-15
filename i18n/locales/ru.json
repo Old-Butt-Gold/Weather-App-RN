@@ -7,7 +7,12 @@
     "rainy": "Дождливо",
     "reload": "Обновить",
     "temperatureRange": "Диапазон температур",
-    "nextDays": "Прогноз на 5 дней"
+    "nextDays": "Прогноз на 7 дней"
+  },
+  "windUnit": {
+    "km/h":  "км/ч",
+    "m/s": "м/c",
+    "mph": "М/Ч"
   },
   "sunMoon": {
     "daylightTime": "Световое время",
@@ -83,7 +88,6 @@
       "99": "Гроза с сильным градом"
     },
     "directions": ["С", "В", "Ю", "З"],
-    "windSpeedUnit": "м/с",
     "dateFormat": "D.M",
     "hourlyForecast": "Почасовой прогноз",
     "today": "Сегодня",
