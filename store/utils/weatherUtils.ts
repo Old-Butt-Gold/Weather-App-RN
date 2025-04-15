@@ -1,4 +1,4 @@
-﻿import {weatherReducer, WeatherState} from "../store/slices/weatherSlice";
+﻿import {weatherReducer, WeatherState} from "../slices/weatherSlice";
 
 export const getWeatherCodeForHour = (weatherState: WeatherState, hour: number) => {
     return weatherState.data!.hourly.weather_code[hour];

@@ -17,7 +17,7 @@ import {
     getCurrentTemperatureApparrent,
     getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
     getWeatherCodeForHour
-} from "../utils/weatherUtils";
+} from "../store/utils/weatherUtils";
 import {WeatherState} from "../store/slices/weatherSlice";
 
 // Константы анимаций
