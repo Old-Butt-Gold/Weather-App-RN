@@ -22,6 +22,7 @@ export const fetchWeather = createAppAsyncThunk<WeatherData>(
                     'wind_speed_10m,weather_code,apparent_temperature,temperature_2m,relative_humidity_2m,is_day',
                 timezone: 'auto',
                 forecast_hours: '24',
+                past_days: '1'
             };
             const response = await meteoApi.get('', { params });
             return response.data as WeatherData;
