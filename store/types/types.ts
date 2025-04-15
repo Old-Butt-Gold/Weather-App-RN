@@ -39,6 +39,7 @@ export interface HourlyData {
     weather_code: number[];
     wind_direction_10m: number[];
     precipitation_probability: number[];
+    is_day: number[];
 }
 
 export interface DailyUnits {
