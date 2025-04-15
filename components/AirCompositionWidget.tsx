@@ -1,47 +1,14 @@
 // components/AirCompositionWidget.tsx
 import React from 'react';
 import {View, Text, Dimensions} from 'react-native';
-import { FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import {t} from "i18next";
 import {BlurView} from "expo-blur";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Svg, { Text as SvgText, Path} from "react-native-svg";
 import {describeRingSector} from "../utils/ringUtils";
 import {VerticalBar} from "./VerticalBar";
-import { useTranslation } from "react-i18next";
-const AIR_COMPOSITION = [
-    {
-        label: "CO₂",
-        value: "70",
-        max: "250",
-    },
-    {
-        label: "PM2.5",
-        value: "35",
-        max: "250",
-    },
-    {
-        label: "O₃",
-        value: "120",
-        max: "250",
-    },
-    {
-        label: "SO₂",
-        value: "10",
-        max: "250",
-    },
-    {
-        label: "NO₂",
-        value: "35",
-        max: "250",
-    },
-    {
-        label: "PM₁₀",
-        value: "120",
-        max: "250",
-    }
-];
-const MAX_AQI = 500;
+import {useAppSelector} from "../store/hooks";
+
 const Infolabel = () => (
     <View className="absolute top-5 left-5 flex flex-row justify-center items-center gap-x-2">
         <FontAwesome name="leaf" size={16} color="rgba(243, 244, 246,0.6)" />
@@ -57,21 +24,70 @@ const getAngleFromAQI = (aqi: number, max_aqi :number): number => {
 };
 
 const getAirQualityLevelKey = (aqi: number): string => {
-    if (aqi <= 19) return "excellent";
-    if (aqi <= 49) return "moderate";
-    if (aqi <= 99) return "poor";
-    if (aqi <= 149) return "unhealthy";
-    if (aqi <= 249) return "veryUnhealthy";
+    if (aqi <= 50) return "good";
+    if (aqi <= 100) return "moderate";
+    if (aqi <= 150) return "unhealthyForSensitiveGroups";
+    if (aqi <= 200) return "unhealthy";
+    if (aqi <= 300) return "veryUnhealthy";
     return "hazardous";
 };
 
+type AirInfo = {
+    label: string,
+    value: string,
+    max: string,
+}
+
 export const AirCompositionWidget = () => {
-    const { t } = useTranslation();
-    const AIR_QUALITY_INDEX = 170;
+
+    const MAX_AQI = 500;
+
+    const currentHour = new Date().getHours();
+
+    const weatherState = useAppSelector(x => x.weather);
+
+    const airComposition : AirInfo[] = [];
+
+    airComposition.push({
+       label: "CO",
+       value: weatherState.airQuality!.us_aqi_carbon_monoxide[currentHour].toString(),
+       max: "30" //??
+    });
+
+    airComposition.push({
+        label: "PM2.5",
+        value: weatherState.airQuality!.us_aqi_pm2_5[currentHour].toString(),
+        max: "250" //??
+    });
+
+    airComposition.push({
+        label: "PM10",
+        value: weatherState.airQuality!.us_aqi_pm10[currentHour].toString(),
+        max: "425" //??
+    });
+
+    airComposition.push({
+        label: "O₃",
+        value: weatherState.airQuality!.us_aqi_ozone[currentHour].toString(),
+        max: "201" //??
+    });
+
+    airComposition.push({
+        label: "NO₂",
+        value: weatherState.airQuality!.us_aqi_nitrogen_dioxide[currentHour].toString(),
+        max: "1250" //??
+    });
+
+    airComposition.push({
+        label: "SO₂",
+        value: weatherState.airQuality!.us_aqi_sulphur_dioxide[currentHour].toString(),
+        max: "605" //??
+    });
+
+    const AIR_QUALITY_INDEX = weatherState.airQuality!.us_aqi[currentHour];
     const levelKey = getAirQualityLevelKey(AIR_QUALITY_INDEX);
     const screenWidth = Dimensions.get('window').width;
-    const svgWidth = screenWidth /1.7;
-    const radius = svgWidth / 2;
+    const svgWidth = screenWidth / 1.7;
     const topMargin = 65;
     const cx = svgWidth / 2;
     const cy = svgWidth / 2;
@@ -165,7 +181,7 @@ export const AirCompositionWidget = () => {
             {t(`airComposition.description.${levelKey}`)}
         </Text>
         <View className="p-4 bg-white/20 w-[85%] rounded-[35] mt-6 mb-8 flex-row flex-wrap justify-between gap-y-6">
-            {AIR_COMPOSITION.map((item, index) => (
+            {airComposition.map((item, index) => (
                 <View
                     key={index}
                     className="w-[30%] flex-row items-end"

@@ -9,30 +9,20 @@ import RingWithGradient from "../utils/RingWithGradientProps";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
-import i18next, {t} from "i18next";
+import {t} from "i18next";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {formatDate, getCurrentWindUnit, getWeatherCodeForHour} from "../store/utils/weatherUtils";
 
 export type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
-const DIRECTIONS = ["C", "В", "Ю", "З"];
 const LINE_PATTERN = [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];
-const HOUR_MARKS = Array.from({ length: 24 }, (_, i) => i);
 const ANGLE_PER_HOUR = 15;
 const ANGLE_OFFSET = 7.5;
 
-const getWeatherCodeForHour = (hour: number) => {
-    const codes = ['0', '2', '3', '45', '48', '51', '53', '55', '61', '63', '65', '71', '75', '96'];
-    return codes[hour % codes.length];
-};
-
-function formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    return `${day}.${month}`;
-}
-
 export const ClockComponent = () => {
+    const dispatch = useAppDispatch();
+    const weatherState = useAppSelector(x => x.weather);
 
-    // TODO надо работать будет с возвращаемыми часами, поскольку возвращает ровно 24 часа
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
@@ -54,7 +44,7 @@ export const ClockComponent = () => {
     const TimeDisplay = () => (
         <View className="flex absolute top-[65px] h-[35px] rounded-[35px] z-[999] justify-center items-center flex-col">
             <Text className="text-white font-manrope-bold text-2xl h-[30]">
-                {`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}:${currentSeconds.toString().padStart(2, '0')}`}
+                {`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`}
             </Text>
             <Text className="text-white/50 font-manrope-bold text-sm h-[20] leading-4">
                 {utc}
@@ -62,10 +52,8 @@ export const ClockComponent = () => {
         </View>
     );
 
-    //TODO Температуру будем брать из store
-    const temperatures = useMemo(() => [-2, -1, 12, 0, 1, 3, 6, 10, 14, 17, 20, 22, 24, 25, 24, 22, 19, 15, 12, 9, 6, 4, 2, 0], []);
-    //TODO скорость ветра также из store
-    const windSpeeds = useMemo(() => [5.0, 5.4, 4.2, 3.1, 3.5, 2.0, 2.3, 3.7, 5.1, 7.2, 10.0, 12.5, 14.3, 13.2, 12.1, 10.4, 8.2, 6.3, 5.5, 4.8, 4.0, 4.2, 5.1, 5.0], []);
+    const temperatures = weatherState.data!.hourly.temperature_2m;
+    const windSpeeds = weatherState.data!.hourly.wind_speed_10m;
 
     // Размеры
     const svgSize = Dimensions.get('window').width;
@@ -80,22 +68,25 @@ export const ClockComponent = () => {
     // Текущие значения
     const currentHour = time.getHours();
     const currentMinute = time.getMinutes();
-    const currentSeconds = time.getSeconds();
 
-    const currentTemperature = temperatures[currentHour];
+    const HOUR_MARKS = Array.from({ length: 24 }, (_, i) => (currentHour + i) % 24);
 
-    const currentWindSpeed = windSpeeds[currentHour];
+    const currentTemperature = temperatures[0];
 
-    //TODO Получить по коду состояние температуры
-    const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(currentHour));
+    const currentWindSpeed = windSpeeds[0];
 
-    // TODO получить направление ветра из store
-    const currentWindDirection = 60;
+    const windSpeedUnit = t(`windUnit.${getCurrentWindUnit(weatherState)}`);
+
+    // 0 – текущий час
+    const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(weatherState, 0));
+
+    const currentWindDirection = weatherState.data!.hourly.wind_direction_10m[0];
     const angleRad = useMemo(() => ((currentWindDirection - 90) * Math.PI) / 180, [currentWindDirection]);
     const segments = currentHour > 17 ? 25 : undefined;
 
-    // TODO добавить utc_offset_seconds в data_type
-    const utc : string = "UTC+" + 10800 / 3600;
+    const offsetSeconds = weatherState.data!.utc_offset_seconds;
+    const hours = offsetSeconds / 3600;
+    const utc: string = `UTC${hours >= 0 ? '+' : '-'}${Math.abs(hours)}`;
 
     const DateIndicator = () => (
         <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
@@ -134,7 +125,7 @@ export const ClockComponent = () => {
         </View>
     );
 
-    const renderHourMark = (hour: number) => {
+    const renderHourMark = (hour: number, index: number) => {
         const baseAngle = hour * ANGLE_PER_HOUR;
         const rad = (baseAngle * Math.PI) / 180;
         const textRadius = 42;
@@ -163,7 +154,7 @@ export const ClockComponent = () => {
                         fontSize="4"
                         fontFamily="Poppins-SemiBold"
                     >
-                        {`${temperatures[hour]}°`}
+                        {`${temperatures[index]}°`}
                     </SvgText>
                 )}
 
@@ -175,8 +166,8 @@ export const ClockComponent = () => {
                         fill="#FFFFFF"
                         fontFamily="Poppins-SemiBold"
                     >
-                        <TSpan fontSize="4">{windSpeeds[hour].toFixed(1)}</TSpan>
-                        <TSpan x={50 + dataRadius * Math.sin(rad)} dy={2.2} dx={0.5} fontSize="2.3">{t('clock.windSpeedUnit')}</TSpan>
+                        <TSpan fontSize="4">{windSpeeds[index].toFixed(1)}</TSpan>
+                        <TSpan x={50 + dataRadius * Math.sin(rad)} dy={2.2} dx={0.5} fontSize="2.3">{windSpeedUnit}</TSpan>
                     </SvgText>
                 )}
             </React.Fragment>
@@ -199,7 +190,7 @@ export const ClockComponent = () => {
                     fontFamily="Manrope-ExtraBold"
                     alignmentBaseline="middle"
                 >
-                    {DIRECTIONS[quarterIndex]}
+                    {t(`clock.directions.${quarterIndex}`)}
                 </SvgText>
 
                 {LINE_PATTERN.map((isWhite, lineIndex) => {
@@ -223,14 +214,14 @@ export const ClockComponent = () => {
         );
     };
 
-    const renderPrecipitationIcon = (hour: number) => {
+    const renderPrecipitationIcon = (hour: number, index: number) => {
         const angle = hour * ANGLE_PER_HOUR;
         const rad = (angle * Math.PI) / 180;
         const iconRadius = 32;
 
         // Пример генерации weatherCode и isDay. Ты можешь подставлять реальные данные.
-        const weatherCode = getWeatherCodeForHour(hour); // например, '63'
-        const isDay = hour >= 6 && hour < 18;
+        const weatherCode = getWeatherCodeForHour(weatherState, index); // например, '63'
+        const isDay = weatherState.data!.hourly.is_day[index] === 1;
 
         return (
             <View
@@ -244,7 +235,7 @@ export const ClockComponent = () => {
                 }}
             >
                 <WeatherIcon
-                    code={weatherCode}
+                    code={weatherCode.toString()}
                     isDay={isDay}
                     size={38}
                     fill="white"
@@ -300,7 +291,6 @@ export const ClockComponent = () => {
                         {currentWeatherDescription}
                     </SvgText>
 
-                    {/* Направления */}
                     {[12, 102, 192, 282].map(renderDirectionIndicator)}
 
                     {/* Кольца с градиентом */}
@@ -344,7 +334,6 @@ export const ClockComponent = () => {
                         opacity={0.45}
                     />
 
-                    {/* Активный сектор */}
                     <Path
                         d={describeRingSector(50, 50, 46, 26, currentHour * ANGLE_PER_HOUR - ANGLE_OFFSET, currentHour * ANGLE_PER_HOUR + ANGLE_OFFSET)}
                         fill="white"
@@ -356,14 +345,8 @@ export const ClockComponent = () => {
                         fillOpacity={1}
                     />
 
-
-                    {/* Часовые метки */}
                     {HOUR_MARKS.map(renderHourMark)}
 
-                    {/* Индикатор ветра */}
-
-
-                    {/* Линия направления ветра */}
                     <Line
                         x1={50 + 5.5 * Math.cos(angleRad)}
                         y1={63 + 5.5 * Math.sin(angleRad)}
@@ -429,7 +412,7 @@ export const ClockComponent = () => {
                         fontFamily="Manrope-Bold"
                         alignmentBaseline="middle"
                     >
-                        {currentWindSpeed.toFixed(0)}
+                        {currentWindSpeed}
                     </SvgText>
                     <SvgText
                         x="50.3"
@@ -440,7 +423,7 @@ export const ClockComponent = () => {
                         fontFamily="Manrope-Bold"
                         alignmentBaseline="middle"
                     >
-                        <TSpan>{t('clock.windSpeedUnit')}</TSpan>
+                        <TSpan>{windSpeedUnit}</TSpan>
                     </SvgText>
                 </Svg>
             </View>

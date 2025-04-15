@@ -7,7 +7,12 @@
     "rainy": "Rainy",
     "reload": "Reload",
     "temperatureRange": "Temperature range",
-    "nextDays": "5-day forecast"
+    "nextDays": "7-day forecast"
+  },
+  "windUnit": {
+    "km/h":  "km/h",
+    "m/s": "m/s",
+    "mph": "mph"
   },
   "sunMoon": {
     "daylightTime": "Daylight time",
@@ -51,7 +56,6 @@
       "11": "Dec"
     }
   },
-  "city": "Minsk",
   "clock": {
     "weather_code_descriptions": {
       "0": "Clear sky",
@@ -84,7 +88,6 @@
       "99": "Thunderstorm with heavy hail"
     },
     "directions": ["N", "E", "S", "W"],
-    "windSpeedUnit": "m/s",
     "dateFormat": "M.D",
     "hourlyForecast": "Hourly forecast",
     "today": "Today",
@@ -94,20 +97,20 @@
     "AQI": "AQI",
     "labelName": "Air Quality",
     "level": {
-      "excellent": "Excellent",
+      "good": "Good",
       "moderate": "Moderate",
-      "poor": "Poor",
+      "unhealthyForSensitiveGroups": "Sensitive Groups",
       "unhealthy": "Unhealthy",
       "veryUnhealthy": "Very Unhealthy",
       "hazardous": "Hazardous"
     },
     "description": {
-      "excellent": "Air quality is ideal for most people; it's safe to spend time outdoors without restrictions.",
-      "moderate": "Air quality is generally acceptable for most people. However, those who are more sensitive may experience mild or moderate symptoms after prolonged outdoor exposure.",
-      "poor": "Air pollution has reached a high level and may be unsafe for sensitive individuals. If you experience breathing difficulties or throat irritation, reduce your time outdoors.",
-      "unhealthy": "Sensitive individuals may feel unwell immediately. Prolonged outdoor exposure may cause breathing issues or throat irritation even in healthy individuals. Limit outdoor activities.",
-      "veryUnhealthy": "Sensitive individuals should avoid going outside. Healthy individuals may also experience symptoms like breathing difficulty or throat irritation. It's recommended to stay indoors and reschedule outdoor activities.",
-      "hazardous": "Any time spent outdoors, even for a few minutes, can cause serious health issues for everyone. Try to remain indoors."
+      "good": "Air quality is ideal for most people. It’s safe to engage in outdoor activities without restrictions.",
+      "moderate": "Air quality is acceptable for most people. Sensitive individuals may experience minor symptoms with prolonged exposure.",
+      "unhealthyForSensitiveGroups": "Air quality may pose risks to sensitive groups. Consider reducing prolonged outdoor exertion.",
+      "unhealthy": "Health risks increase for everyone. Sensitive groups should avoid prolonged exposure. Others may experience discomfort.",
+      "veryUnhealthy": "Health alert: Everyone may experience serious health effects. Avoid all unnecessary outdoor activities.",
+      "hazardous": "Health emergency: Even brief exposure can be life-threatening. Stay indoors with windows closed."
     }
   }
 }
