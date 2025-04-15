@@ -28,15 +28,6 @@ const ANIMATIONS = [
     { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 }
 ];
 
-const sunMoonData = {
-    sunrise: new Date(new Date().setHours(6, 20)),
-    sunset: new Date(new Date().setHours(19, 45)),
-    moonrise: new Date(new Date().setHours(19, 46)),
-    moonset: new Date(new Date().setHours(6, 50)),
-    moonPhase:  0.65,
-    uvIndex: 6 // УФ-индекс
-};
-
 const CLICK_ANIMATIONS = {
     day: { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 },
     night: { source: require("../assets/svg-icons/animations/angryCloud.json"), repeats: 1 }
@@ -383,7 +374,7 @@ export const HomeScreen = () => {
                     />
                     <ClockComponent />
                     <NextDaysWeatherWidget />
-                    <SunMoonWidget data={sunMoonData}/>
+                    <SunMoonWidget/>
                     <AirCompositionWidget />
                 </View>
             </ScrollView>

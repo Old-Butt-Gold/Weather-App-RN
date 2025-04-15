@@ -93,3 +93,14 @@ export interface LocationResult {
     country: string;
     country_code: string;
 }
+
+export interface AirQuality {
+    time: string[],
+    us_aqi: number[],
+    us_aqi_pm2_5: number[],
+    us_aqi_pm10: number[],
+    us_aqi_nitrogen_dioxide: number[],
+    us_aqi_carbon_monoxide: number[],
+    us_aqi_ozone: number[],
+    us_aqi_sulphur_dioxide: number[],
+}

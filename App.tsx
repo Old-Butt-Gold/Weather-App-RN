@@ -13,6 +13,7 @@ import {setCurrentCity, setLocation} from "./store/slices/weatherSlice";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import * as Location from 'expo-location';
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
+import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,7 +55,10 @@ const Initializer = () => {
                 }
                 // Выполняем запрос данных о погоде по координатам
                 await dispatch(fetchWeather()).unwrap();
-                await dispatch(fetchMoonPhase()).unwrap().then((x) => {
+                await dispatch(fetchMoonPhase()).unwrap().then(x => {
+                    console.log(x);
+                });
+                await dispatch(fetchAirQuality()).unwrap().then(x => {
                     console.log(x);
                 })
             } catch (error) {

@@ -17,7 +17,6 @@ interface SunMoonData {
 }
 
 interface SunMoonWidgetProps {
-    data: SunMoonData;
     currentTime?: Date;
 }
 
@@ -148,12 +147,23 @@ const GRADIENT_RANGES = [
     },
 ];
 
-export const SunMoonWidget: React.FC<SunMoonWidgetProps> = ({
-                                                                data,
-                                                                currentTime = new Date(),
-                                                            }) => {
+export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
+    ({
+         currentTime = new Date(),
+     }) =>
+{
+    // TODO parse data from store
+    const sunMoonData : SunMoonData = {
+        sunrise: new Date(new Date().setHours(6, 20)),
+        sunset: new Date(new Date().setHours(19, 45)),
+        moonrise: new Date(new Date().setHours(19, 46)),
+        moonset: new Date(new Date().setHours(6, 50)),
+        moonPhase:  0.65,
+        uvIndex: 6 // УФ-индекс
+    };
+
     const [currentTimeState, setCurrentTimeState] = useState(currentTime);
-    const { sunrise, sunset, moonrise, moonset, moonPhase, uvIndex } = data;
+    const { sunrise, sunset, moonrise, moonset, moonPhase, uvIndex } = sunMoonData;
 
     useEffect(() => {
         const interval = setInterval(() => {

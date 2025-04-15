@@ -84,7 +84,9 @@ export const ClockComponent = () => {
     const angleRad = useMemo(() => ((currentWindDirection - 90) * Math.PI) / 180, [currentWindDirection]);
     const segments = currentHour > 17 ? 25 : undefined;
 
-    const utc : string = "UTC+" + weatherState.data!.utc_offset_seconds / 3600;
+    const offsetSeconds = weatherState.data!.utc_offset_seconds;
+    const hours = offsetSeconds / 3600;
+    const utc: string = `UTC${hours >= 0 ? '+' : '-'}${Math.abs(hours)}`;
 
     const DateIndicator = () => (
         <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">

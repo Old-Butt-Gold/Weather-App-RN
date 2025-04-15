@@ -2,6 +2,7 @@
 
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {
+    AirQuality,
     Coordinates,
     Status,
     TemperatureUnit,
@@ -10,6 +11,7 @@ import {
 } from "../types/types";
 import {fetchWeather} from "../actions/fetchWeather";
 import {fetchMoonPhase} from "../actions/fetchMoonPhase";
+import {fetchAirQuality} from "../actions/fetchAirQuality";
 
 export interface WeatherState {
     data: WeatherData | null;
@@ -21,6 +23,7 @@ export interface WeatherState {
     windSpeedUnit: WindSpeedUnit;
     currentCity: string | null;
     moonPhase: number | null;
+    airQuality: AirQuality | null;
 }
 
 const initialState: WeatherState = {
@@ -33,6 +36,7 @@ const initialState: WeatherState = {
     windSpeedUnit: 'km/h',
     currentCity: null,
     moonPhase: null,
+    airQuality: null,
 };
 
 const weatherSlice = createSlice({
@@ -85,6 +89,21 @@ const weatherSlice = createSlice({
                 state.status = 'failed';
                 state.loading = false;
                 state.error = action.payload ? action.payload.message : 'Ошибка запроса фазы луны';
+            })
+            .addCase(fetchAirQuality.pending, (state) => {
+                state.status = 'loading';
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchAirQuality.fulfilled, (state, action: PayloadAction<AirQuality>) => {
+                state.status = 'succeeded';
+                state.loading = false;
+                state.airQuality = action.payload;
+            })
+            .addCase(fetchAirQuality.rejected, (state, action) => {
+                state.status = 'failed';
+                state.loading = false;
+                state.error = action.payload ? action.payload.message : 'Ошибка запроса качества воздуха';
             });
     },
 });
