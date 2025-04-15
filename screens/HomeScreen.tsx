@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
+import {View, ScrollView, TouchableOpacity, Text, Image, ActivityIndicator} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
 import LottieView from 'lottie-react-native';
@@ -9,6 +9,7 @@ import { t } from 'i18next';
 import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
 
 // Константы анимаций
 const ANIMATIONS = [

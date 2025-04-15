@@ -18,6 +18,7 @@ interface WeatherState {
     location: Coordinates | null;
     temperatureUnit: TemperatureUnit;
     windSpeedUnit: WindSpeedUnit;
+    currentCity: string | null;
 }
 
 const initialState: WeatherState = {
@@ -28,6 +29,7 @@ const initialState: WeatherState = {
     location: null,
     temperatureUnit: '°C',
     windSpeedUnit: 'km/h',
+    currentCity: null,
 };
 
 const weatherSlice = createSlice({
@@ -43,7 +45,9 @@ const weatherSlice = createSlice({
         setLocation(state, action: PayloadAction<Coordinates>) {
             state.location = action.payload;
         },
-
+        setCurrentCity(state, action: PayloadAction<string | null>) {
+            state.currentCity = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -66,5 +70,5 @@ const weatherSlice = createSlice({
     },
 });
 
-export const { setTemperatureUnit, setWindSpeedUnit, setLocation } = weatherSlice.actions;
+export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity } = weatherSlice.actions;
 export const weatherReducer = weatherSlice.reducer;
