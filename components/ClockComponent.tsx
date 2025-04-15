@@ -11,7 +11,7 @@ import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
 import i18next, {t} from "i18next";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {getCurrentWindUnit, getWeatherCodeForHour} from "../store/utils/weatherUtils";
+import {formatDate, getCurrentWindUnit, getWeatherCodeForHour} from "../store/utils/weatherUtils";
 
 export type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
@@ -20,17 +20,10 @@ const LINE_PATTERN = [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];
 const ANGLE_PER_HOUR = 15;
 const ANGLE_OFFSET = 7.5;
 
-function formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    return `${day}.${month}`;
-}
-
 export const ClockComponent = () => {
     const dispatch = useAppDispatch();
     const weatherState = useAppSelector(x => x.weather);
 
-    // TODO надо работать будет с возвращаемыми часами, поскольку возвращает ровно 24 часа
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
