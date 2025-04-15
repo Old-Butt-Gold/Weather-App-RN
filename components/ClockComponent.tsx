@@ -9,7 +9,7 @@ import RingWithGradient from "../utils/RingWithGradientProps";
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
-import i18next, {t} from "i18next";
+import {t} from "i18next";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {formatDate, getCurrentWindUnit, getWeatherCodeForHour} from "../store/utils/weatherUtils";
 

@@ -12,6 +12,7 @@ import {useAppDispatch} from "./store/hooks";
 import {setCurrentCity, setLocation} from "./store/slices/weatherSlice";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import * as Location from 'expo-location';
+import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -53,6 +54,9 @@ const Initializer = () => {
                 }
                 // Выполняем запрос данных о погоде по координатам
                 await dispatch(fetchWeather()).unwrap();
+                await dispatch(fetchMoonPhase()).unwrap().then((x) => {
+                    console.log(x);
+                })
             } catch (error) {
                 console.error("Ошибка при инициализации координат:", error);
                 // Если произошла ошибка — задаём дефолтные координаты

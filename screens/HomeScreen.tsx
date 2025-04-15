@@ -162,8 +162,8 @@ const WeatherHeader = () => {
 // Компонент диапазона температур
 const TemperatureRange = () => {
     const weatherState = useAppSelector(state => state.weather);
-    const max = ~~weatherState.data?.daily.temperature_2m_max[0]!;
-    const min = ~~weatherState.data?.daily.temperature_2m_min[0]!;
+    const max = ~~weatherState.data?.daily.temperature_2m_max[1]!;
+    const min = ~~weatherState.data?.daily.temperature_2m_min[1]!;
     const unit = getCurrentTemperatureUnit(weatherState);
 
     return (<View className="flex-row justify-center mt-2">

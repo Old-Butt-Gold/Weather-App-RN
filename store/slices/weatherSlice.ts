@@ -9,6 +9,7 @@ import {
     WindSpeedUnit
 } from "../types/types";
 import {fetchWeather} from "../actions/fetchWeather";
+import {fetchMoonPhase} from "../actions/fetchMoonPhase";
 
 export interface WeatherState {
     data: WeatherData | null;
@@ -19,6 +20,7 @@ export interface WeatherState {
     temperatureUnit: TemperatureUnit;
     windSpeedUnit: WindSpeedUnit;
     currentCity: string | null;
+    moonPhase: number | null;
 }
 
 const initialState: WeatherState = {
@@ -30,6 +32,7 @@ const initialState: WeatherState = {
     temperatureUnit: '°C',
     windSpeedUnit: 'km/h',
     currentCity: null,
+    moonPhase: null,
 };
 
 const weatherSlice = createSlice({
@@ -67,6 +70,22 @@ const weatherSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload ? action.payload.message : 'Ошибка запроса';
             })
+            // Обработка fetchMoonPhase
+            .addCase(fetchMoonPhase.pending, (state) => {
+                state.status = 'loading';
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMoonPhase.fulfilled, (state, action: PayloadAction<number>) => {
+                state.status = 'succeeded';
+                state.loading = false;
+                state.moonPhase = action.payload;
+            })
+            .addCase(fetchMoonPhase.rejected, (state, action) => {
+                state.status = 'failed';
+                state.loading = false;
+                state.error = action.payload ? action.payload.message : 'Ошибка запроса фазы луны';
+            });
     },
 });
 
