@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {View, ScrollView, TouchableOpacity, Text, Image, ActivityIndicator} from 'react-native';
+import {View, ScrollView, TouchableOpacity, Text, Image} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
 import LottieView from 'lottie-react-native';
@@ -10,6 +10,15 @@ import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {
+    getCurrentHumidity,
+    getCurrentRainChance,
+    getCurrentTemperature,
+    getCurrentTemperatureApparrent,
+    getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
+    getWeatherCodeForHour
+} from "../utils/weatherUtils";
+import {WeatherState} from "../store/slices/weatherSlice";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -41,7 +50,7 @@ const NIGHT_ANIMATION = {
 
 type WeatherDetailsItem = {
     icon: any,
-    value: string,
+    value: number,
     unit: string,
     labelKey: string,
 }
@@ -92,9 +101,11 @@ const IconButton = ({ icon }: { icon: React.ReactNode }) => (
 
 // Компонент заголовка местоположения
 const LocationTitle = () => {
+    const weatherCity = useAppSelector(state => state.weather.currentCity);
+
     return (
         <View className="flex-col items-center">
-            <Text className="font-manrope-extrabold text-2xl text-accent">{t('city')}</Text>
+            <Text className="font-manrope-extrabold text-2xl text-accent">{weatherCity}</Text>
             <View className="w-20 h-2 bg-white/20 rounded-2xl"></View>
         </View>
     );
@@ -150,33 +161,43 @@ const WeatherHeader = () => {
 };
 
 // Компонент диапазона температур
-const TemperatureRange = () => (
-    <View className="flex-row justify-center mt-2">
+const TemperatureRange = () => {
+    const weatherState = useAppSelector(state => state.weather);
+    const max = ~~weatherState.data?.daily.temperature_2m_max[0]!;
+    const min = ~~weatherState.data?.daily.temperature_2m_min[0]!;
+    const unit = getCurrentTemperatureUnit(weatherState);
+
+    return (<View className="flex-row justify-center mt-2">
         <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
             <View className="flex-row items-center">
-                <AntDesign name="arrowup" size={18} color="white" />
-                <Text className="font-poppins-medium text-accent text-[13px] ml-1">25&deg;</Text>
+                <AntDesign name="arrowup" size={18} color="white"/>
+                <Text className="font-poppins-medium text-accent text-[13px] ml-1">{max}{unit}</Text>
             </View>
             <View className="flex-row items-center">
-                <AntDesign name="arrowdown" size={18} color="white" />
-                <Text className="font-poppins-medium text-accent text-[13px] ml-1">9&deg;</Text>
+                <AntDesign name="arrowdown" size={18} color="white"/>
+                <Text className="font-poppins-medium text-accent text-[13px] ml-1">{min}{unit}</Text>
             </View>
         </View>
-    </View>
-);
+    </View>);
+};
+
+
 
 const TemperatureDisplay = () => {
-    // TODO Получить по коду состояние температуры
-    // const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(currentHour));
+    const weatherState = useAppSelector(x => x.weather);
+
+    const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(weatherState, 0));
+    const currentTemperature = ~~getCurrentTemperature(weatherState);
+    const currentTemperatureUnit = getCurrentTemperatureUnit(weatherState);
 
     return (
         <View className="flex-row items-start">
             <View className="flex-col flex border-accent">
-                <Text className="text-accent text-[20px] font-manrope-extrabold">{t('weather.rainy')}</Text>
-                <Text className="font-poppins-medium text-primary text-[90px] h-[90] leading-[100px]">25</Text>
+                <Text className="text-accent text-[20px] font-manrope-extrabold">{currentWeatherDescription}</Text>
+                <Text className="font-poppins-medium text-primary text-[90px] h-[90] leading-[100px]">{currentTemperature}</Text>
                 <TemperatureRange />
             </View>
-            <Text className="text-primary font-poppins-bold text-[25px] mt-8">&deg;C</Text>
+            <Text className="text-primary font-poppins-bold text-[25px] mt-8">{currentTemperatureUnit}</Text>
         </View>
     );
 };
@@ -196,37 +217,44 @@ const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
 
 // Компонент деталей погоды
 const WeatherDetails = () => {
+    const weatherState = useAppSelector(x => x.weather);
+    const weatherDetails : WeatherDetailsItem[] = [];
 
-    // TODO расфасовать данные по апишке
-    const WEATHER_DETAILS : WeatherDetailsItem[] = [
-        {
-            icon: <FontAwesome6 name="temperature-three-quarters" size={24} color="white" />,
-            value: "12",
-            unit: "°C",
-            labelKey: "feelsLike"
-        },
-        {
-            icon: <FontAwesome6 name="wind" size={24} color="white" />,
-            value: "5",
-            unit: "м/c",
-            labelKey: "windSpeed"
-        },
-        {
-            icon: <Ionicons name="rainy-sharp" size={24} color="white" />,
-            value: "68",
-            unit: "%",
-            labelKey: "rainChance"
-        },
-        {
-            icon: <MaterialIcons name="water-drop" size={24} color="white" />,
-            value: "4",
-            unit: "%",
-            labelKey: "humidity"
-        }
-    ];
+
+    // apparrent
+    weatherDetails.push({
+        icon: <FontAwesome6 name="temperature-three-quarters" size={24} color="white" />,
+        value: getCurrentTemperatureApparrent(weatherState),
+        unit: getCurrentTemperatureUnit(weatherState),
+        labelKey: "feelsLike",
+    })
+
+    // Wind
+    weatherDetails.push({
+        icon: <FontAwesome6 name="wind" size={24} color="white" />,
+        value: getCurrentWindSpeed(weatherState),
+        unit: getCurrentWindUnit(weatherState),
+        labelKey: "windSpeed",
+    });
+
+    // rain chance
+    weatherDetails.push({
+        icon: <Ionicons name="rainy-sharp" size={24} color="white" />,
+        value: getCurrentRainChance(weatherState, 0),
+        unit: "%",
+        labelKey: "rainChance"
+    });
+
+    // humidity
+    weatherDetails.push({
+        icon: <MaterialIcons name="water-drop" size={24} color="white" />,
+        value: getCurrentHumidity(weatherState),
+        unit: "%",
+        labelKey: "humidity"
+    })
 
     return <View className="flex-row flex-wrap justify-between mt-6 gap-3">
-        {WEATHER_DETAILS.map((item, index) => (
+        {weatherDetails.map((item, index) => (
             <WeatherDetailCard key={index} item={item} />
         ))}
     </View>
@@ -280,8 +308,9 @@ const WeatherCard = ({
     </View>
 );
 
-// Главный компонент экрана
 export const HomeScreen = () => {
+    const weatherState = useAppSelector(x => x.weather);
+
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
         repeatCount: 0,
@@ -290,7 +319,7 @@ export const HomeScreen = () => {
     });
 
     //TODO Брать из Апишки IsDayOrNight
-    const isNightTime = false;
+    const isNightTime = weatherState.data!.current.is_day === 0;
 
     const handleAnimationPress = useCallback(() => {
         setAnimationState(prev => ({
@@ -333,7 +362,6 @@ export const HomeScreen = () => {
             <StatusBar style="light" />
             <BackgroundImage />
 
-            {/* Фиксированный Header */}
             <View className="absolute top-0 left-0 right-0 z-50">
                 <Header />
             </View>
@@ -347,8 +375,6 @@ export const HomeScreen = () => {
                 showsVerticalScrollIndicator={false}
             >
                 <View className="flex-1 justify-center items-center px-4 w-full relative pb-5">
-                    {/* Убираем Header отсюда, так как он теперь фиксированный */}
-
                     <WeatherCard
                         isNightTime={isNightTime}
                         currentAnimation={getCurrentAnimation(animationState, isNightTime)}

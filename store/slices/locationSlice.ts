@@ -2,7 +2,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchLocation} from "../actions/fetchLocation";
 
-interface LocationState {
+export interface LocationState {
     searchResults: LocationResult[];
     status: Status;
     loading: boolean;

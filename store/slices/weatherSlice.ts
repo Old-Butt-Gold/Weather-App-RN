@@ -10,7 +10,7 @@ import {
 } from "../types/types";
 import {fetchWeather} from "../actions/fetchWeather";
 
-interface WeatherState {
+export interface WeatherState {
     data: WeatherData | null;
     loading: boolean;
     error: string | null;
