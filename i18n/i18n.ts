@@ -13,7 +13,7 @@ i18n
             en: { translation: enTranslation },
             ru: { translation: ruTranslation }
         },
-        lng: 'en', // язык по умолчанию
+        lng: 'ru', // язык по умолчанию
         fallbackLng: 'ru',
         interpolation: {
             escapeValue: false // не экранировать HTML

@@ -4,7 +4,7 @@ import { Svg, Path, Defs, LinearGradient, Stop, Circle, ClipPath, G } from 'reac
 import { BlurView } from 'expo-blur';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import RingWithGradient from "../utils/RingWithGradientProps";
-import i18n from "i18next";
+import {t} from "i18next";
 import Feather from '@expo/vector-icons/Feather';
 
 interface SunMoonData {
@@ -25,7 +25,7 @@ const Infolabel = () => (
     <View className="absolute top-5 left-5 flex flex-row justify-center items-center gap-x-2">
         <MaterialIcons name="light-mode" size={16} color="rgba(243, 244, 246,0.6)" />
         <Text className="text-[16px] text-gray-100/60 font-manrope-medium mb-1">
-            {i18n.t('sunMoon.daylightTime')}
+            {t('sunMoon.daylightTime')}
         </Text>
     </View>
 );
@@ -44,10 +44,10 @@ const formatTime = (date: Date) => {
 
 const getMoonPhaseText = (moonIllumination: number) => {
     const phases = [
-        {threshold: 0, text: i18n.t('sunMoon.newMoon')},
-        {threshold: 0.25, text: i18n.t('sunMoon.firstQuarter')},
-        {threshold: 0.5, text: i18n.t('sunMoon.fullMoon')},
-        {threshold: 0.75, text: i18n.t('sunMoon.lastQuarter')},
+        {threshold: 0, text: t('sunMoon.newMoon')},
+        {threshold: 0.25, text: t('sunMoon.firstQuarter')},
+        {threshold: 0.5, text: t('sunMoon.fullMoon')},
+        {threshold: 0.75, text: t('sunMoon.lastQuarter')},
     ];
 
     if (moonIllumination === 0) return phases[0].text;
@@ -55,9 +55,9 @@ const getMoonPhaseText = (moonIllumination: number) => {
     if (moonIllumination === 0.5) return phases[2].text;
     if (moonIllumination === 0.75) return phases[3].text;
 
-    return moonIllumination < 0.25 ? i18n.t('sunMoon.waxingCrescent') :
-        moonIllumination < 0.5 ? i18n.t('sunMoon.waxingGibbous') :
-            moonIllumination < 0.75 ? i18n.t('sunMoon.waningGibbous') : i18n.t('sunMoon.waningCrescent');
+    return moonIllumination < 0.25 ? t('sunMoon.waxingCrescent') :
+        moonIllumination < 0.5 ? t('sunMoon.waxingGibbous') :
+            moonIllumination < 0.75 ? t('sunMoon.waningGibbous') : t('sunMoon.waningCrescent');
 };
 
 const useCelestialBodyPosition = (
@@ -358,7 +358,7 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> = ({
                             {uvIndex !== undefined ? uvIndex : '—'}
                         </Text>
                         <Text className="text-gray-100/60 font-manrope-bold text-[12px]">
-                            {i18n.t('sunMoon.uvIndex')}
+                            {t('sunMoon.uvIndex')}
                         </Text>
                     </>
                 ) : showMoon ? (
@@ -373,7 +373,7 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> = ({
             <View className="w-full absolute bottom-[78] bg-white/20 h-0.5" />
             <View className="flex flex-col absolute bottom-6 left-5">
                 <Text className="text-gray-100/60 font-manrope-bold text-[14px] leading-5">
-                    {showSun ? i18n.t('sunMoon.sunrise') : showMoon ? i18n.t('sunMoon.moonrise') : i18n.t('sunMoon.noData')}
+                    {showSun ? t('sunMoon.sunrise') : showMoon ? t('sunMoon.moonrise') : t('sunMoon.noData')}
                 </Text>
                 <Text className="text-white font-poppins-bold text-[14px] leading-5">
                     {showSun ? formatTime(sunrise) : showMoon ? formatTime(moonrise) : '—'}
@@ -381,7 +381,7 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> = ({
             </View>
             <View className="flex flex-col absolute bottom-6 right-5 items-end">
                 <Text className="text-gray-100/60 font-manrope-bold text-[14px] leading-5">
-                    {showSun ? i18n.t('sunMoon.sunset') : showMoon ? i18n.t('sunMoon.moonset') : i18n.t('sunMoon.noData')}
+                    {showSun ? t('sunMoon.sunset') : showMoon ? t('sunMoon.moonset') : t('sunMoon.noData')}
                 </Text>
                 <Text className="text-white font-poppins-bold text-[14px] leading-5">
                     {showSun ? formatTime(sunset) : showMoon ? formatTime(moonset) : '—'}
