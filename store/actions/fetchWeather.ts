@@ -1,16 +1,33 @@
 ﻿// Асинхронный thunk для получения данных погоды по координатам
 import {createAppAsyncThunk} from "../hooks";
-import {WeatherData} from "../types/types";
+import {TemperatureUnit, WeatherData, WindSpeedUnit} from "../types/types";
 import meteoApi from "../../api/meteoApi";
+
+function getQueryWind(windUnit: WindSpeedUnit): string {
+    if (windUnit === 'km/h') return "kmh";
+    if (windUnit === 'm/s') return "ms";
+    return "mph";
+}
+
+function getQueryTemperature(tempUnit: TemperatureUnit): string {
+    return tempUnit === "°C" ? "celsius" : "fahrenheit";
+}
 
 export const fetchWeather = createAppAsyncThunk<WeatherData>(
     'weather/fetchWeather',
     async (_, { getState, dispatch, rejectWithValue }) => {
         try {
-            const location = getState().weather.location;
+            const weatherState = getState().weather;
+            const location = weatherState.location;
             if (!location) {
                 return rejectWithValue({ message: 'Location not set' });
             }
+
+            const currentWindUnit = weatherState.windSpeedUnit;
+            const currentTempUnit = weatherState.temperatureUnit;
+
+            const queryTemperatureUnit = getQueryTemperature(currentTempUnit);
+            const queryWindUnit = getQueryWind(currentWindUnit);
 
             const params = {
                 latitude: location.latitude,
@@ -22,7 +39,9 @@ export const fetchWeather = createAppAsyncThunk<WeatherData>(
                     'wind_speed_10m,weather_code,apparent_temperature,temperature_2m,relative_humidity_2m,is_day',
                 timezone: 'auto',
                 forecast_hours: '24',
-                past_days: '1'
+                past_days: '1',
+                wind_speed_unit: queryWindUnit,
+                temperature_unit: queryTemperatureUnit,
             };
             const response = await meteoApi.get('', { params });
             return response.data as WeatherData;
