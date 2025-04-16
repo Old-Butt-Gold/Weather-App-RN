@@ -22,6 +22,7 @@ import { RootState } from '../store/store';
 import { sendQuestion } from '../store/slices/chatSlice';
 import { ChatMessage } from '../api/openai';
 import { AppDispatch } from '../store/store';
+import { getWeatherConditionText } from '../utils/prompts';
 
 // Компонент для фонового изображения
 const BackgroundImage = () => (
@@ -80,7 +81,7 @@ const SuggestedQuestion = ({
   </TouchableOpacity>
 );
 
-// Компонент сообщения чата - переименован, чтобы избежать конфликта с типом ChatMessage
+// Компонент сообщения чата
 const ChatMessageBubble = ({ message }: { message: ChatMessage }) => {
   const isUser = message.role === 'user';
   
@@ -97,6 +98,27 @@ const ChatMessageBubble = ({ message }: { message: ChatMessage }) => {
   );
 };
 
+// Компонент погодной информации (показывает текущие условия)
+const WeatherInfoBadge = () => {
+  const weatherData = useSelector((state: RootState) => state.weather?.data);
+  
+  if (!weatherData) {
+    return null;
+  }
+  
+  const current = weatherData.current;
+  const condition = getWeatherConditionText(current.weather_code);
+  const isDay = current.is_day === 1;
+  
+  return (
+    <View className="mb-3 p-2 bg-white/10 rounded-[10] self-center">
+      <Text className="font-manrope-medium text-accent text-[12px] text-center">
+        {t('chat.currentWeather')}: {condition}, {current.temperature_2m}°C
+      </Text>
+    </View>
+  );
+};
+
 type ChatScreenProps = {
   navigation: any; 
 };
@@ -104,21 +126,20 @@ type ChatScreenProps = {
 export const ChatScreen = ({ navigation }: ChatScreenProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { messages, isLoading, error } = useSelector((state: RootState) => state.chat);
+  // Get weather data from Redux store
+  const weatherData = useSelector((state: RootState) => state.weather?.data);
   const scrollViewRef = useRef<ScrollView>(null);
-  
-  // Получаем данные о текущей погоде (в реальном приложении брать из weatherSlice)
-  const currentWeather = {
-    temperature: 25,
-    condition: 'Rainy'
-  };
   
   // Функция для обработки нажатия на предлагаемый вопрос
   const handleQuestionPress = (questionType: string, questionText: string) => {
-    // Отправляем вопрос через Redux thunk
+    console.log('[CHAT SCREEN] Question pressed:', { questionType, questionText });
+    console.log('[CHAT SCREEN] Current weather data available:', !!weatherData);
+    
+    // Отправляем вопрос через Redux thunk с актуальными данными о погоде
     dispatch(sendQuestion({
       questionType,
       questionText,
-      weatherData: currentWeather
+      weatherData
     }));
     
     // Прокручиваем чат вниз после добавления сообщения
@@ -158,6 +179,9 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
           
           {/* Основной контент */}
           <View className="flex-1 px-4">
+            {/* Текущие погодные условия */}
+            <WeatherInfoBadge />
+            
             {/* Контейнер чата */}
             <View className="flex-1 rounded-[25] overflow-hidden relative mb-4">
               <BlurBackground />

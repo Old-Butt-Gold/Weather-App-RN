@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import openaiService, { ChatMessage } from '../../api/openai';
 import { t } from 'i18next';
+import { WeatherData } from '../types/types';
 
 // Define chat state type
 interface ChatState {
@@ -23,15 +24,28 @@ export const sendQuestion = createAsyncThunk(
     {
       questionType,
       questionText,
-      weatherData = { temperature: 25, condition: 'Rainy' },
+      weatherData = null,
     }: {
       questionType: string;
       questionText: string;
-      weatherData?: { temperature: number; condition: string };
+      weatherData?: WeatherData | null;
     },
     { rejectWithValue }
   ) => {
-    console.log('[CHAT THUNK] Starting request with:', { questionType, questionText, weatherData });
+    console.log('[CHAT THUNK] Starting request with:', { 
+      questionType, 
+      questionText, 
+      hasWeatherData: !!weatherData 
+    });
+    
+    if (weatherData) {
+      console.log('[CHAT THUNK] Weather data summary:', {
+        temperature: weatherData.current.temperature_2m,
+        condition: weatherData.current.weather_code,
+        location: `${weatherData.latitude},${weatherData.longitude}`,
+        timezone: weatherData.timezone
+      });
+    }
     
     try {
       console.log('[CHAT THUNK] Calling OpenAI service...');

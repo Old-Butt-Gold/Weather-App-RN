@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getAzureOpenAIEndpoint, getAzureOpenAIKey } from '../utils/env';
 import { getPromptForQuestion } from '../utils/prompts';
+import { WeatherData } from '../store/types/types';
 
 // Define message types
 export type ChatMessage = {
@@ -131,20 +132,22 @@ export const openaiService = {
   generateResponseForQuestion: async (
     questionType: string,
     userQuestion: string,
-    weatherData: {
-      temperature: number;
-      condition: string;
-    } = { temperature: 25, condition: 'Rainy' }
+    weatherData: WeatherData | null = null
   ): Promise<string> => {
     console.log('[OPENAI SERVICE] Generating response for question type:', questionType);
-    console.log('[OPENAI SERVICE] Weather data:', weatherData);
+    
+    if (weatherData) {
+      console.log('[OPENAI SERVICE] Using actual weather data:', {
+        temperature: weatherData.current.temperature_2m,
+        weatherCode: weatherData.current.weather_code,
+        isDay: weatherData.current.is_day
+      });
+    } else {
+      console.log('[OPENAI SERVICE] No weather data provided, using generic prompt');
+    }
     
     // Get the appropriate system prompt for this question type
-    const systemPrompt = getPromptForQuestion(
-      questionType,
-      weatherData.temperature,
-      weatherData.condition
-    );
+    const systemPrompt = getPromptForQuestion(questionType, weatherData);
     
     console.log('[OPENAI SERVICE] System prompt sample:', 
       systemPrompt.substring(0, 100) + '...');
