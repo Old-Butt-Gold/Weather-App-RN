@@ -19,6 +19,7 @@ import {
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
 
+
 // Константы анимаций
 const ANIMATIONS = [
     { source: require("../assets/svg-icons/animations/cloudSpeaks.json"), repeats: 3 },
@@ -69,6 +70,11 @@ type WeatherCardProps = {
     animationKey: number;
     onAnimationPress: () => void;
     onAnimationFinish: () => void;
+    onChatPress: () => void; // Добавлен новый prop для обработки нажатия на кнопку чата
+};
+
+type HomeScreenProps = {
+    navigation: any; // Добавлен тип для навигации
 };
 
 // Компонент фонового изображения
@@ -191,6 +197,7 @@ const TemperatureDisplay = () => {
         </View>
     );
 };
+
 // Компонент карточки деталей погоды
 const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
     return (
@@ -250,40 +257,66 @@ const WeatherDetails = () => {
     </View>
 };
 
-// Компонент контента погоды
+// Обновленный компонент контента погоды с кнопкой чата рядом с диапазоном температур
 const WeatherContent = ({
-                            currentAnimation,
-                            animationKey,
-                            onAnimationPress,
-                            onAnimationFinish
-                        }: Omit<WeatherCardProps, 'isNightTime'>) => (
-    <View className="flex-row justify-between mt-4">
-        <TemperatureDisplay />
-        <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
-            <LottieView
-                key={animationKey}
-                source={currentAnimation}
-                autoPlay
-                loop={false}
-                style={{ width: 170, height: 170 }}
-                onAnimationFinish={onAnimationFinish}
-                colorFilters={LOTTIE_COLOR_FILTERS}
-            />
-        </TouchableOpacity>
+    currentAnimation,
+    animationKey,
+    onAnimationPress,
+    onAnimationFinish,
+    onChatPress
+}: Omit<WeatherCardProps, 'isNightTime'>) => (
+    <View className="flex-col">
+        <View className="flex-row justify-between">
+            <TemperatureDisplay />
+            <View>
+                <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
+                    <LottieView
+                        key={animationKey}
+                        source={currentAnimation}
+                        autoPlay
+                        loop={false}
+                        style={{ width: 170, height: 170 }}
+                        onAnimationFinish={onAnimationFinish}
+                        colorFilters={LOTTIE_COLOR_FILTERS}
+                    />
+                </TouchableOpacity>
+            </View>
+        </View>
+
+        <View className="flex-row justify-center items-center -mt-4">
+            <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
+                <View className="flex-row items-center">
+                    <AntDesign name="arrowup" size={18} color="white" />
+                    <Text className="font-poppins-medium text-accent text-[13px] ml-1">25&deg;</Text>
+                </View>
+                <View className="flex-row items-center">
+                    <AntDesign name="arrowdown" size={18} color="white" />
+                    <Text className="font-poppins-medium text-accent text-[13px] ml-1">9&deg;</Text>
+                </View>
+            </View>
+
+            <TouchableOpacity
+                onPress={onChatPress}
+                className="px-3 py-2 bg-white/30 rounded-[35] ml-3"
+            >
+                <Text className="font-manrope-semibold text-accent text-[12px]">
+                    {t('buttons.chatWithMe')}
+                </Text>
+            </TouchableOpacity>
+        </View>
     </View>
 );
 
 // Основной компонент карточки погоды
 const WeatherCard = ({
-                         isNightTime,
-                         currentAnimation,
-                         animationKey,
-                         onAnimationPress,
-                         onAnimationFinish
+    isNightTime,
+    currentAnimation,
+    animationKey,
+    onAnimationPress,
+    onAnimationFinish,
+    onChatPress
 }: WeatherCardProps) => (
-    <View
-        className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]"
-    >
+    <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]">
         <BlurBackground />
         <View className="w-full z-10">
             <WeatherHeader />
@@ -292,15 +325,19 @@ const WeatherCard = ({
                 animationKey={animationKey}
                 onAnimationPress={onAnimationPress}
                 onAnimationFinish={onAnimationFinish}
+                onChatPress={onChatPress}
             />
             <WeatherDetails />
         </View>
     </View>
 );
 
-export const HomeScreen = () => {
-    const weatherState = useAppSelector(x => x.weather);
 
+
+
+// Главный компонент экрана
+export const HomeScreen = ({ navigation }: HomeScreenProps) => {
+    const weatherState = useAppSelector(x => x.weather);
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
         repeatCount: 0,
@@ -346,6 +383,10 @@ export const HomeScreen = () => {
         });
     }, [isNightTime]);
 
+    // Обработчик нажатия на кнопку чата
+    const handleChatPress = useCallback(() => {
+        navigation.navigate('Chat');
+    }, [navigation]);
 
     return (
         <>
@@ -371,6 +412,7 @@ export const HomeScreen = () => {
                         animationKey={animationState.animationKey}
                         onAnimationPress={handleAnimationPress}
                         onAnimationFinish={handleAnimationFinish}
+                        onChatPress={handleChatPress}
                     />
                     <ClockComponent />
                     <NextDaysWeatherWidget />

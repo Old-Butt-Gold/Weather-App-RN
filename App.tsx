@@ -12,6 +12,14 @@ import {useAppDispatch} from "./store/hooks";
 import {setCurrentCity, setLocation} from "./store/slices/weatherSlice";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import * as Location from 'expo-location';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {ChatScreen} from "./components/ChatScreen";
+
+SplashScreen.preventAutoHideAsync();
+
+const Stack = createNativeStackNavigator();
+
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 
@@ -84,6 +92,7 @@ const Initializer = () => {
     return <HomeScreen/>;
 };
 
+
 export default function App() {
     // Правильное использование хука для загрузки шрифтов
     const [fontsLoaded] = useCustomFonts();
@@ -101,16 +110,32 @@ export default function App() {
     }, [fontsLoaded]);
 
     if (!appIsReady || !fontsLoaded) {
-        return (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        return (
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <ActivityIndicator size="large"/>
-            </View>);
+            </View>
+        );
     }
 
-    return (<Provider store={store}>
+    return (
+        <Provider store={store}>
             <I18nextProvider i18n={i18n}>
                 <SafeAreaView className="flex-1" style={{paddingTop: Platform.OS === 'ios' ? 0 : 0}}>
                     <Initializer />
+                    <NavigationContainer>
+                    <Stack.Navigator
+                        screenOptions={{
+                            headerShown: false,
+                            animation: 'slide_from_right',
+                        }}
+                    >
+                        <Stack.Screen name="Home" component={HomeScreen} />
+                        <Stack.Screen name="Chat" component={ChatScreen} />
+                    </Stack.Navigator>
+                </NavigationContainer>
                 </SafeAreaView>
+
             </I18nextProvider>
-        </Provider>);
+        </Provider>
+    );
 }
