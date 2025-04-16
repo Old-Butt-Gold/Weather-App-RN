@@ -120,6 +120,7 @@
     "title": "Weather Chat",
     "emptyStateMessage": "This is where your weather conversation will appear. Start chatting!",
     "suggestedQuestions": "Suggested Questions",
+    "errorGettingResponse": "Sorry, I encountered an error getting a response. Please try again later.",
     "questions": {
       "whatToWear": "What should I wear today?",
       "suggestMusic": "Suggest music for this weather",
