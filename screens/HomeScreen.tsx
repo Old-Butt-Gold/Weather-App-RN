@@ -188,12 +188,37 @@ const TemperatureDisplay = () => {
 
     return (
         <View className="flex-row items-start">
-            <View className="flex-col flex border-accent">
-                <Text className="text-accent text-[20px] font-manrope-extrabold">{currentWeatherDescription}</Text>
-                <Text className="font-poppins-medium text-primary text-[90px] h-[90] leading-[100px]">{currentTemperature}</Text>
+            <View className="flex-col flex">
+                <Text
+                    className={`text-accent font-manrope-extrabold max-w-40 ${
+                        currentWeatherDescription.length > 16
+                            ? 'text-[12px]'
+                            : currentWeatherDescription.length > 8
+                                ? 'text-[15px]'
+                                : 'text-[20px]'
+                    }`}
+                >{currentWeatherDescription}</Text>
+                <View className="flex-row relative w-full h-[90] items-start">
+                    <View className="flex-col">
+                        <Text className="flex-row text-primary font-poppins-bold text-[25px] h-[50%] self-start">
+                            {currentTemperatureUnit}
+                        </Text>
+
+                        {currentTemperature < 0 && (
+                            <Text className="font-poppins-medium text-primary items-center text-[40px] h-[50%] leading-10">
+                                -
+                            </Text>
+                        )}
+                    </View>
+
+                    <Text className="font-poppins-medium text-primary text-[90px] leading-[100px]">
+                        {Math.abs(currentTemperature)}
+                    </Text>
+                </View>
+
                 <TemperatureRange />
             </View>
-            <Text className="text-primary font-poppins-bold text-[25px] mt-8">{currentTemperatureUnit}</Text>
+
         </View>
     );
 };
@@ -268,41 +293,35 @@ const WeatherContent = ({
     <View className="flex-col">
         <View className="flex-row justify-between">
             <TemperatureDisplay />
-            <View>
-                <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
-                    <LottieView
-                        key={animationKey}
-                        source={currentAnimation}
-                        autoPlay
-                        loop={false}
-                        style={{ width: 170, height: 170 }}
-                        onAnimationFinish={onAnimationFinish}
-                        colorFilters={LOTTIE_COLOR_FILTERS}
-                    />
-                </TouchableOpacity>
-            </View>
-        </View>
-
-        <View className="flex-row justify-center items-center -mt-4">
-            <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
-                <View className="flex-row items-center">
-                    <AntDesign name="arrowup" size={18} color="white" />
-                    <Text className="font-poppins-medium text-accent text-[13px] ml-1">25&deg;</Text>
+            <View className="flex-col justify-end items-end">
+                <View
+                    className="rounded-xl overflow-hidden"
+                    style={{ width: 170, height: 120 }}
+                >
+                    <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
+                        <LottieView
+                            key={animationKey}
+                            source={currentAnimation}
+                            autoPlay
+                            loop={false}
+                            style={{ width: '100%', height: '100%' }}
+                            onAnimationFinish={onAnimationFinish}
+                            colorFilters={LOTTIE_COLOR_FILTERS}
+                        />
+                    </TouchableOpacity>
                 </View>
-                <View className="flex-row items-center">
-                    <AntDesign name="arrowdown" size={18} color="white" />
-                    <Text className="font-poppins-medium text-accent text-[13px] ml-1">9&deg;</Text>
+
+                <View className="flex-row justify-center items-center  ml-2">
+                    <TouchableOpacity
+                        onPress={onChatPress}
+                        className="px-2 py-2 bg-white/20 rounded-[35] "
+                    >
+                        <Text className="font-manrope-semibold text-accent text-[13px] mb-1">
+                            {t('buttons.chatWithMe')}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
-
-            <TouchableOpacity
-                onPress={onChatPress}
-                className="px-3 py-2 bg-white/30 rounded-[35] ml-3"
-            >
-                <Text className="font-manrope-semibold text-accent text-[12px]">
-                    {t('buttons.chatWithMe')}
-                </Text>
-            </TouchableOpacity>
         </View>
     </View>
 );
