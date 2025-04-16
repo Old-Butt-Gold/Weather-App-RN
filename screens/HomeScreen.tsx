@@ -167,11 +167,11 @@ const TemperatureRange = () => {
         <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
             <View className="flex-row items-center">
                 <AntDesign name="arrowup" size={18} color="white"/>
-                <Text className="font-poppins-medium text-accent text-[13px] ml-1">{max}{unit}</Text>
+                <Text className="font-poppins-medium text-accent text-[15px] ml-1 pr-1.5">{max}{unit}</Text>
             </View>
             <View className="flex-row items-center">
                 <AntDesign name="arrowdown" size={18} color="white"/>
-                <Text className="font-poppins-medium text-accent text-[13px] ml-1">{min}{unit}</Text>
+                <Text className="font-poppins-medium text-accent text-[15px] ml-1 pr-1.5">{min}{unit}</Text>
             </View>
         </View>
     </View>);
@@ -199,20 +199,19 @@ const TemperatureDisplay = () => {
                     }`}
                 >{currentWeatherDescription}</Text>
                 <View className="flex-row relative w-full h-[90] items-start">
-                    <View className="flex-col">
-                        <Text className="flex-row text-primary font-poppins-bold text-[25px] h-[50%] self-start">
-                            {currentTemperatureUnit}
-                        </Text>
+                    {/* Основная температура с минусом */}
 
-                        {currentTemperature < 0 && (
-                            <Text className="font-poppins-medium text-primary items-center text-[40px] h-[50%] leading-10">
-                                -
-                            </Text>
-                        )}
-                    </View>
+                    <Text className="font-poppins-light text-primary text-[50px]">
+                        {currentTemperature < 0 ? "-" : ""}
+                    </Text>
 
                     <Text className="font-poppins-medium text-primary text-[90px] leading-[100px]">
                         {Math.abs(currentTemperature)}
+                    </Text>
+
+                    {/* Единица измерения справа */}
+                    <Text className="font-poppins-medium text-primary text-[28px] self-center ml-1">
+                        {currentTemperatureUnit}
                     </Text>
                 </View>
 
@@ -316,7 +315,7 @@ const WeatherContent = ({
                         onPress={onChatPress}
                         className="px-2 py-2 bg-white/20 rounded-[35] "
                     >
-                        <Text className="font-manrope-semibold text-accent text-[13px] mb-1">
+                        <Text className="font-manrope-semibold text-accent text-[15px] mb-1">
                             {t('buttons.chatWithMe')}
                         </Text>
                     </TouchableOpacity>

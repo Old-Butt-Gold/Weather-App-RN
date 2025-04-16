@@ -104,3 +104,7 @@ export interface AirQuality {
     us_aqi_ozone: number[],
     us_aqi_sulphur_dioxide: number[],
 }
+
+export interface LocationData extends Coordinates {
+    city: string;
+}
