@@ -1,4 +1,7 @@
 {
+  "buttons": {
+    "chatWithMe": "Chat with me about weather!"
+  },
   "weather": {
     "feelsLike": "Feels like",
     "windSpeed": "Wind speed",
@@ -111,6 +114,17 @@
       "unhealthy": "Health risks increase for everyone. Sensitive groups should avoid prolonged exposure. Others may experience discomfort.",
       "veryUnhealthy": "Health alert: Everyone may experience serious health effects. Avoid all unnecessary outdoor activities.",
       "hazardous": "Health emergency: Even brief exposure can be life-threatening. Stay indoors with windows closed."
+    }
+  },
+  "chat": {
+    "title": "Weather Chat",
+    "emptyStateMessage": "This is where your weather conversation will appear. Start chatting!",
+    "suggestedQuestions": "Suggested Questions",
+    "questions": {
+      "whatToWear": "What should I wear today?",
+      "suggestMusic": "Suggest music for this weather",
+      "interestingFact": "Tell me an interesting weather fact",
+      "outdoorActivities": "What outdoor activities would you recommend?"
     }
   }
 }
