@@ -6,6 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import RingWithGradient from "../utils/RingWithGradientProps";
 import {t} from "i18next";
 import Feather from '@expo/vector-icons/Feather';
+import {useAppSelector} from "../store/hooks";
 
 interface SunMoonData {
     sunrise: Date;
@@ -152,14 +153,16 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
          currentTime = new Date(),
      }) =>
 {
+    const weatherState = useAppSelector(x => x.weather);
+
     // TODO parse data from store
     const sunMoonData : SunMoonData = {
-        sunrise: new Date(new Date().setHours(6, 20)),
-        sunset: new Date(new Date().setHours(19, 45)),
-        moonrise: new Date(new Date().setHours(19, 46)),
+        sunrise: new Date(weatherState.data!.daily.sunrise[1]),
+        sunset: new Date(weatherState.data!.daily.sunset[1]),
+        moonrise: new Date(new Date().setHours(15, 46)),
         moonset: new Date(new Date().setHours(6, 50)),
-        moonPhase:  0.65,
-        uvIndex: 6 // УФ-индекс
+        moonPhase:  weatherState.moonPhase!,
+        uvIndex: weatherState.data!.hourly.uv_index[0]
     };
 
     const [currentTimeState, setCurrentTimeState] = useState(currentTime);
@@ -170,7 +173,7 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
             setCurrentTimeState(new Date());
         }, 60000);
         return () => clearInterval(interval);
-    }, []);
+    }, [currentTimeState]);
 
     const screenWidth = Dimensions.get('window').width;
     const svgWidth = screenWidth / 1.5;
