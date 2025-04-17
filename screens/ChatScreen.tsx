@@ -55,7 +55,7 @@ const BlurBackground = () => (
   />
 );
 
-// Компонент для предлагаемых вопросов
+// Компонент для предлагаемых вопросов (уменьшенный размер)
 const SuggestedQuestion = ({ 
   icon, 
   question,
@@ -69,15 +69,15 @@ const SuggestedQuestion = ({
 }) => (
   <TouchableOpacity 
     onPress={() => onPress(questionType, question)}
-    className="flex-row items-center bg-white/20 rounded-[15] p-4 mb-3"
+    className="flex-row items-center bg-white/20 rounded-[12] p-3 mb-2"
   >
-    <View className="bg-white/30 rounded-full p-2 mr-3">
+    <View className="bg-white/30 rounded-full p-1.5 mr-2">
       {icon}
     </View>
-    <Text className="flex-1 font-manrope-semibold text-accent text-[14px]">
+    <Text className="flex-1 font-manrope-semibold text-accent text-[13px]">
       {question}
     </Text>
-    <Ionicons name="chevron-forward" size={20} color="white" />
+    <Ionicons name="chevron-forward" size={18} color="white" />
   </TouchableOpacity>
 );
 
@@ -98,27 +98,6 @@ const ChatMessageBubble = ({ message }: { message: ChatMessage }) => {
   );
 };
 
-// Компонент погодной информации (показывает текущие условия)
-const WeatherInfoBadge = () => {
-  const weatherData = useSelector((state: RootState) => state.weather?.data);
-  
-  if (!weatherData) {
-    return null;
-  }
-  
-  const current = weatherData.current;
-  const condition = getWeatherConditionText(current.weather_code);
-  const isDay = current.is_day === 1;
-  
-  return (
-    <View className="mb-3 p-2 bg-white/10 rounded-[10] self-center">
-      <Text className="font-manrope-medium text-accent text-[12px] text-center">
-        {t('chat.currentWeather')}: {condition}, {current.temperature_2m}°C
-      </Text>
-    </View>
-  );
-};
-
 type ChatScreenProps = {
   navigation: any; 
 };
@@ -128,18 +107,22 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
   const { messages, isLoading, error } = useSelector((state: RootState) => state.chat);
   // Get weather data from Redux store
   const weatherData = useSelector((state: RootState) => state.weather?.data);
+  // Get app settings from Redux store
+  const appSettings = useSelector((state: RootState) => state.settings);
   const scrollViewRef = useRef<ScrollView>(null);
   
   // Функция для обработки нажатия на предлагаемый вопрос
   const handleQuestionPress = (questionType: string, questionText: string) => {
     console.log('[CHAT SCREEN] Question pressed:', { questionType, questionText });
     console.log('[CHAT SCREEN] Current weather data available:', !!weatherData);
+    console.log('[CHAT SCREEN] App settings:', appSettings);
     
-    // Отправляем вопрос через Redux thunk с актуальными данными о погоде
+    // Отправляем вопрос через Redux thunk с актуальными данными о погоде и настройками
     dispatch(sendQuestion({
       questionType,
       questionText,
-      weatherData
+      weatherData,
+      appSettings
     }));
     
     // Прокручиваем чат вниз после добавления сообщения
@@ -165,7 +148,7 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
       <SafeAreaView className="flex-1">
         <View className="flex-1">
           {/* Header с кнопкой назад */}
-          <View className="flex-row items-center mb-6 mt-10 px-4 pt-10">
+          <View className="flex-row items-center mb-4 mt-10 px-4 pt-10">
             <TouchableOpacity 
               onPress={() => navigation.goBack()} 
               className="p-3 rounded-[15] bg-white/20 mr-3"
@@ -177,13 +160,10 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
             </Text>
           </View>
           
-          {/* Основной контент */}
+          {/* Основной контент с увеличенной областью для чата */}
           <View className="flex-1 px-4">
-            {/* Текущие погодные условия */}
-            <WeatherInfoBadge />
-            
-            {/* Контейнер чата */}
-            <View className="flex-1 rounded-[25] overflow-hidden relative mb-4">
+            {/* Контейнер чата (увеличенный размер) */}
+            <View className="flex-1 rounded-[25] overflow-hidden relative mb-3">
               <BlurBackground />
               
               <ScrollView 
@@ -213,39 +193,41 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
               </ScrollView>
             </View>
             
-            {/* Раздел предлагаемых вопросов */}
-            <View className="mb-6">
-              <Text className="font-manrope-bold text-accent text-[16px] mb-3 px-1">
+            {/* Раздел предлагаемых вопросов (компактный) */}
+            <View className="mb-4">
+              <Text className="font-manrope-bold text-accent text-[15px] mb-2 px-1">
                 {t('chat.suggestedQuestions')}
               </Text>
               
-              <SuggestedQuestion 
-                icon={<MaterialCommunityIcons name="hanger" size={22} color="white" />}
-                question={t('chat.questions.whatToWear')}
-                questionType="whatToWear"
-                onPress={handleQuestionPress}
-              />
-              
-              <SuggestedQuestion 
-                icon={<Ionicons name="musical-notes" size={22} color="white" />}
-                question={t('chat.questions.suggestMusic')}
-                questionType="suggestMusic"
-                onPress={handleQuestionPress}
-              />
-              
-              <SuggestedQuestion 
-                icon={<Feather name="info" size={22} color="white" />}
-                question={t('chat.questions.interestingFact')}
-                questionType="interestingFact"
-                onPress={handleQuestionPress}
-              />
-              
-              <SuggestedQuestion 
-                icon={<FontAwesome5 name="running" size={22} color="white" />}
-                question={t('chat.questions.outdoorActivities')}
-                questionType="outdoorActivities"
-                onPress={handleQuestionPress}
-              />
+              <View className="space-y-1.5">
+                <SuggestedQuestion 
+                  icon={<MaterialCommunityIcons name="hanger" size={20} color="white" />}
+                  question={t('chat.questions.whatToWear')}
+                  questionType="whatToWear"
+                  onPress={handleQuestionPress}
+                />
+                
+                <SuggestedQuestion 
+                  icon={<Ionicons name="musical-notes" size={20} color="white" />}
+                  question={t('chat.questions.suggestMusic')}
+                  questionType="suggestMusic"
+                  onPress={handleQuestionPress}
+                />
+                
+                <SuggestedQuestion 
+                  icon={<Feather name="info" size={20} color="white" />}
+                  question={t('chat.questions.interestingFact')}
+                  questionType="interestingFact"
+                  onPress={handleQuestionPress}
+                />
+                
+                <SuggestedQuestion 
+                  icon={<FontAwesome5 name="running" size={20} color="white" />}
+                  question={t('chat.questions.outdoorActivities')}
+                  questionType="outdoorActivities"
+                  onPress={handleQuestionPress}
+                />
+              </View>
             </View>
           </View>
         </View>

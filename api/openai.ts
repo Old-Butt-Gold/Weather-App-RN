@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAzureOpenAIEndpoint, getAzureOpenAIKey } from '../utils/env';
 import { getPromptForQuestion } from '../utils/prompts';
-import { WeatherData } from '../store/types/types';
+import { WeatherData, AppSettingsState } from '../store/types/types';
 
 // Define message types
 export type ChatMessage = {
@@ -76,10 +76,16 @@ export const openaiService = {
         max_tokens: options.maxTokens ?? 800,
       };
       
-      console.log('[OPENAI SERVICE] Request body:', JSON.stringify(requestBody));
+      console.log('[OPENAI SERVICE] Request body:', JSON.stringify({
+        ...requestBody,
+        messages: requestBody.messages.map(m => ({
+          role: m.role,
+          content_length: m.content.length,
+          content_preview: m.content.substring(0, 50) + '...'
+        }))
+      }));
+      
       console.log('[OPENAI SERVICE] Messages count:', messages.length);
-      console.log('[OPENAI SERVICE] First few words of last message:', 
-        messages[messages.length-1].content.substring(0, 30) + '...');
 
       console.log('[OPENAI SERVICE] Sending request to Azure...');
       const response = await axios.post<OpenAIChatResponse>(url, requestBody, {
@@ -132,7 +138,8 @@ export const openaiService = {
   generateResponseForQuestion: async (
     questionType: string,
     userQuestion: string,
-    weatherData: WeatherData | null = null
+    weatherData: WeatherData | null = null,
+    appSettings: AppSettingsState | null = null
   ): Promise<string> => {
     console.log('[OPENAI SERVICE] Generating response for question type:', questionType);
     
@@ -140,7 +147,11 @@ export const openaiService = {
       console.log('[OPENAI SERVICE] Using actual weather data:', {
         temperature: weatherData.current.temperature_2m,
         weatherCode: weatherData.current.weather_code,
-        isDay: weatherData.current.is_day
+        isDay: weatherData.current.is_day,
+        units: {
+          temp: weatherData.current_units?.temperature_2m,
+          wind: weatherData.current_units?.wind_speed_10m
+        }
       });
     } else {
       console.log('[OPENAI SERVICE] No weather data provided, using generic prompt');
@@ -157,6 +168,14 @@ export const openaiService = {
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userQuestion }
     ];
+    
+    // Determine which language to use based on app settings
+    const language = appSettings?.language || 'en';
+    if (language === 'ru') {
+      console.log('[OPENAI SERVICE] Using Russian language for response');
+      // Add instruction to respond in Russian
+      messages[0].content += '\nPlease respond in Russian language.';
+    }
     
     console.log('[OPENAI SERVICE] Prepared messages for API call');
 

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import openaiService, { ChatMessage } from '../../api/openai';
 import { t } from 'i18next';
-import { WeatherData } from '../types/types';
+import { WeatherData, AppSettingsState } from '../types/types';
 
 // Define chat state type
 interface ChatState {
@@ -25,17 +25,20 @@ export const sendQuestion = createAsyncThunk(
       questionType,
       questionText,
       weatherData = null,
+      appSettings = null,
     }: {
       questionType: string;
       questionText: string;
       weatherData?: WeatherData | null;
+      appSettings?: AppSettingsState | null;
     },
-    { rejectWithValue }
+    { rejectWithValue, getState }
   ) => {
     console.log('[CHAT THUNK] Starting request with:', { 
       questionType, 
       questionText, 
-      hasWeatherData: !!weatherData 
+      hasWeatherData: !!weatherData,
+      language: appSettings?.language || 'en'
     });
     
     if (weatherData) {
@@ -43,7 +46,11 @@ export const sendQuestion = createAsyncThunk(
         temperature: weatherData.current.temperature_2m,
         condition: weatherData.current.weather_code,
         location: `${weatherData.latitude},${weatherData.longitude}`,
-        timezone: weatherData.timezone
+        timezone: weatherData.timezone,
+        units: {
+          temperature: weatherData.current_units?.temperature_2m,
+          wind: weatherData.current_units?.wind_speed_10m
+        }
       });
     }
     
@@ -54,7 +61,8 @@ export const sendQuestion = createAsyncThunk(
       const response = await openaiService.generateResponseForQuestion(
         questionType,
         questionText,
-        weatherData
+        weatherData,
+        appSettings
       );
       
       console.log('[CHAT THUNK] Received successful response:', { 

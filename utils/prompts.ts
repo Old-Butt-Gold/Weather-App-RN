@@ -1,5 +1,5 @@
 // This file contains system prompts for the ChatGPT model
-import { WeatherData, LocationResult } from '../store/types/types';
+import { WeatherData, CurrentWeather, DailyData, TemperatureUnit, WindSpeedUnit } from '../store/types/types';
 
 // Helper function to get weather condition text from code
 export const getWeatherConditionText = (code: number): string => {
@@ -46,11 +46,8 @@ Be enthusiastic but not overly verbose.
 You can be creative and personable.
 If asked about specific weather conditions, you'll respond based on the current conditions shown in the app.`;
 
-// Generate context string about current weather conditions and location
-export const generateWeatherContext = (
-  weatherData: WeatherData | null,
-  locationData: LocationResult | null
-): string => {
+// Generate context string about current weather conditions with proper units
+export const generateWeatherContext = (weatherData: WeatherData | null): string => {
   if (!weatherData) {
     return "Current weather data is not available.";
   }
@@ -58,7 +55,11 @@ export const generateWeatherContext = (
   try {
     const current = weatherData.current;
     const daily = weatherData.daily;
-    const hourly = weatherData.hourly;
+    
+    // Get units from the data
+    const tempUnit: string = weatherData.current_units?.temperature_2m || "°C";
+    const windUnit: string = weatherData.current_units?.wind_speed_10m || "km/h";
+    const humidityUnit: string = weatherData.current_units?.relative_humidity_2m || "%";
     
     const currentCondition = getWeatherConditionText(current.weather_code);
     const isDay = current.is_day === 1;
@@ -73,26 +74,27 @@ export const generateWeatherContext = (
     
     // Wind speed
     const windSpeed = current.wind_speed_10m;
-    const windSpeedUnit = weatherData.current_units?.wind_speed_10m || "km/h";
     
     // Humidity
     const humidity = current.relative_humidity_2m;
     
-    // Location information
-    let locationInfo = "";
-    if (locationData) {
-      const cityName = locationData.name || "Unknown location";
-      const country = locationData.country || "";
-      locationInfo = `Location: ${cityName}, ${country}\n`;
-    }
+    // UV index (from hourly data if available)
+    const uvIndex = weatherData.hourly?.uv_index ? 
+      Math.round(weatherData.hourly.uv_index[new Date().getHours()]) : 
+      "N/A";
     
-    return `${locationInfo}Current weather: ${currentCondition}, ${current.temperature_2m}°C (feels like ${current.apparent_temperature}°C)
+    // Sunrise and sunset
+    const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5); // Format: HH:MM
+    const sunset = daily.sunset[0].split('T')[1].substring(0, 5); // Format: HH:MM
+    
+    return `Current weather: ${currentCondition}, ${current.temperature_2m}${tempUnit} (feels like ${current.apparent_temperature}${tempUnit})
 Time of day: ${timeOfDay}
-Today's temperature range: ${todayMinTemp}°C to ${todayMaxTemp}°C
+Today's temperature range: ${todayMinTemp}${tempUnit} to ${todayMaxTemp}${tempUnit}
 Precipitation probability: ${precipProbability}%
-Wind speed: ${windSpeed} ${windSpeedUnit}
-Humidity: ${humidity}%
-Timezone: ${weatherData.timezone}`;
+Wind speed: ${windSpeed} ${windUnit}
+Humidity: ${humidity}${humidityUnit}
+UV Index: ${uvIndex}
+Sunrise: ${sunrise}, Sunset: ${sunset}`;
   } catch (error) {
     console.error("Error generating weather context:", error);
     return "Error processing weather data.";
@@ -105,45 +107,47 @@ When suggesting clothing options, consider the following weather conditions:
 
 WEATHER_CONTEXT
 
-Based on the location and current weather, suggest specific outfit components (like layers, accessories, footwear) appropriate for these weather conditions.
-Consider both practicality and comfort for the current conditions, as well as any local customs or typical dress in this region if relevant.`;
+Suggest specific outfit components (like layers, accessories, footwear) appropriate for these weather conditions.
+Consider both practicality and comfort for the current conditions, including UV index for sun protection needs.
+Keep your suggestions fitting for the time of day and appropriate for the current temperature range.`;
 
 export const SUGGEST_MUSIC_PROMPT = `${BASE_SYSTEM_PROMPT}
 When suggesting music for the current weather:
 
 WEATHER_CONTEXT
 
-Suggest 2-3 music genres and a few specific artists or songs that would complement the current weather conditions and location.
-Consider both the weather mood and local musical culture if relevant.
-Be creative with your suggestions and explain briefly why they match the weather mood.`;
+Suggest 2-3 music genres and a few specific artists or songs that would complement the current weather conditions.
+Be creative with your suggestions and explain briefly why they match the weather mood.
+Consider the time of day (day/night) and overall weather condition in your music recommendations.`;
 
 export const INTERESTING_FACT_PROMPT = `${BASE_SYSTEM_PROMPT}
 Share an interesting and educational weather fact.
 
-Current conditions:
+Current weather conditions:
 WEATHER_CONTEXT
 
-You can relate it to the current weather conditions, the current location/region, or share a general fascinating weather phenomenon.
-If the location has any interesting weather patterns or history, feel free to mention that.
-Make it engaging and informative, something that would surprise most people.`;
+You can relate it to the current weather conditions or share a general fascinating weather phenomenon.
+Make it engaging and informative, something that would surprise most people.
+If the current conditions include any notable elements (high UV, precipitation, temperature extremes), consider 
+prioritizing facts related to those conditions.`;
 
 export const OUTDOOR_ACTIVITIES_PROMPT = `${BASE_SYSTEM_PROMPT}
 Suggest outdoor activities appropriate for:
 
 WEATHER_CONTEXT
 
-Recommend 3-4 activities that would be enjoyable and practical in these conditions and location.
-If there are popular or traditional activities in this region, prioritize those that fit the current weather.
-Include a brief explanation of why each activity would be good for this weather.`;
+Recommend 3-4 activities that would be enjoyable and practical in these conditions.
+Include a brief explanation of why each activity would be good for this weather.
+Consider time of day, UV index, precipitation probability, and temperature when making recommendations.
+If the conditions aren't ideal for outdoor activities, suggest suitable alternatives.`;
 
 // Function to generate the appropriate prompt based on question type
 export const getPromptForQuestion = (
   questionType: string,
-  weatherData: WeatherData | null = null,
-  locationData: LocationResult | null = null
+  weatherData: WeatherData | null = null
 ): string => {
-  // Generate weather context with location
-  const weatherContext = generateWeatherContext(weatherData, locationData);
+  // Generate weather context with proper units
+  const weatherContext = generateWeatherContext(weatherData);
   
   // Replace placeholder with actual weather context
   const replacePlaceholders = (prompt: string) => {

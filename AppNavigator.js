@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 
 import { HomeScreen } from './screens/HomeScreen';
-import ChatScreen from './components/ChatScreen';
+import ChatScreen from './screens/ChatScreen';
 
 const Stack = createStackNavigator();
 
