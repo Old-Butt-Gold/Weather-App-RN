@@ -94,6 +94,12 @@ export interface LocationResult {
     country: string;
     country_code: string;
 }
+export type RootStackParamList = {
+    Home: undefined;
+    Settings: undefined;
+    Chat: undefined;
+    // Add other screens here as needed
+};
 
 export interface AirQuality {
     time: string[],
