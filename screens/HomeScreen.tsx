@@ -236,14 +236,14 @@ const TemperatureDisplay = () => {
                                 : 'text-[20px]'
                     }`}
                 >{currentWeatherDescription}</Text>
-                <View className="flex-row relative w-full h-[90] items-start">
+                <View className="flex-row relative w-full h-[90] items-center">
                     {/* Основная температура с минусом */}
-
-                    <Text className="font-poppins-light text-primary text-[50px]">
-                        {currentTemperature < 0 ? "-" : ""}
-                    </Text>
-
-                    <Text className="font-poppins-medium text-primary text-[90px] leading-[100px]">
+                    {currentTemperature < 0 && (
+                        <Text className="font-poppins-light text-primary text-[30px] ">
+                            {currentTemperature < 0 ? "-" : ""}
+                        </Text>
+                    )}
+                    <Text className="font-poppins-medium text-primary text-[60px] leading-[80px]">
                         {Math.abs(currentTemperature)}
                     </Text>
 
