@@ -18,6 +18,7 @@ import {
     getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
+import {useNavigation} from "@react-navigation/native";
 
 
 // Константы анимаций
@@ -411,14 +412,14 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <StatusBar style="light" />
             <BackgroundImage />
 
-            <View className="absolute top-0 left-0 right-0 z-50">
+            <View className="absolute z-50">
                 <Header />
             </View>
 
             <ScrollView
                 contentContainerStyle={{
                     flexGrow: 1,
-                    paddingTop: 80, // Добавляем отступ сверху равный высоте Header
+                    paddingTop: 100, // Добавляем отступ сверху равный высоте Header
                 }}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
