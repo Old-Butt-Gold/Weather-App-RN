@@ -12,6 +12,12 @@
     "temperatureRange": "Диапазон температур",
     "nextDays": "Прогноз на 7 дней"
   },
+  "settings": {
+    "title": "Настройки",
+    "language": "Язык",
+    "temperatureUnit": "Единицы температуры",
+    "windSpeedUnit": "Единицы скорости ветра"
+  },
   "windUnit": {
     "km/h":  "км/ч",
     "m/s": "м/c",

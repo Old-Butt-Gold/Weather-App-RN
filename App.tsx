@@ -13,6 +13,7 @@ import {fetchWeather} from "./store/actions/fetchWeather";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ChatScreen} from "./components/ChatScreen";
+import { SettingsScreen } from './screens/SettingsScreen';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -62,12 +63,11 @@ const Initializer = () => {
             >
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Chat" component={ChatScreen} />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
 };
-
-
 
 export default function App() {
     // Правильное использование хука для загрузки шрифтов

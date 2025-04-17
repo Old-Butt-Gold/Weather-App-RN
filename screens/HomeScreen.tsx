@@ -109,13 +109,20 @@ const LocationTitle = () => {
 };
 
 // Компонент шапки
-const Header = () => (
-    <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
-        <IconButton icon={<Ionicons name="settings" size={24} color="white" />} />
-        <LocationTitle />
-        <IconButton icon={<FontAwesome name="search" size={24} color="white" />} />
-    </View>
-);
+const Header = () => {
+
+    const navigation = useNavigation();
+
+    return (
+        <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
+            </TouchableOpacity>
+            <LocationTitle/>
+            <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+        </View>
+    );
+};
 
 // Компонент размытого фона
 const BlurBackground = () => (
