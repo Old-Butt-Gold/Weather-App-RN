@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import openaiService, { ChatMessage } from '../../api/openai';
 import { t } from 'i18next';
-import { WeatherData, AppSettingsState } from '../types/types';
+import { AppSettingsState } from '../types/types';
+import {WeatherState} from "./weatherSlice";
 
 // Define chat state type
 interface ChatState {
@@ -24,32 +25,32 @@ export const sendQuestion = createAsyncThunk(
     {
       questionType,
       questionText,
-      weatherData = null,
-      appSettings = null,
+      weatherState,
+      appSettings,
     }: {
       questionType: string;
       questionText: string;
-      weatherData?: WeatherData | null;
-      appSettings?: AppSettingsState | null;
+      weatherState: WeatherState;
+      appSettings: AppSettingsState;
     },
     { rejectWithValue, getState }
   ) => {
     console.log('[CHAT THUNK] Starting request with:', { 
       questionType, 
       questionText, 
-      hasWeatherData: !!weatherData,
+      hasWeatherData: weatherState?.data,
       language: appSettings?.language || 'en'
     });
     
-    if (weatherData) {
+    if (weatherState?.data) {
       console.log('[CHAT THUNK] Weather data summary:', {
-        temperature: weatherData.current.temperature_2m,
-        condition: weatherData.current.weather_code,
-        location: `${weatherData.latitude},${weatherData.longitude}`,
-        timezone: weatherData.timezone,
+        temperature: weatherState.data.current.temperature_2m,
+        condition: weatherState.data.current.weather_code,
+        location: `${weatherState.data.latitude},${weatherState.data.longitude}`,
+        timezone: weatherState.data.timezone,
         units: {
-          temperature: weatherData.current_units?.temperature_2m,
-          wind: weatherData.current_units?.wind_speed_10m
+          temperature: weatherState.temperatureUnit,
+          wind: weatherState.windSpeedUnit,
         }
       });
     }
@@ -61,7 +62,7 @@ export const sendQuestion = createAsyncThunk(
       const response = await openaiService.generateResponseForQuestion(
         questionType,
         questionText,
-        weatherData,
+        weatherState,
         appSettings
       );
       

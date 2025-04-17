@@ -1,5 +1,5 @@
 // This file contains system prompts for the ChatGPT model
-import { WeatherData, CurrentWeather, DailyData, TemperatureUnit, WindSpeedUnit } from '../store/types/types';
+import {WeatherState} from "../store/slices/weatherSlice";
 
 // Helper function to get weather condition text from code
 export const getWeatherConditionText = (code: number): string => {
@@ -47,30 +47,30 @@ You can be creative and personable.
 If asked about specific weather conditions, you'll respond based on the current conditions shown in the app.`;
 
 // Generate context string about current weather conditions with proper units
-export const generateWeatherContext = (weatherData: WeatherData | null): string => {
-  if (!weatherData) {
+export const generateWeatherContext = (weatherState: WeatherState): string => {
+  if (!weatherState.data) {
     return "Current weather data is not available.";
   }
   
   try {
-    const current = weatherData.current;
-    const daily = weatherData.daily;
+    const current = weatherState.data.current;
+    const daily = weatherState.data.daily;
     
     // Get units from the data
-    const tempUnit: string = weatherData.current_units?.temperature_2m || "°C";
-    const windUnit: string = weatherData.current_units?.wind_speed_10m || "km/h";
-    const humidityUnit: string = weatherData.current_units?.relative_humidity_2m || "%";
+    const tempUnit: string = weatherState.temperatureUnit;
+    const windUnit: string = weatherState.windSpeedUnit;
+    const humidityUnit: string = weatherState.data.current_units?.relative_humidity_2m || "%";
     
     const currentCondition = getWeatherConditionText(current.weather_code);
     const isDay = current.is_day === 1;
     const timeOfDay = isDay ? "day" : "night";
     
     // Today's min/max
-    const todayMaxTemp = daily.temperature_2m_max[0];
-    const todayMinTemp = daily.temperature_2m_min[0];
+    const todayMaxTemp = daily.temperature_2m_max[1];
+    const todayMinTemp = daily.temperature_2m_min[1];
     
     // Precipitation probability for the day
-    const precipProbability = daily.precipitation_probability_mean[0];
+    const precipProbability = daily.precipitation_probability_mean[1];
     
     // Wind speed
     const windSpeed = current.wind_speed_10m;
@@ -79,22 +79,20 @@ export const generateWeatherContext = (weatherData: WeatherData | null): string 
     const humidity = current.relative_humidity_2m;
     
     // UV index (from hourly data if available)
-    const uvIndex = weatherData.hourly?.uv_index ? 
-      Math.round(weatherData.hourly.uv_index[new Date().getHours()]) : 
-      "N/A";
+    const uvIndex = weatherState.data.hourly.uv_index[0];
     
     // Sunrise and sunset
-    const sunrise = daily.sunrise[0].split('T')[1].substring(0, 5); // Format: HH:MM
-    const sunset = daily.sunset[0].split('T')[1].substring(0, 5); // Format: HH:MM
+    const sunrise = daily.sunrise[1].split('T')[1].substring(0, 5); // Format: HH:MM
+    const sunset = daily.sunset[1].split('T')[1].substring(0, 5); // Format: HH:MM
     
     return `Current weather: ${currentCondition}, ${current.temperature_2m}${tempUnit} (feels like ${current.apparent_temperature}${tempUnit})
-Time of day: ${timeOfDay}
-Today's temperature range: ${todayMinTemp}${tempUnit} to ${todayMaxTemp}${tempUnit}
-Precipitation probability: ${precipProbability}%
-Wind speed: ${windSpeed} ${windUnit}
-Humidity: ${humidity}${humidityUnit}
-UV Index: ${uvIndex}
-Sunrise: ${sunrise}, Sunset: ${sunset}`;
+    Time of day: ${timeOfDay}
+    Today's temperature range: ${todayMinTemp}${tempUnit} to ${todayMaxTemp}${tempUnit}
+    Precipitation probability: ${precipProbability}%
+    Wind speed: ${windSpeed} ${windUnit}
+    Humidity: ${humidity}${humidityUnit}
+    UV Index: ${uvIndex}
+    Sunrise: ${sunrise}, Sunset: ${sunset}`;
   } catch (error) {
     console.error("Error generating weather context:", error);
     return "Error processing weather data.";
@@ -144,7 +142,7 @@ If the conditions aren't ideal for outdoor activities, suggest suitable alternat
 // Function to generate the appropriate prompt based on question type
 export const getPromptForQuestion = (
   questionType: string,
-  weatherData: WeatherData | null = null
+  weatherData: WeatherState
 ): string => {
   // Generate weather context with proper units
   const weatherContext = generateWeatherContext(weatherData);

@@ -1,6 +1,5 @@
 import Constants from 'expo-constants';
 
-
 export const getEnvValue = (key: string, defaultValue: string = ''): string => {
   try {
     console.log(`[ENV UTILS] Attempting to get env variable: ${key}`);
