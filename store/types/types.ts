@@ -40,6 +40,7 @@ export interface HourlyData {
     wind_direction_10m: number[];
     precipitation_probability: number[];
     is_day: number[];
+    uv_index: number[];
 }
 
 export interface DailyUnits {
@@ -103,4 +104,12 @@ export interface AirQuality {
     us_aqi_carbon_monoxide: number[],
     us_aqi_ozone: number[],
     us_aqi_sulphur_dioxide: number[],
+}
+
+export interface LocationData extends Coordinates {
+    city: string;
+}
+
+export interface AppSettingsState {
+    language: 'ru' | 'en';
 }

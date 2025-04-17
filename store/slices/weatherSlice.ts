@@ -13,6 +13,7 @@ import {fetchWeather} from "../actions/fetchWeather";
 import {fetchMoonPhase} from "../actions/fetchMoonPhase";
 import {fetchAirQuality} from "../actions/fetchAirQuality";
 import {convertTemperature, convertWindSpeed} from "../utils/convertUtils";
+import {fetchLocationByIP} from "../actions/fetchLocationByIp";
 
 export interface WeatherState {
     data: WeatherData | null;
@@ -141,9 +142,29 @@ const weatherSlice = createSlice({
                 state.status = 'failed';
                 state.loading = false;
                 state.error = action.payload ? action.payload.message : 'Ошибка запроса качества воздуха';
+            })
+            .addCase(fetchLocationByIP.pending, (state) => {
+                state.status = 'loading';
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchLocationByIP.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.loading = false;
+                state.location = action.payload;
+                state.currentCity = action.payload.city;
+            })
+            .addCase(fetchLocationByIP.rejected, (state, action) => {
+                state.status = 'failed';
+                state.loading = false;
+                state.error = action.payload ? action.payload.message : 'Ошибка запроса получения координат';
+                state.location = DEFAULT_COORDINATES;
+                state.currentCity = DEFAULT_COORDINATES.city;
             });
     },
 });
+
+const DEFAULT_COORDINATES = { latitude: 53.9, longitude: 27.56667, city: "Минск" };
 
 export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity } = weatherSlice.actions;
 export const weatherReducer = weatherSlice.reducer;
