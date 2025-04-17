@@ -154,7 +154,7 @@ export const ClockComponent = () => {
                         fontSize="4"
                         fontFamily="Poppins-SemiBold"
                     >
-                        {`${temperatures[index]}°`}
+                        {`${~~temperatures[index]}°`}
                     </SvgText>
                 )}
 
