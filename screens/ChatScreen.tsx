@@ -17,12 +17,8 @@ import {
 } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { t } from 'i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
 import { sendQuestion } from '../store/slices/chatSlice';
 import { ChatMessage } from '../api/openai';
-import { AppDispatch } from '../store/store';
-import { getWeatherConditionText } from '../utils/prompts';
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 
 // Компонент для фонового изображения
