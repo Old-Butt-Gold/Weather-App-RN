@@ -12,7 +12,7 @@ import {useAppDispatch} from "./store/hooks";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ChatScreen} from "./components/ChatScreen";
+import {ChatScreen} from "./screens/ChatScreen";
 import { SettingsScreen } from './screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
