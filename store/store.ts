@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import {weatherReducer} from "./slices/weatherSlice";
 import {locationReducer} from "./slices/locationSlice";
+import {appSettingsReducer} from "./slices/appSettingsSlice";
 
 export const store = configureStore({
     reducer: {
         weather: weatherReducer,
         location: locationReducer,
+        appSettings: appSettingsReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

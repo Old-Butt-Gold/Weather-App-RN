@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {View, ScrollView, TouchableOpacity, Text, Image} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
@@ -19,6 +19,7 @@ import {
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
 import {useNavigation} from "@react-navigation/native";
+import i18n from "../i18n/i18n";
 
 
 // Константы анимаций
@@ -363,6 +364,7 @@ const WeatherCard = ({
 
 // Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
+    const { language } = useAppSelector(state => state.appSettings);
     const weatherState = useAppSelector(x => x.weather);
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,

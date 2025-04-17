@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { t } from 'i18next';
@@ -7,6 +7,8 @@ import { setTemperatureUnit, setWindSpeedUnit } from '../store/slices/weatherSli
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n/i18n';
+import {setLanguage} from "../store/slices/appSettingsSlice";
+import {AppSettingsState} from "../store/types/types";
 
 const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <View className="mb-6">
@@ -31,7 +33,7 @@ const SettingButton = ({
         className={`flex-1 p-3 rounded-xl ${isActive ? 'bg-white/20' : 'bg-transparent'}`}
     >
         <Text className={`text-center font-manrope-medium ${isActive ? 'text-accent' : 'text-white/70'}`}>
-            {t(label)}
+            {label}
         </Text>
     </TouchableOpacity>
 );
@@ -40,10 +42,10 @@ export const SettingsScreen = () => {
     const dispatch = useAppDispatch();
     const navigation = useNavigation();
     const { temperatureUnit, windSpeedUnit } = useAppSelector(state => state.weather);
-    const currentLanguage = i18n.language;
+    const { language } = useAppSelector(state => state.appSettings);
 
-    const handleLanguageChange = (lang: 'ru' | 'en') => {
-        i18n.changeLanguage(lang);
+    const handleLanguageChange = async (settings: AppSettingsState) => {
+        dispatch(setLanguage(settings.language)); // Диспатчим изменение языка
     };
 
     return (
@@ -69,13 +71,13 @@ export const SettingsScreen = () => {
                             <View className="flex-row gap-2">
                                 <SettingButton
                                     label="Русский"
-                                    isActive={currentLanguage === 'ru'}
-                                    onPress={() => handleLanguageChange('ru')}
+                                    isActive={language === 'ru'}
+                                    onPress={async () => await handleLanguageChange({language: 'ru'})}
                                 />
                                 <SettingButton
                                     label="English"
-                                    isActive={currentLanguage === 'en'}
-                                    onPress={() => handleLanguageChange('en')}
+                                    isActive={language === 'en'}
+                                    onPress={async () => await handleLanguageChange({language: 'en'})}
                                 />
                             </View>
                         </SettingSection>
@@ -100,17 +102,17 @@ export const SettingsScreen = () => {
                         <SettingSection title={t('settings.windSpeedUnit')}>
                             <View className="flex-row gap-2">
                                 <SettingButton
-                                    label="windUnit.km/h"
+                                    label={t("windUnit.km/h")}
                                     isActive={windSpeedUnit === 'km/h'}
                                     onPress={() => dispatch(setWindSpeedUnit('km/h'))}
                                 />
                                 <SettingButton
-                                    label="windUnit.m/s"
+                                    label={t("windUnit.m/s")}
                                     isActive={windSpeedUnit === 'm/s'}
                                     onPress={() => dispatch(setWindSpeedUnit('m/s'))}
                                 />
                                 <SettingButton
-                                    label="windUnit.mph"
+                                    label={t("windUnit.mph")}
                                     isActive={windSpeedUnit === 'mph'}
                                     onPress={() => dispatch(setWindSpeedUnit('mph'))}
                                 />

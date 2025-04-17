@@ -15,13 +15,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ChatScreen} from "./components/ChatScreen";
 import { SettingsScreen } from './screens/SettingsScreen';
 
-SplashScreen.preventAutoHideAsync();
-
 const Stack = createNativeStackNavigator();
 
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 import {fetchLocationByIP} from "./store/actions/fetchLocationByIp";
+import {setLanguage} from "./store/slices/appSettingsSlice";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,6 +31,7 @@ const Initializer = () => {
     useEffect(() => {
         async function initialize() {
             try {
+                dispatch(setLanguage('ru'));
                 await dispatch(fetchLocationByIP(i18n.language));
                 await dispatch(fetchWeather()).unwrap();
                 await dispatch(fetchMoonPhase()).unwrap();
@@ -42,6 +42,7 @@ const Initializer = () => {
                 setInitFinished(true);
             }
         }
+
         initialize();
     }, [dispatch]);
 
