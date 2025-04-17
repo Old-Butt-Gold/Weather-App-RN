@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getAzureOpenAIEndpoint, getAzureOpenAIKey } from '../utils/env';
 import { getPromptForQuestion } from '../utils/prompts';
 import { WeatherData, AppSettingsState } from '../store/types/types';
+import {WeatherState} from "../store/slices/weatherSlice";
 
 // Define message types
 export type ChatMessage = {
@@ -138,19 +139,19 @@ export const openaiService = {
   generateResponseForQuestion: async (
     questionType: string,
     userQuestion: string,
-    weatherData: WeatherData | null = null,
-    appSettings: AppSettingsState | null = null
+    weatherState: WeatherState,
+    appSettings: AppSettingsState
   ): Promise<string> => {
     console.log('[OPENAI SERVICE] Generating response for question type:', questionType);
     
-    if (weatherData) {
+    if (weatherState?.data) {
       console.log('[OPENAI SERVICE] Using actual weather data:', {
-        temperature: weatherData.current.temperature_2m,
-        weatherCode: weatherData.current.weather_code,
-        isDay: weatherData.current.is_day,
+        temperature: weatherState.data.current.temperature_2m,
+        weatherCode: weatherState.data.current.weather_code,
+        isDay: weatherState.data.current.is_day,
         units: {
-          temp: weatherData.current_units?.temperature_2m,
-          wind: weatherData.current_units?.wind_speed_10m
+          temp: weatherState.temperatureUnit,
+          wind: weatherState.windSpeedUnit,
         }
       });
     } else {
@@ -158,7 +159,7 @@ export const openaiService = {
     }
     
     // Get the appropriate system prompt for this question type
-    const systemPrompt = getPromptForQuestion(questionType, weatherData);
+    const systemPrompt = getPromptForQuestion(questionType, weatherState);
     
     console.log('[OPENAI SERVICE] System prompt sample:', 
       systemPrompt.substring(0, 100) + '...');
@@ -170,7 +171,7 @@ export const openaiService = {
     ];
     
     // Determine which language to use based on app settings
-    const language = appSettings?.language || 'en';
+    const language = appSettings.language || 'en';
     if (language === 'ru') {
       console.log('[OPENAI SERVICE] Using Russian language for response');
       // Add instruction to respond in Russian

@@ -17,12 +17,9 @@ import {
 } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { t } from 'i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
 import { sendQuestion } from '../store/slices/chatSlice';
 import { ChatMessage } from '../api/openai';
-import { AppDispatch } from '../store/store';
-import { getWeatherConditionText } from '../utils/prompts';
+import {useAppDispatch, useAppSelector} from "../store/hooks";
 
 // Компонент для фонового изображения
 const BackgroundImage = () => (
@@ -103,25 +100,25 @@ type ChatScreenProps = {
 };
 
 export const ChatScreen = ({ navigation }: ChatScreenProps) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { messages, isLoading, error } = useSelector((state: RootState) => state.chat);
+  const dispatch = useAppDispatch();
+  const { messages, isLoading, error } = useAppSelector(state => state.chat);
   // Get weather data from Redux store
-  const weatherData = useSelector((state: RootState) => state.weather?.data);
+  const weatherState = useAppSelector(state => state.weather);
   // Get app settings from Redux store
-  const appSettings = useSelector((state: RootState) => state.settings);
+  const appSettings = useAppSelector(state => state.appSettings);
   const scrollViewRef = useRef<ScrollView>(null);
   
   // Функция для обработки нажатия на предлагаемый вопрос
   const handleQuestionPress = (questionType: string, questionText: string) => {
     console.log('[CHAT SCREEN] Question pressed:', { questionType, questionText });
-    console.log('[CHAT SCREEN] Current weather data available:', !!weatherData);
+    console.log('[CHAT SCREEN] Current weather data available:', weatherState?.data);
     console.log('[CHAT SCREEN] App settings:', appSettings);
     
     // Отправляем вопрос через Redux thunk с актуальными данными о погоде и настройками
     dispatch(sendQuestion({
       questionType,
       questionText,
-      weatherData,
+      weatherState,
       appSettings
     }));
     
