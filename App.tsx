@@ -13,14 +13,14 @@ import {fetchWeather} from "./store/actions/fetchWeather";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ChatScreen} from "./components/ChatScreen";
-
-SplashScreen.preventAutoHideAsync();
+import { SettingsScreen } from './screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 import {fetchLocationByIP} from "./store/actions/fetchLocationByIp";
+import {setLanguage} from "./store/slices/appSettingsSlice";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,16 +31,22 @@ const Initializer = () => {
     useEffect(() => {
         async function initialize() {
             try {
+                dispatch(setLanguage('ru'));
+
                 await dispatch(fetchLocationByIP(i18n.language));
-                await dispatch(fetchWeather()).unwrap();
-                await dispatch(fetchMoonPhase()).unwrap();
-                await dispatch(fetchAirQuality()).unwrap();
+
+                await Promise.all([
+                    dispatch(fetchWeather()),
+                    dispatch(fetchMoonPhase()),
+                    dispatch(fetchAirQuality())
+                ]);
             } catch (error) {
                 console.error("Ошибка при инициализации координат:", error);
             } finally {
                 setInitFinished(true);
             }
         }
+
         initialize();
     }, [dispatch]);
 
@@ -62,12 +68,11 @@ const Initializer = () => {
             >
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Chat" component={ChatScreen} />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
 };
-
-
 
 export default function App() {
     // Правильное использование хука для загрузки шрифтов

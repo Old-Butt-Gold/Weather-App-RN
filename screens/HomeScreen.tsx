@@ -9,7 +9,7 @@ import { t } from 'i18next';
 import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
-import {useAppSelector} from "../store/hooks";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {
     getCurrentHumidity,
     getCurrentRainChance,
@@ -19,6 +19,11 @@ import {
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
 import {useNavigation} from "@react-navigation/native";
+import i18n from "../i18n/i18n";
+import {fetchLocationByIP} from "../store/actions/fetchLocationByIp";
+import {fetchWeather} from "../store/actions/fetchWeather";
+import {fetchMoonPhase} from "../store/actions/fetchMoonPhase";
+import {fetchAirQuality} from "../store/actions/fetchAirQuality";
 
 
 // Константы анимаций
@@ -46,7 +51,9 @@ type WeatherDetailsItem = {
     unit: string,
     labelKey: string,
 }
-
+type WeatherButtonsProps = {
+    onChatPress: () => void;
+};
 // Фильтры цветов для Lottie
 const LOTTIE_COLOR_FILTERS = [
     { keypath: "mouth", color: "#2B3F56" },
@@ -109,13 +116,22 @@ const LocationTitle = () => {
 };
 
 // Компонент шапки
-const Header = () => (
-    <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
-        <IconButton icon={<Ionicons name="settings" size={24} color="white" />} />
-        <LocationTitle />
-        <IconButton icon={<FontAwesome name="search" size={24} color="white" />} />
-    </View>
-);
+const Header = () => {
+
+    const navigation = useNavigation();
+
+    return (
+        <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
+            </TouchableOpacity>
+            <LocationTitle/>
+            <TouchableOpacity>
+                <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+            </TouchableOpacity>
+        </View>
+    );
+};
 
 // Компонент размытого фона
 const BlurBackground = () => (
@@ -142,6 +158,27 @@ const WeatherHeader = () => {
     const weekdayShort = t(`date.weekdayShort.${date.getDay()}`);
     const monthShort = t(`date.monthShort.${date.getMonth()}`);
 
+    const dispatch = useAppDispatch();
+    const { loading } = useAppSelector(state => state.weather);
+    const currentLanguage = useAppSelector(state => state.appSettings.language);
+
+    const handleSearchPress = async () => {
+        try {
+            // Обновляем геолокацию
+            await dispatch(fetchLocationByIP(currentLanguage));
+
+            // Параллельно обновляем все данные
+            await Promise.all([
+                dispatch(fetchWeather()),
+                dispatch(fetchMoonPhase()),
+                dispatch(fetchAirQuality())
+            ]);
+
+        } catch (error) {
+            console.error('Ошибка при обновлении данных:', error);
+        }
+    };
+
     return (
         <View className="flex-row justify-between items-start">
             <View className="flex-row items-center gap-2">
@@ -150,7 +187,7 @@ const WeatherHeader = () => {
                     {weekdayShort} {date.getDate()} {monthShort} {date.getFullYear()}
                 </Text>
             </View>
-            <TouchableOpacity className="p-2 rounded-[15] bg-white/20">
+            <TouchableOpacity onPress={async () => await handleSearchPress()} className="p-2 rounded-[15] bg-white/20">
                 <Ionicons name="reload-circle-sharp" size={24} color="white" />
             </TouchableOpacity>
         </View>
@@ -164,8 +201,8 @@ const TemperatureRange = () => {
     const min = ~~weatherState.data?.daily.temperature_2m_min[1]!;
     const unit = getCurrentTemperatureUnit(weatherState);
 
-    return (<View className="flex-row justify-center mt-2">
-        <View className="flex-row px-4 py-2 gap-3 bg-white/20 rounded-[35]">
+    return (<View className="flex-row justify-center w-[48%]">
+        <View className="flex-row px-3 py-2 gap-1 bg-white/20 rounded-[35]">
             <View className="flex-row items-center">
                 <AntDesign name="arrowup" size={18} color="white"/>
                 <Text className="font-poppins-medium text-accent text-[15px] ml-1 pr-1.5">{max}{unit}</Text>
@@ -215,8 +252,6 @@ const TemperatureDisplay = () => {
                         {currentTemperatureUnit}
                     </Text>
                 </View>
-
-                <TemperatureRange />
             </View>
 
         </View>
@@ -236,7 +271,23 @@ const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
         </View>
     );
 };
-
+const WeatherButtons = ({
+                            onChatPress
+                        }:WeatherButtonsProps) =>(
+    <View className="flex-row flex-wrap justify-between mt-6 w-full">
+        <TemperatureRange />
+        <View className="flex-row justify-center items-center w-[48%]">
+            <TouchableOpacity
+                onPress={onChatPress}
+                className="px-2 py-2 bg-white/20 rounded-[35] w-full justify-center items-center"
+            >
+                <Text className="font-manrope-semibold text-accent text-[15px] mb-1">
+                    {t('buttons.chatWithMe')}
+                </Text>
+            </TouchableOpacity>
+        </View>
+    </View>
+)
 // Компонент деталей погоды
 const WeatherDetails = () => {
     const weatherState = useAppSelector(x => x.weather);
@@ -284,18 +335,17 @@ const WeatherDetails = () => {
 
 // Обновленный компонент контента погоды с кнопкой чата рядом с диапазоном температур
 const WeatherContent = ({
-    currentAnimation,
-    animationKey,
-    onAnimationPress,
-    onAnimationFinish,
-    onChatPress
-}: Omit<WeatherCardProps, 'isNightTime'>) => (
+                            currentAnimation,
+                            animationKey,
+                            onAnimationPress,
+                            onAnimationFinish,
+                        }: Omit<WeatherCardProps, 'isNightTime' | 'onChatPress'>) => (
     <View className="flex-col">
         <View className="flex-row justify-between">
             <TemperatureDisplay />
             <View className="flex-col justify-end items-end">
                 <View
-                    className="rounded-xl overflow-hidden"
+                    className="rounded-xl overflow-hidden ml-2"
                     style={{ width: 170, height: 120 }}
                 >
                     <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
@@ -311,16 +361,6 @@ const WeatherContent = ({
                     </TouchableOpacity>
                 </View>
 
-                <View className="flex-row justify-center items-center  ml-2">
-                    <TouchableOpacity
-                        onPress={onChatPress}
-                        className="px-2 py-2 bg-white/20 rounded-[35] "
-                    >
-                        <Text className="font-manrope-semibold text-accent text-[15px] mb-1">
-                            {t('buttons.chatWithMe')}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
             </View>
         </View>
     </View>
@@ -328,13 +368,13 @@ const WeatherContent = ({
 
 // Основной компонент карточки погоды
 const WeatherCard = ({
-    isNightTime,
-    currentAnimation,
-    animationKey,
-    onAnimationPress,
-    onAnimationFinish,
-    onChatPress
-}: WeatherCardProps) => (
+                         isNightTime,
+                         currentAnimation,
+                         animationKey,
+                         onAnimationPress,
+                         onAnimationFinish,
+                         onChatPress
+                     }: WeatherCardProps) => (
     <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]">
         <BlurBackground />
         <View className="w-full z-10">
@@ -344,18 +384,18 @@ const WeatherCard = ({
                 animationKey={animationKey}
                 onAnimationPress={onAnimationPress}
                 onAnimationFinish={onAnimationFinish}
-                onChatPress={onChatPress}
             />
+            <WeatherButtons  onChatPress={onChatPress}/>
             <WeatherDetails />
         </View>
     </View>
 );
 
-
-
-
 // Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
+    // DON'T DELETE IT ALL APP WORK ON THIS LINE
+    const { language } = useAppSelector(state => state.appSettings);
+
     const weatherState = useAppSelector(x => x.weather);
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,

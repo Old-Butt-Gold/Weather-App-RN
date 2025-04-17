@@ -1,6 +1,6 @@
 {
   "buttons": {
-    "chatWithMe": "Поболтай со мной!"
+    "chatWithMe": "Давай поболтаем!"
   },
   "weather": {
     "feelsLike": "Ощущается как",
@@ -11,6 +11,12 @@
     "reload": "Обновить",
     "temperatureRange": "Диапазон температур",
     "nextDays": "Прогноз на 7 дней"
+  },
+  "settings": {
+    "title": "Настройки",
+    "language": "Язык",
+    "temperatureUnit": "Единицы температуры",
+    "windSpeedUnit": "Единицы скорости ветра"
   },
   "windUnit": {
     "km/h":  "км/ч",

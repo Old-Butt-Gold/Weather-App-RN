@@ -1,6 +1,12 @@
 {
   "buttons": {
-    "chatWithMe": "Chat with me about weather!"
+    "chatWithMe": "Let's Chat!"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "temperatureUnit": "Temperature Units",
+    "windSpeedUnit": "Wind Speed Units"
   },
   "weather": {
     "feelsLike": "Feels like",

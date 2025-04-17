@@ -109,3 +109,7 @@ export interface AirQuality {
 export interface LocationData extends Coordinates {
     city: string;
 }
+
+export interface AppSettingsState {
+    language: 'ru' | 'en';
+}
