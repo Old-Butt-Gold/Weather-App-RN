@@ -45,7 +45,7 @@ export const SettingsScreen = () => {
     const { language } = useAppSelector(state => state.appSettings);
 
     const handleLanguageChange = async (settings: AppSettingsState) => {
-        dispatch(setLanguage(settings.language)); // Диспатчим изменение языка
+        dispatch(setLanguage(settings.language));
     };
 
     return (

@@ -32,10 +32,14 @@ const Initializer = () => {
         async function initialize() {
             try {
                 dispatch(setLanguage('ru'));
+
                 await dispatch(fetchLocationByIP(i18n.language));
-                await dispatch(fetchWeather()).unwrap();
-                await dispatch(fetchMoonPhase()).unwrap();
-                await dispatch(fetchAirQuality()).unwrap();
+
+                await Promise.all([
+                    dispatch(fetchWeather()),
+                    dispatch(fetchMoonPhase()),
+                    dispatch(fetchAirQuality())
+                ]);
             } catch (error) {
                 console.error("Ошибка при инициализации координат:", error);
             } finally {

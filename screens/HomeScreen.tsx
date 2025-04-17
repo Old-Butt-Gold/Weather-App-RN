@@ -9,7 +9,7 @@ import { t } from 'i18next';
 import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
 import {SunMoonWidget} from "../components/SunMoonWidget";
 import {AirCompositionWidget} from "../components/AirCompositionWidget";
-import {useAppSelector} from "../store/hooks";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {
     getCurrentHumidity,
     getCurrentRainChance,
@@ -20,6 +20,10 @@ import {
 } from "../store/utils/weatherUtils";
 import {useNavigation} from "@react-navigation/native";
 import i18n from "../i18n/i18n";
+import {fetchLocationByIP} from "../store/actions/fetchLocationByIp";
+import {fetchWeather} from "../store/actions/fetchWeather";
+import {fetchMoonPhase} from "../store/actions/fetchMoonPhase";
+import {fetchAirQuality} from "../store/actions/fetchAirQuality";
 
 
 // Константы анимаций
@@ -111,7 +115,6 @@ const LocationTitle = () => {
 
 // Компонент шапки
 const Header = () => {
-
     const navigation = useNavigation();
 
     return (
@@ -120,7 +123,10 @@ const Header = () => {
                 <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
             </TouchableOpacity>
             <LocationTitle/>
-            <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+            <TouchableOpacity>
+                <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+            </TouchableOpacity>
+
         </View>
     );
 };
@@ -150,6 +156,27 @@ const WeatherHeader = () => {
     const weekdayShort = t(`date.weekdayShort.${date.getDay()}`);
     const monthShort = t(`date.monthShort.${date.getMonth()}`);
 
+    const dispatch = useAppDispatch();
+    const { loading } = useAppSelector(state => state.weather);
+    const currentLanguage = useAppSelector(state => state.appSettings.language);
+
+    const handleSearchPress = async () => {
+        try {
+            // Обновляем геолокацию
+            await dispatch(fetchLocationByIP(currentLanguage));
+
+            // Параллельно обновляем все данные
+            await Promise.all([
+                dispatch(fetchWeather()),
+                dispatch(fetchMoonPhase()),
+                dispatch(fetchAirQuality())
+            ]);
+
+        } catch (error) {
+            console.error('Ошибка при обновлении данных:', error);
+        }
+    };
+
     return (
         <View className="flex-row justify-between items-start">
             <View className="flex-row items-center gap-2">
@@ -158,7 +185,7 @@ const WeatherHeader = () => {
                     {weekdayShort} {date.getDate()} {monthShort} {date.getFullYear()}
                 </Text>
             </View>
-            <TouchableOpacity className="p-2 rounded-[15] bg-white/20">
+            <TouchableOpacity onPress={async () => await handleSearchPress()} className="p-2 rounded-[15] bg-white/20">
                 <Ionicons name="reload-circle-sharp" size={24} color="white" />
             </TouchableOpacity>
         </View>
@@ -359,12 +386,11 @@ const WeatherCard = ({
     </View>
 );
 
-
-
-
 // Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
+    // DON'T DELETE IT ALL APP WORK ON THIS LINE
     const { language } = useAppSelector(state => state.appSettings);
+
     const weatherState = useAppSelector(x => x.weather);
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
