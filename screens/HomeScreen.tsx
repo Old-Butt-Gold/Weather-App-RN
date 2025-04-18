@@ -26,6 +26,7 @@ import {fetchMoonPhase} from "../store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "../store/actions/fetchAirQuality";
 import SearchModal from "./SearchModal";
 import {clearSearchResults} from "../store/slices/locationSlice";
+import {BackgroundImage} from "../components/BackgroundImage";
 
 
 // Константы анимаций
@@ -88,17 +89,7 @@ type HomeScreenProps = {
 };
 
 // Компонент фонового изображения
-const BackgroundImage = () => (
-    <View className="absolute top-0 left-0 right-0 bottom-0">
-        <Image
-            source={require("../assets/bg.png")}
-            style={{ flex: 1, width: '100%', height: '100%' }}
-            blurRadius={6}
-            resizeMode="cover"
-        />
-        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/10" />
-    </View>
-);
+
 
 // Компонент кнопки с иконкой
 const IconButton = ({ icon }: { icon: React.ReactNode }) => (
@@ -379,7 +370,6 @@ const WeatherCard = ({
 
 // Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
-    const [showSearch, setShowSearch] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -443,7 +433,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
             </TouchableOpacity>
             <LocationTitle/>
-            <TouchableOpacity onPress={() => setShowSearch(true)}>
+            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
                 <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
             </TouchableOpacity>
         </View>
@@ -454,13 +444,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <StatusBar style="light" />
             <BackgroundImage />
 
-            <SearchModal
-                visible={showSearch}
-                onClose={() => {
-                    setShowSearch(false);
-                    dispatch(clearSearchResults());
-                }}
-            />
 
             <View className="absolute z-50">
                 <Header />
