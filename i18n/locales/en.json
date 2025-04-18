@@ -2,6 +2,11 @@
   "buttons": {
     "chatWithMe": "Let's Chat?"
   },
+  "search": {
+    "title": "Search Location",
+    "placeholder": "Enter city name...",
+    "noResults": "No locations found"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

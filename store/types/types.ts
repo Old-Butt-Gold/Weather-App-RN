@@ -88,11 +88,13 @@ export interface WeatherData {
 }
 
 export interface LocationResult {
+    id: number,
     name: string | null;
     latitude: number;
     longitude: number;
     country: string;
     country_code: string;
+    admin1: string;
 }
 
 export interface AirQuality {

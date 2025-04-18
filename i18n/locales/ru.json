@@ -2,6 +2,11 @@
   "buttons": {
     "chatWithMe": "Поболтаем?"
   },
+  "search": {
+    "title": "Поиск локации",
+    "placeholder": "Введите название города...",
+    "noResults": "Ничего не найдено"
+  },
   "weather": {
     "feelsLike": "Ощущается как",
     "windSpeed": "Скорость ветра",

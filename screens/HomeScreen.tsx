@@ -24,6 +24,8 @@ import {fetchLocationByIP} from "../store/actions/fetchLocationByIp";
 import {fetchWeather} from "../store/actions/fetchWeather";
 import {fetchMoonPhase} from "../store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "../store/actions/fetchAirQuality";
+import SearchModal from "./SearchModal";
+import {clearSearchResults} from "../store/slices/locationSlice";
 
 
 // Константы анимаций
@@ -116,22 +118,6 @@ const LocationTitle = () => {
 };
 
 // Компонент шапки
-const Header = () => {
-
-    const navigation = useNavigation();
-
-    return (
-        <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
-            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-                <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
-            </TouchableOpacity>
-            <LocationTitle/>
-            <TouchableOpacity>
-                <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
-            </TouchableOpacity>
-        </View>
-    );
-};
 
 // Компонент размытого фона
 const BlurBackground = () => (
@@ -393,6 +379,10 @@ const WeatherCard = ({
 
 // Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
+    const [showSearch, setShowSearch] = useState(false);
+
+    const dispatch = useAppDispatch();
+
     // DON'T DELETE IT ALL APP WORK ON THIS LINE
     const { language } = useAppSelector(state => state.appSettings);
 
@@ -447,10 +437,30 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         navigation.navigate('Chat');
     }, [navigation]);
 
+    const Header = () => (
+        <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
+            </TouchableOpacity>
+            <LocationTitle/>
+            <TouchableOpacity onPress={() => setShowSearch(true)}>
+                <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+            </TouchableOpacity>
+        </View>
+    );
+
     return (
         <>
             <StatusBar style="light" />
             <BackgroundImage />
+
+            <SearchModal
+                visible={showSearch}
+                onClose={() => {
+                    setShowSearch(false);
+                    dispatch(clearSearchResults());
+                }}
+            />
 
             <View className="absolute z-50">
                 <Header />
