@@ -21,6 +21,7 @@ import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 import {fetchLocationByIP} from "./store/actions/fetchLocationByIp";
 import {setLanguage} from "./store/slices/appSettingsSlice";
+import SearchScreen from "./screens/SearchScreen";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,6 +70,7 @@ const Initializer = () => {
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Chat" component={ChatScreen} />
                 <Stack.Screen name="Settings" component={SettingsScreen} />
+                <Stack.Screen name="Search" component={SearchScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
