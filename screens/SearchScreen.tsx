@@ -11,7 +11,7 @@ import { fetchWeather } from "../store/actions/fetchWeather";
 import { fetchMoonPhase } from "../store/actions/fetchMoonPhase";
 import { fetchAirQuality } from "../store/actions/fetchAirQuality";
 import { useNavigation } from '@react-navigation/native';
-import {BackgroundImage} from "../components/BackgroundImage";
+import { ScreenLayout } from '../components/ScreenLayout';
 
 const SearchScreen = () => {
     const navigation = useNavigation();
@@ -55,8 +55,8 @@ const SearchScreen = () => {
     };
 
     return (
+        <ScreenLayout>
         <View className="flex-1  p-4 pt-14">
-            <BackgroundImage />
             {/* Header */}
             <View className="flex-row items-center justify-between mb-4">
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -104,6 +104,7 @@ const SearchScreen = () => {
                 />
             )}
         </View>
+        </ScreenLayout>
     );
 };
 

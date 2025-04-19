@@ -103,9 +103,9 @@ export default function App() {
     return (
         <Provider store={store}>
             <I18nextProvider i18n={i18n}>
-                <SafeAreaView className="flex-1" style={{paddingTop: Platform.OS === 'ios' ? 0 : 0}}>
+                <View className="flex-1"> {/* Больше не SafeAreaView */}
                     <Initializer />
-                </SafeAreaView>
+                </View>
             </I18nextProvider>
         </Provider>
     );

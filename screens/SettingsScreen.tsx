@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n/i18n';
 import {setLanguage} from "../store/slices/appSettingsSlice";
 import {AppSettingsState} from "../store/types/types";
-import {BackgroundImage} from "../components/BackgroundImage";
+import { ScreenLayout } from '../components/ScreenLayout';
 
 const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <View className="mb-6">
@@ -50,8 +50,8 @@ export const SettingsScreen = () => {
     };
 
     return (
+        <ScreenLayout>
         <View className="flex-1">
-            <BackgroundImage />
             <View className="flex-1"
             >
                 <View className="p-4 pt-14">
@@ -121,5 +121,6 @@ export const SettingsScreen = () => {
                 </View>
             </View>
         </View>
+        </ScreenLayout>
     );
 };

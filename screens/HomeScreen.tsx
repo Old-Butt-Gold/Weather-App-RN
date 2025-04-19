@@ -26,7 +26,7 @@ import {fetchMoonPhase} from "../store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "../store/actions/fetchAirQuality";
 import SearchModal from "./SearchModal";
 import {clearSearchResults} from "../store/slices/locationSlice";
-import {BackgroundImage} from "../components/BackgroundImage";
+import {ScreenLayout} from "../components/ScreenLayout";
 
 
 // Константы анимаций
@@ -440,9 +440,8 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     );
 
     return (
-        <>
+        <ScreenLayout>
             <StatusBar style="light" />
-            <BackgroundImage />
 
 
             <View className="absolute z-50">
@@ -472,7 +471,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     <AirCompositionWidget />
                 </View>
             </ScrollView>
-        </>
+        </ScreenLayout>
     );
 };
 
