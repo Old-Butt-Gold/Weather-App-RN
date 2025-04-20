@@ -142,11 +142,55 @@
   },
   "weatherMap": {
     "title": "Карта погоды",
-    "temperature": "Температура",
-    "precipitation": "Осадки",
-    "wind": "Ветер",
-    "currentTemp": "Температура",
-    "currentPrecip": "Осадки",
-    "currentWind": "Ветер"
+    "error": "Ошибка",
+    "locationPermissionDenied": "Разрешение на использование геолокации не получено",
+    "locationError": "Не удалось определить местоположение",
+    "weatherFetchError": "Не удалось загрузить погодные данные",
+    "weatherDescription": {
+      "clear": "Ясно",
+      "mainlyClear": "В основном ясно",
+      "partlyCloudy": "Переменная облачность",
+      "cloudy": "Облачно",
+      "fog": "Туман",
+      "lightDrizzle": "Легкая морось",
+      "moderateDrizzle": "Умеренная морось",
+      "heavyDrizzle": "Сильная морось",
+      "freezingDrizzle": "Ледяная морось",
+      "lightRain": "Легкий дождь",
+      "moderateRain": "Умеренный дождь",
+      "heavyRain": "Сильный дождь",
+      "freezingRain": "Ледяной дождь",
+      "lightSnow": "Легкий снег",
+      "moderateSnow": "Умеренный снег",
+      "heavySnow": "Сильный снег",
+      "snowGrains": "Снежная крупа",
+      "lightShowers": "Легкий ливень",
+      "moderateShowers": "Умеренный ливень",
+      "heavyShowers": "Сильный ливень",
+      "lightSnowfall": "Легкий снегопад",
+      "heavySnowfall": "Сильный снегопад",
+      "thunderstorm": "Гроза",
+      "thunderstormWithHail": "Гроза с градом",
+      "unknown": "Неизвестно"
+    },
+    "weatherData": {
+      "temperature": "Температура",
+      "wind": "Ветер",
+      "humidity": "Влажность",
+      "pressure": "Давление",
+      "precipitation": "Осадки",
+      "cloudCover": "Облачность",
+      "precipitationProbability": "Вер. осадков"
+    },
+    "legend": {
+      "title": "Легенда",
+      "temperature": "Температура (°C)",
+      "precipitation": "Осадки (мм)",
+      "rain": "Дождь (мм)",
+      "wind": "Ветер (м/с)",
+      "clouds": "Облачность (%)",
+      "pressure": "Давление (гПа)",
+      "snow": "Снег (мм)"
+    }
   }
 }
