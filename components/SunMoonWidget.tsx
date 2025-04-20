@@ -223,15 +223,11 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
 
     return (
         <View
-            className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full"
+            className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full bg-[#45576170]/25"
             style={{ height: radius + centerY + 35 }}
         >
-            <BlurView
-                intensity={44}
-                tint="light"
-                className="absolute w-full h-full z-0 overflow-hidden rounded-[35]"
-            />
-            <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
+
+            <View className="absolute w-full h-full bg-[rgba(90,139,171,0.05)] rounded-[35]" />
             <Infolabel />
             <View style={{ marginTop: topMargin }} className="">
                 <Svg width={svgWidth} height={centerY + 20}>

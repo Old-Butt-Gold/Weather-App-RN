@@ -34,7 +34,7 @@ const ForecastCard = (props: ForecastProps) => {
 
     return (
         <View
-            className="bg-white/30 rounded-2xl flex-col items-center justify-center px-3 py-3 w-[130] relative overflow-hidden"
+            className="bg-[#45576170]/25 rounded-2xl flex-col items-center justify-center px-3 py-3 w-[130] relative overflow-hidden"
             style={{ marginLeft, marginRight }}
         >
             <BlurView
@@ -42,17 +42,17 @@ const ForecastCard = (props: ForecastProps) => {
                 tint="light"
                 className="absolute w-80 h-80 z-0 overflow-hidden"
             />
-            <View className="absolute w-[40] justify-center items-center top-[50px] left-3">
-                <WeatherIcon code={item.weather_code} isDay={true} size={60} fill="white" />
+            <View className="absolute w-[40] justify-center items-center top-[70px] left-3">
+                <WeatherIcon code={item.weather_code} isDay={true} size={50} fill="white" />
             </View>
             <Text className="absolute top-0 right-1 text-white font-manrope-bold text-[32px] leading-11">
                 {item.temperature_2m_mean}&deg;
             </Text>
-            <Text className="absolute top-20 right-1 text-white/60 font-manrope-bold text-[12px] leading-11">
-                {item.temperature_2m_max}&deg; / {item.temperature_2m_min}&deg;
+            <Text className="absolute top-24 right-1 text-white/60 font-manrope-bold text-[12px] leading-11">
+                {`${Math.round(item.temperature_2m_max)}° / ${Math.round(item.temperature_2m_min)}°`}
             </Text>
-            <View className="flex-row w-full">
-                <View className="flex-col items-start h-36 w-[50%]">
+            <View className="flex-row w-full ">
+                <View className="flex-col items-start h-40 w-[50%]">
                     <Text className="text-white font-manrope-extrabold text-[20px] text-center ml-1 leading-7">
                         {item.dayOfWeek}
                     </Text>
@@ -67,7 +67,11 @@ const ForecastCard = (props: ForecastProps) => {
                 <WeatherIndicator type="humidity" value={item.relative_humidity_2m_mean} />
                 <WeatherIndicator type="windSpeed" value={item.wind_speed_10m_mean} />
             </View>
-
+            <View className="absolute top-16 left-3 flex-row">
+                <Text className="text-white/60 font-manrope-bold text-[9px]">
+                    {t("clock.weather_code_descriptions." + item.weather_code)}
+                </Text>
+            </View>
         </View>
     );
 };

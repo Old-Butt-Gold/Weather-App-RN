@@ -1,15 +1,15 @@
-import React, { useState, useCallback } from 'react';
-import {View, ScrollView, TouchableOpacity, Text, Image} from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { View, ScrollView, TouchableOpacity, Text, Image, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
 import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { t } from 'i18next';
-import {NextDaysWeatherWidget} from "../components/NextDaysWeatherWidget";
-import {SunMoonWidget} from "../components/SunMoonWidget";
-import {AirCompositionWidget} from "../components/AirCompositionWidget";
-import {useAppDispatch, useAppSelector} from "../store/hooks";
+import { NextDaysWeatherWidget } from "../components/NextDaysWeatherWidget";
+import { SunMoonWidget } from "../components/SunMoonWidget";
+import { AirCompositionWidget } from "../components/AirCompositionWidget";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
     getCurrentHumidity,
     getCurrentRainChance,
@@ -18,16 +18,11 @@ import {
     getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
-import {useNavigation} from "@react-navigation/native";
-import i18n from "../i18n/i18n";
-import {fetchLocationByIP} from "../store/actions/fetchLocationByIp";
-import {fetchWeather} from "../store/actions/fetchWeather";
-import {fetchMoonPhase} from "../store/actions/fetchMoonPhase";
-import {fetchAirQuality} from "../store/actions/fetchAirQuality";
-import SearchModal from "./SearchModal";
-import {clearSearchResults} from "../store/slices/locationSlice";
+import { fetchLocationByIP } from "../store/actions/fetchLocationByIp";
+import { fetchWeather } from "../store/actions/fetchWeather";
+import { fetchMoonPhase } from "../store/actions/fetchMoonPhase";
+import { fetchAirQuality } from "../store/actions/fetchAirQuality";
 import BackgroundImage from "../components/BackgroundImage";
-
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -54,9 +49,11 @@ type WeatherDetailsItem = {
     unit: string,
     labelKey: string,
 }
+
 type WeatherButtonsProps = {
     onChatPress: () => void;
 };
+
 // Фильтры цветов для Lottie
 const LOTTIE_COLOR_FILTERS = [
     { keypath: "mouth", color: "#2B3F56" },
@@ -81,19 +78,16 @@ type WeatherCardProps = {
     animationKey: number;
     onAnimationPress: () => void;
     onAnimationFinish: () => void;
-    onChatPress: () => void; // Добавлен новый prop для обработки нажатия на кнопку чата
+    onChatPress: () => void;
 };
 
 type HomeScreenProps = {
-    navigation: any; // Добавлен тип для навигации
+    navigation: any;
 };
-
-// Компонент фонового изображения
-
 
 // Компонент кнопки с иконкой
 const IconButton = ({ icon }: { icon: React.ReactNode }) => (
-    <View className="p-3 rounded-[15] bg-white/20">{icon}</View>
+    <View className="p-3 rounded-[15] bg-[#004b5870]/15">{icon}</View>
 );
 
 // Компонент заголовка местоположения
@@ -103,30 +97,13 @@ const LocationTitle = () => {
     return (
         <View className="flex-col items-center">
             <Text className="font-manrope-extrabold text-2xl text-accent">{weatherCity}</Text>
-            <View className="w-20 h-2 bg-white/20 rounded-2xl"></View>
+            <View className="w-20 h-2 bg-[#004b5870]/15 rounded-2xl"></View>
         </View>
     );
 };
 
-// Компонент шапки
-
 // Компонент размытого фона
-const BlurBackground = () => (
-    <BlurView
-        intensity={44}
-        tint="light"
-        style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: 25,
-            overflow: 'hidden',
-            zIndex: 0,
-        }}
-    />
-);
+
 
 // Компонент заголовка погоды
 const WeatherHeader = () => {
@@ -141,16 +118,12 @@ const WeatherHeader = () => {
 
     const handleSearchPress = async () => {
         try {
-            // Обновляем геолокацию
             await dispatch(fetchLocationByIP(currentLanguage));
-
-            // Параллельно обновляем все данные
             await Promise.all([
                 dispatch(fetchWeather()),
                 dispatch(fetchMoonPhase()),
                 dispatch(fetchAirQuality())
             ]);
-
         } catch (error) {
             console.error('Ошибка при обновлении данных:', error);
         }
@@ -179,7 +152,7 @@ const TemperatureRange = () => {
     const unit = getCurrentTemperatureUnit(weatherState);
 
     return (<View className="flex-row justify-center w-[48%]">
-        <View className="flex-row px-3 py-2 gap-1 bg-white/20 rounded-[35]">
+        <View className="flex-row px-3 py-2 gap-1 bg-white/15 rounded-[35]">
             <View className="flex-row items-center">
                 <AntDesign name="arrowup" size={18} color="white"/>
                 <Text className="font-poppins-medium text-accent text-[15px] ml-1 pr-1.5">{max}{unit}</Text>
@@ -192,11 +165,8 @@ const TemperatureRange = () => {
     </View>);
 };
 
-
-
 const TemperatureDisplay = () => {
     const weatherState = useAppSelector(x => x.weather);
-
     const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(weatherState, 0));
     const currentTemperature = ~~getCurrentTemperature(weatherState);
     const currentTemperatureUnit = getCurrentTemperatureUnit(weatherState);
@@ -204,17 +174,16 @@ const TemperatureDisplay = () => {
     return (
         <View className="flex-row items-start">
             <View className="flex-col flex">
-                <Text
-                    className={`text-accent font-manrope-extrabold max-w-40 ${
-                        currentWeatherDescription.length > 16
-                            ? 'text-[12px]'
-                            : currentWeatherDescription.length > 8
-                                ? 'text-[15px]'
-                                : 'text-[20px]'
-                    }`}
-                >{currentWeatherDescription}</Text>
+                <Text className={`text-accent font-manrope-extrabold max-w-40 ${
+                    currentWeatherDescription.length > 16
+                        ? 'text-[12px]'
+                        : currentWeatherDescription.length > 8
+                            ? 'text-[15px]'
+                            : 'text-[20px]'
+                }`}>
+                    {currentWeatherDescription}
+                </Text>
                 <View className="flex-row relative w-full h-[90] items-center">
-                    {/* Основная температура с минусом */}
                     {currentTemperature < 0 && (
                         <Text className="font-poppins-light text-primary text-[30px] ">
                             {currentTemperature < 0 ? "-" : ""}
@@ -223,14 +192,11 @@ const TemperatureDisplay = () => {
                     <Text className="font-poppins-medium text-primary text-[60px] leading-[80px]">
                         {Math.abs(currentTemperature)}
                     </Text>
-
-                    {/* Единица измерения справа */}
                     <Text className="font-poppins-medium text-primary text-[28px] self-center ml-1">
                         {currentTemperatureUnit}
                     </Text>
                 </View>
             </View>
-
         </View>
     );
 };
@@ -238,7 +204,7 @@ const TemperatureDisplay = () => {
 // Компонент карточки деталей погоды
 const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
     return (
-        <View className="w-[48%] bg-white/20 rounded-[20px] px-3 py-4">
+        <View className="w-[48%] bg-white/15 rounded-[20px] px-3 py-4">
             <View className="absolute top-2 right-3">{item.icon}</View>
             <View className="flex-row items-end">
                 <Text className="font-manrope-bold text-accent text-[36px] h-[60]">{item.value}</Text>
@@ -248,15 +214,14 @@ const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
         </View>
     );
 };
-const WeatherButtons = ({
-                            onChatPress
-                        }:WeatherButtonsProps) =>(
+
+const WeatherButtons = ({ onChatPress }: WeatherButtonsProps) => (
     <View className="flex-row flex-wrap justify-between mt-6 w-full">
         <TemperatureRange />
         <View className="flex-row justify-center items-center w-[48%]">
             <TouchableOpacity
                 onPress={onChatPress}
-                className="px-2 py-2 bg-white/20 rounded-[35] w-full justify-center items-center"
+                className="px-2 py-2 bg-white/15 rounded-[35] w-full justify-center items-center"
             >
                 <Text className="font-manrope-semibold text-accent text-[15px] mb-1">
                     {t('buttons.chatWithMe')}
@@ -264,22 +229,20 @@ const WeatherButtons = ({
             </TouchableOpacity>
         </View>
     </View>
-)
+);
+
 // Компонент деталей погоды
 const WeatherDetails = () => {
     const weatherState = useAppSelector(x => x.weather);
-    const weatherDetails : WeatherDetailsItem[] = [];
+    const weatherDetails: WeatherDetailsItem[] = [];
 
-
-    // apparrent
     weatherDetails.push({
         icon: <FontAwesome6 name="temperature-three-quarters" size={24} color="white" />,
-        value: getCurrentTemperatureApparrent(weatherState),
+        value: Math.round(getCurrentTemperatureApparrent(weatherState)),
         unit: getCurrentTemperatureUnit(weatherState),
         labelKey: "feelsLike",
-    })
+    });
 
-    // Wind
     weatherDetails.push({
         icon: <FontAwesome6 name="wind" size={24} color="white" />,
         value: getCurrentWindSpeed(weatherState),
@@ -287,7 +250,6 @@ const WeatherDetails = () => {
         labelKey: "windSpeed",
     });
 
-    // rain chance
     weatherDetails.push({
         icon: <Ionicons name="rainy-sharp" size={24} color="white" />,
         value: getCurrentRainChance(weatherState, 0),
@@ -295,13 +257,12 @@ const WeatherDetails = () => {
         labelKey: "rainChance"
     });
 
-    // humidity
     weatherDetails.push({
         icon: <MaterialIcons name="water-drop" size={24} color="white" />,
         value: getCurrentHumidity(weatherState),
         unit: "%",
         labelKey: "humidity"
-    })
+    });
 
     return <View className="flex-row flex-wrap justify-between mt-6 gap-3">
         {weatherDetails.map((item, index) => (
@@ -310,7 +271,7 @@ const WeatherDetails = () => {
     </View>
 };
 
-// Обновленный компонент контента погоды с кнопкой чата рядом с диапазоном температур
+// Компонент контента погоды
 const WeatherContent = ({
                             currentAnimation,
                             animationKey,
@@ -337,13 +298,12 @@ const WeatherContent = ({
                         />
                     </TouchableOpacity>
                 </View>
-
             </View>
         </View>
     </View>
 );
 
-// Основной компонент карточки погоды
+// Компонент карточки погоды
 const WeatherCard = ({
                          isNightTime,
                          currentAnimation,
@@ -352,8 +312,7 @@ const WeatherCard = ({
                          onAnimationFinish,
                          onChatPress
                      }: WeatherCardProps) => (
-    <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25]">
-        <BlurBackground />
+    <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25] bg-[#45576170]/25">
         <View className="w-full z-10">
             <WeatherHeader />
             <WeatherContent
@@ -362,7 +321,7 @@ const WeatherCard = ({
                 onAnimationPress={onAnimationPress}
                 onAnimationFinish={onAnimationFinish}
             />
-            <WeatherButtons  onChatPress={onChatPress}/>
+            <WeatherButtons onChatPress={onChatPress}/>
             <WeatherDetails />
         </View>
     </View>
@@ -370,13 +329,8 @@ const WeatherCard = ({
 
 // Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
-
-
     const dispatch = useAppDispatch();
-
-    // DON'T DELETE IT ALL APP WORK ON THIS LINE
     const { language } = useAppSelector(state => state.appSettings);
-
     const weatherState = useAppSelector(x => x.weather);
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
@@ -385,7 +339,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         clickAnimation: null
     });
 
-    //TODO Брать из Апишки IsDayOrNight
+    const scrollY = useRef(new Animated.Value(0)).current;
     const isNightTime = weatherState.data!.current.is_day === 0;
 
     const handleAnimationPress = useCallback(() => {
@@ -423,39 +377,56 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         });
     }, [isNightTime]);
 
-    // Обработчик нажатия на кнопку чата
     const handleChatPress = useCallback(() => {
         navigation.navigate('Chat');
     }, [navigation]);
 
-    const Header = () => (
-        <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
-            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-                <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
-            </TouchableOpacity>
-            <LocationTitle/>
-            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
-                <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
-            </TouchableOpacity>
-        </View>
+    const headerBackgroundOpacity = scrollY.interpolate({
+        inputRange: [0, 50],
+        outputRange: [0, 0.7],
+        extrapolate: 'clamp',
+    });
+
+    const handleScroll = Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: false }
     );
 
     return (
         <>
             <StatusBar style="light" />
             <BackgroundImage
-                source={require("../assets/bg.png")}
-                blurRadius={4}
+                blurRadius={5}
                 overlayColor="rgba(25, 50, 75, 0.2)"
             />
-            <View className="absolute z-50">
-                <Header />
-            </View>
 
-            <ScrollView
+            {/* Фиксированный хедер с анимированным фоном */}
+            <Animated.View
+                className="w-full flex-row justify-between items-center px-4 pt-10 pb-4 absolute top-0 left-0 right-0 z-50"
+                style={{
+                    paddingTop: 60,
+                    backgroundColor: scrollY.interpolate({
+                        inputRange: [0, 50],
+                        outputRange: ['rgba(25, 50, 75, 0)', 'rgba(112, 130, 140, 0.5)'],
+                        extrapolate: 'clamp',
+                    }),
+                }}
+            >
+                <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                    <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
+                </TouchableOpacity>
+                <LocationTitle/>
+                <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+                    <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+                </TouchableOpacity>
+            </Animated.View>
+
+            <Animated.ScrollView
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
                 contentContainerStyle={{
                     flexGrow: 1,
-                    paddingTop: 100, // Добавляем отступ сверху равный высоте Header
+                    paddingTop: 100, // Отступ для фиксированного хедера
                 }}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -474,7 +445,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     <SunMoonWidget/>
                     <AirCompositionWidget />
                 </View>
-            </ScrollView>
+            </Animated.ScrollView>
         </>
     );
 };

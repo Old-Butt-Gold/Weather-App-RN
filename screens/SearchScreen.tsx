@@ -57,8 +57,7 @@ const SearchScreen = () => {
     return (
         <View className="flex-1 p-4 pt-14">
             <BackgroundImage
-                source={require("../assets/bg.png")}
-                blurRadius={4}
+                blurRadius={5}
                 overlayColor="rgba(25, 50, 75, 0.2)"
             />
             <View className="flex-row items-center justify-between mb-4">

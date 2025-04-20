@@ -89,7 +89,7 @@ export const ClockComponent = () => {
     const utc: string = `UTC${hours >= 0 ? '+' : '-'}${Math.abs(hours)}`;
 
     const DateIndicator = () => (
-        <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
+        <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/15 z-[999] justify-center items-center flex-row">
             <View className="flex flex-row justify-center items-center gap-x-1">
                 <View className="rounded-full bg-[rgba(229,229,234,0.4)] w-2 h-2"/>
                 <Text className="text-white/80 font-manrope-semibold text-sm">{formatDate(today)}</Text>
@@ -109,7 +109,7 @@ export const ClockComponent = () => {
         </View>
     );
     const TypeSelector = () => (
-        <View className="absolute top-[60px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
+        <View className="absolute top-[60px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/15 z-[999] justify-center items-center flex-row">
             <TypeSelectorButton
                 type="temperature"
                 icon={<FontAwesome6 name="temperature-three-quarters" size={16} color="white" />}
@@ -246,15 +246,11 @@ export const ClockComponent = () => {
 
     return (
         <View
-            className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full"
+            className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full bg-[#45576170]/25"
             style={{ height: svgSize + topMargin }}
         >
-            <BlurView
-                intensity={44}
-                tint="light"
-                className="absolute w-full h-full z-0 overflow-hidden rounded-[35]"
-            />
-            <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
+
+
             <Infolabel/>
             <TypeSelector />
             <TimeDisplay />
@@ -265,7 +261,7 @@ export const ClockComponent = () => {
 
                     {/* Основные элементы */}
                     <Path d={describeFullRing(50, 50, 38, 26)} fill="rgba(17, 24, 39, 0.05)" />
-                    <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.1)" />
+                    <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.15)" />
 
                     {/* Центральная информация */}
                     <SvgText
@@ -277,7 +273,7 @@ export const ClockComponent = () => {
                         fontFamily="Poppins-SemiBold"
                         dy=".3em"
                     >
-                        {`${currentTemperature}°`}
+                        {`${Math.round(currentTemperature)}°`}
                     </SvgText>
                     <SvgText
                         x="50.5"

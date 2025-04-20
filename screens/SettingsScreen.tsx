@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n/i18n';
 import {setLanguage} from "../store/slices/appSettingsSlice";
 import {AppSettingsState} from "../store/types/types";
+import BackgroundImage from "../components/BackgroundImage";
 
 const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <View className="mb-6">
@@ -50,6 +51,10 @@ export const SettingsScreen = () => {
 
     return (
         <View className="flex-1">
+            <BackgroundImage
+                blurRadius={5}
+                overlayColor="rgba(25, 50, 75, 0.2)"
+            />
             <BlurView
                 intensity={50}
                 tint="dark"
