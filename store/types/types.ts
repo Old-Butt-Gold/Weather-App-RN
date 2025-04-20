@@ -115,3 +115,11 @@ export interface LocationData extends Coordinates {
 export interface AppSettingsState {
     language: 'ru' | 'en';
 }
+
+export type MapLayerType = 
+  | 'temp_new'
+  | 'precipitation_new'
+  | 'wind_new'
+  | 'clouds_new'
+  | 'pressure_new'
+  | 'none';

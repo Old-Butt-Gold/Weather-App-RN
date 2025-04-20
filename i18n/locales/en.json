@@ -139,5 +139,14 @@
       "interestingFact": "Tell me an interesting weather fact",
       "outdoorActivities": "What outdoor activities would you recommend?"
     }
+  },
+  "weatherMap": {
+    "title": "Weather Map",
+    "temperature": "Temperature",
+    "precipitation": "Precipitation",
+    "wind": "Wind",
+    "currentTemp": "Temperature",
+    "currentPrecip": "Precipitation",
+    "currentWind": "Wind"
   }
 }

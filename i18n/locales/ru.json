@@ -139,5 +139,14 @@
       "interestingFact": "Расскажи интересный факт о погоде",
       "outdoorActivities": "Какие активности на свежем воздухе ты порекомендуешь?"
     }
+  },
+  "weatherMap": {
+    "title": "Карта погоды",
+    "temperature": "Температура",
+    "precipitation": "Осадки",
+    "wind": "Ветер",
+    "currentTemp": "Температура",
+    "currentPrecip": "Осадки",
+    "currentWind": "Ветер"
   }
 }

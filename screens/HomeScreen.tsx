@@ -437,15 +437,21 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         navigation.navigate('Chat');
     }, [navigation]);
 
+    // Обновленный компонент Header с кнопкой для перехода на карту
     const Header = () => (
         <View className="w-full flex-row justify-between items-center mt-10 px-4 pt-10">
             <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                 <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
             </TouchableOpacity>
             <LocationTitle/>
-            <TouchableOpacity onPress={() => setShowSearch(true)}>
-                <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
-            </TouchableOpacity>
+            <View className="flex-row gap-2">
+                <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
+                    <IconButton icon={<Ionicons name="planet" size={24} color="white"/>}/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowSearch(true)}>
+                    <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 
