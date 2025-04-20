@@ -3,18 +3,22 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { useDispatch } from 'react-redux';
 
 // Import components
 import MapWebView from '../components/MapWebView';
 import LayerButtons from '../components/LayerButtons';
 import WeatherHeader from '../components/WeatherHeader';
 import LoadingOverlay from '../components/LoadingOverlay';
+import ActionButton from '../components/ActionButton';
 
 // Import actions
 import { fetchMapWeather } from '../store/actions/fetchMapWeather';
 import { getCurrentLocation } from '../store/actions/getCurrentLocation';
+import { setLocation, setCurrentCity } from '../store/slices/weatherSlice';
+import { fetchWeather } from '../store/actions/fetchWeather';
+import { fetchMoonPhase } from '../store/actions/fetchMoonPhase';
+import { fetchAirQuality } from '../store/actions/fetchAirQuality';
 
 // Import types
 import { MapLayerType, WeatherMapData } from '../store/types/types';
@@ -39,6 +43,7 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [activeLayer, setActiveLayer] = useState<MapLayerType>(MapLayerType.TEMPERATURE);
   const [isLoading, setIsLoading] = useState(true);
+  const [weatherData, setWeatherData] = useState<WeatherMapData | null>(null);
   
   // Create translations object for the WebView
   const weatherMapTranslations = {
@@ -82,11 +87,43 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
       title: t('weatherMap.legend.title'),
       temperature: t('weatherMap.legend.temperature'),
       precipitation: t('weatherMap.legend.precipitation'),
-      rain: t('weatherMap.legend.rain'),
       wind: t('weatherMap.legend.wind'),
       clouds: t('weatherMap.legend.clouds'),
       pressure: t('weatherMap.legend.pressure'),
       snow: t('weatherMap.legend.snow')
+    }
+  };
+
+  // Handle button press - Apply the selected location
+  const handleApplyLocation = async () => {
+    if (!weatherData) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Update location in the Redux store
+      dispatch(setLocation({
+        latitude: weatherData.latitude,
+        longitude: weatherData.longitude
+      }));
+      
+      // Set the city name
+      dispatch(setCurrentCity(weatherData.name));
+      
+      // Fetch all required data for the home screen
+      await Promise.all([
+        dispatch(fetchWeather()),
+        dispatch(fetchMoonPhase()),
+        dispatch(fetchAirQuality())
+      ]);
+      
+      // Navigate back to the home screen
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error applying location:', error);
+      Alert.alert(t('weatherMap.error'), t('weatherMap.locationApplyError'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,6 +171,7 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }));
         
         if (weatherAction.payload) {
+          setWeatherData(weatherAction.payload);
           updateWeatherDataInWebView(weatherAction.payload);
         }
       }
@@ -213,6 +251,7 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
             }));
             
             if (weatherAction.payload) {
+              setWeatherData(weatherAction.payload);
               updateWeatherDataInWebView(weatherAction.payload);
             }
           } catch (error) {
@@ -254,6 +293,13 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
       <WeatherHeader
         title={t('weatherMap.title')}
         onBack={() => navigation.goBack()}
+      />
+      
+      {/* Action Button - only visible when weather data is available */}
+      <ActionButton 
+        title={t('weatherMap.actionButton')}
+        visible={!!weatherData}
+        onPress={handleApplyLocation}
       />
       
       {/* Loading Overlay Component */}

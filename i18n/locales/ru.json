@@ -146,6 +146,7 @@
     "locationPermissionDenied": "Разрешение на использование геолокации не получено",
     "locationError": "Не удалось определить местоположение",
     "weatherFetchError": "Не удалось загрузить погодные данные",
+    "actionButton": "Использовать это место",
     "weatherDescription": {
       "clear": "Ясно",
       "mainlyClear": "В основном ясно",

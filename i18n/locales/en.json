@@ -146,6 +146,7 @@
     "locationPermissionDenied": "Location permission not granted",
     "locationError": "Could not determine location",
     "weatherFetchError": "Failed to load weather data",
+    "actionButton": "Use This Location",
     "weatherDescription": {
       "clear": "Clear",
       "mainlyClear": "Mainly clear",
