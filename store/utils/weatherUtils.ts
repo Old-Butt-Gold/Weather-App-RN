@@ -37,3 +37,16 @@ export function formatDate(date: Date): string {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     return `${day}.${month}`;
 }
+
+export const getCurrentLocalDateFromWeatherState = (weatherState: WeatherState): Date => {
+    // Получаем текущее UTC время (оно же по нулевому меридиану)
+    const utcNow = new Date();
+
+    // Смещение в секундах (например, 10800 = 3 часа)
+    const offsetSeconds = weatherState.data!.utc_offset_seconds;
+
+    // Получаем локальное время с учётом смещения
+    const localTime = new Date(utcNow.getTime() + offsetSeconds * 1000);
+
+    return localTime;
+}
