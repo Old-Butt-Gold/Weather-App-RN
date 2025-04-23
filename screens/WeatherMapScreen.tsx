@@ -148,21 +148,18 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         try {
             setIsLoading(true);
 
-            // Dispatch action to get current location
-            await dispatch(fetchCurrentLocation());
-            const locationForMap = useAppSelector(x => x.weatherMap.coordinates);
+            // Здесь при rejectWithValue и unwrap() генерируется catch, и error можем обработать
+            const result = await dispatch(fetchCurrentLocation()).unwrap();
 
-            // Center map on current location
-            centerMap(locationForMap!.latitude, locationForMap!.longitude);
+            const {latitude, longitude} = result;
 
-            await dispatch(fetchMapWeather(locationForMap!));
+            centerMap(latitude, longitude);
 
-            const weatherMapState = useAppSelector(x => x.weatherMap);
+            const weatherResult = await dispatch(fetchMapWeather({latitude, longitude})).unwrap();
 
-            setWeatherData(weatherMapState.weatherData);
-            updateWeatherDataInWebView(weatherMapState.weatherData!);
+            setWeatherData(weatherResult);
+            updateWeatherDataInWebView(weatherResult);
         } catch (error) {
-            console.error('Error getting location:', error);
             Alert.alert(t('weatherMap.error'), t('weatherMap.locationError'));
         } finally {
             setIsLoading(false);
@@ -234,17 +231,16 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
                 case 'FETCH_WEATHER':
                     setIsLoading(true);
                     try {
-                        await dispatch(fetchMapWeather({
+                        // Внутри также спрашивается за геолокацию, здесь выскакивает ошибка геолокации
+                        // и идет в catch с rejectWithValue!
+                        const result = await dispatch(fetchMapWeather({
                             latitude: message.latitude,
                             longitude: message.longitude
-                        }));
+                        })).unwrap();
 
-                        const weatherMapState = useAppSelector(x => x.weatherMap);
-
-                        setWeatherData(weatherMapState.weatherData);
-                        updateWeatherDataInWebView(weatherMapState.weatherData!);
+                        setWeatherData(result);
+                        updateWeatherDataInWebView(result);
                     } catch (error) {
-                        console.error('Error fetching weather data:', error);
                         Alert.alert(t('weatherMap.error'), t('weatherMap.weatherFetchError'));
                     } finally {
                         setIsLoading(false);

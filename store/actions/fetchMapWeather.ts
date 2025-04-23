@@ -39,6 +39,12 @@ export const fetchMapWeather = createAppAsyncThunk<WeatherMapData, Coordinates>(
 
             const response = await meteoApi.get('', { params });
 
+            const { status } = await Location.requestForegroundPermissionsAsync();
+
+            if (status !== 'granted') {
+                return rejectWithValue({ message: 'Location permission not granted' });
+            }
+
             const locationName = await getLocationName(latitude, longitude);
 
             const weatherMapData: WeatherMapData = {
@@ -48,8 +54,6 @@ export const fetchMapWeather = createAppAsyncThunk<WeatherMapData, Coordinates>(
                 current: response.data.current,
                 daily: response.data.daily
             };
-
-
 
             return weatherMapData;
         } catch (error: any) {
@@ -79,7 +83,6 @@ const getLocationName = async (latitude: number, longitude: number): Promise<str
 
         return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
     } catch (error) {
-        console.error('Error getting location name:', error);
         return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
     }
 };
