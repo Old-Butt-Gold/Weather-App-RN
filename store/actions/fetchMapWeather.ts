@@ -1,5 +1,4 @@
-﻿import axios from 'axios';
-import * as Location from 'expo-location';
+﻿import * as Location from 'expo-location';
 import {Coordinates, TemperatureUnit, WeatherMapData, WindSpeedUnit} from '../types/types';
 import meteoApi from "../../api/meteoApi";
 import {createAppAsyncThunk} from "../hooks";
@@ -14,20 +13,12 @@ function getQueryTemperature(tempUnit: TemperatureUnit): string {
     return tempUnit === "°C" ? "celsius" : "fahrenheit";
 }
 
-export const fetchMapWeather = createAppAsyncThunk<WeatherMapData>(
+export const fetchMapWeather = createAppAsyncThunk<WeatherMapData, Coordinates>(
     'weatherMap/fetchMapWeather',
-    async (_, { getState, dispatch, rejectWithValue }) => {
+    async ({ latitude, longitude }, { getState, dispatch, rejectWithValue }) => {
         try {
-
-            const weatherState = getState().weather;
-            const location = getState().weatherMap.coordinates;
-            if (!location) {
-                return rejectWithValue({ message: 'Location not set' });
-            }
-
-            const {latitude, longitude} = location;
-
             console.log(`Fetching weather data for map: ${latitude}, ${longitude}`);
+            const weatherState = getState().weather;
 
             const currentWindUnit = weatherState.windSpeedUnit;
             const currentTempUnit = weatherState.temperatureUnit;
@@ -57,6 +48,8 @@ export const fetchMapWeather = createAppAsyncThunk<WeatherMapData>(
                 current: response.data.current,
                 daily: response.data.daily
             };
+
+
 
             return weatherMapData;
         } catch (error: any) {

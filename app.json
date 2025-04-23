@@ -14,14 +14,23 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Приложение использует ваше местоположение для отображения погоды в вашем районе",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Приложение использует ваше местоположение для отображения погоды в вашем районе"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/cloud.png",
         "backgroundColor": "#ffffff"
       },
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",

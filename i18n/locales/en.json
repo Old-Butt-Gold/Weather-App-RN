@@ -139,5 +139,59 @@
       "interestingFact": "Tell me an interesting weather fact",
       "outdoorActivities": "What outdoor activities would you recommend?"
     }
+  },
+  "weatherMap": {
+    "title": "Weather Map",
+    "error": "Error",
+    "locationPermissionDenied": "Location permission not granted",
+    "locationError": "Could not determine location",
+    "weatherFetchError": "Failed to load weather data",
+    "actionButton": "Use This Location",
+    "weatherDescription": {
+      "clear": "Clear",
+      "mainlyClear": "Mainly clear",
+      "partlyCloudy": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "lightDrizzle": "Light drizzle",
+      "moderateDrizzle": "Moderate drizzle",
+      "heavyDrizzle": "Heavy drizzle",
+      "freezingDrizzle": "Freezing drizzle",
+      "lightRain": "Light rain",
+      "moderateRain": "Moderate rain",
+      "heavyRain": "Heavy rain",
+      "freezingRain": "Freezing rain",
+      "lightSnow": "Light snow",
+      "moderateSnow": "Moderate snow",
+      "heavySnow": "Heavy snow",
+      "snowGrains": "Snow grains",
+      "lightShowers": "Light showers",
+      "moderateShowers": "Moderate showers",
+      "heavyShowers": "Heavy showers",
+      "lightSnowfall": "Light snowfall",
+      "heavySnowfall": "Heavy snowfall",
+      "thunderstorm": "Thunderstorm",
+      "thunderstormWithHail": "Thunderstorm with hail",
+      "unknown": "Unknown"
+    },
+    "weatherData": {
+      "temperature": "Temperature",
+      "wind": "Wind",
+      "humidity": "Humidity",
+      "pressure": "Pressure",
+      "precipitation": "Precipitation",
+      "cloudCover": "Cloud cover",
+      "precipitationProbability": "Precip. probability"
+    },
+    "legend": {
+      "title": "Legend",
+      "temperature": "Temperature (°C)",
+      "precipitation": "Precipitation (mm)",
+      "rain": "Rain (mm)",
+      "wind": "Wind (m/s)",
+      "clouds": "Cloud cover (%)",
+      "pressure": "Pressure (hPa)",
+      "snow": "Snow (mm)"
+    }
   }
 }
