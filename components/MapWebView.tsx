@@ -11,7 +11,7 @@ interface MapWebViewProps {
 }
 
 // Generates HTML for the map
-const getWeatherMapHtml = (latitude: number, longitude: number, translations: any) => {
+const getWeatherMapHtml = (latitude: number, longitude: number, translations: Record<string, any>) => {
     return `
     <!DOCTYPE html>
     <html>
@@ -41,12 +41,27 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: an
           filter: brightness(1.05) contrast(1.1);
         }
         .legend {
-          padding: 6px 8px;
-          background: rgba(255, 255, 255, 0.9);
-          box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-          border-radius: 5px;
-          line-height: 18px;
-          color: #000;
+          padding: 8px 12px;
+          background: rgba(255, 255, 255, 0.95);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+          border-radius: 8px;
+          width: 100%;
+          font-family: -apple-system, sans-serif;
+        }
+        .legend h4 {
+          margin: 0 0 6px;
+          font-size: 14px;
+          text-align: center;
+        }
+        .legend .gradient {
+          height: 12px;
+          width: 100%;
+          margin-bottom: 4px;
+          border-radius: 4px;
+        }
+        .legend .labels {
+          display: flex;
+          justify-content: space-between;
         }
         .weather-data {
           position: absolute;
@@ -89,25 +104,18 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: an
           }));
         }
         // Initialize map
-        const map = L.map('map', {
-          zoomControl: false,
-          attributionControl: false
-        }).setView([${latitude}, ${longitude}], 8);
+        const map = L.map('map', { zoomControl: false, attributionControl: false })
+      .setView([${latitude}, ${longitude}], 8);
         
         // Base light map layer
-        const baseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          minZoom: 3,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: 'abcd'
-        });
+        L.tileLayer(
+          'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+          { maxZoom: 19, minZoom: 3, subdomains: 'abcd' }
+        ).addTo(map);
         
-        baseLayer.addTo(map);
-        log('Base map layer added');
-        
-        // Weather layer
         let weatherLayer = null;
-        
+        let legendControl = null;
+
         // Add scale
         L.control.scale({
           position: 'bottomleft',
@@ -135,7 +143,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: an
               case 'temp_new':
                 title = '${translations.legend.temperature}';
                 gradient = 'linear-gradient(to right, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF9900, #FF0000)';
-                stops = ['< -20', '-10', '0', '10', '20', '> 30'];
+                stops = ['< -20', '-10', '0', '10', '20', '30 >'];
                 break;
               case 'precipitation_new':
                 title = '${translations.legend.precipitation}';
@@ -172,10 +180,10 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: an
             
             if (gradient !== 'none') {
               // Add gradient
-              div.innerHTML += '<div style="height: 20px; width: 100%; background: ' + gradient + '; margin-bottom: 5px;"></div>';
+              div.innerHTML += '<div style="height: 30px; background: ' + gradient + '; margin-bottom: 5px;"></div>';
               
               // Add labels
-              let stopsHtml = '<div style="display: flex; justify-content: space-between; font-size: 12px;">';
+              let stopsHtml = '<div class="labels">';
               for (let i = 0; i < stops.length; i++) {
                 stopsHtml += '<span>' + stops[i] + '</span>';
               }
