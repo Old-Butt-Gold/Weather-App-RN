@@ -38,7 +38,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           width: 100%;
         }
         .leaflet-tile-pane {
-          filter: brightness(1.05) contrast(1.1);
+          /* стили для карты */
         }
         .legend {
           padding: 8px 12px;
@@ -86,6 +86,19 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         .weather-data div {
           margin-bottom: 3px;
         }
+        .close-btn {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          cursor: pointer;
+          font-size: 18px;
+          color: #666;
+          padding: 2px;
+        }
+        
+        .close-btn:hover {
+          color: #333;
+        }
       </style>
     </head>
     <body>
@@ -105,22 +118,46 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         }
         // Initialize map
         const map = L.map('map', { zoomControl: false, attributionControl: false })
-      .setView([${latitude}, ${longitude}], 8);
+      .setView([${latitude}, ${longitude}], 12);
+        
+        let lastMarker = null;
+        const arrowIcon = L.icon({
+          iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="%23ff0000"><circle cx="16" cy="16" r="12" stroke="%23ff4040" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="%23ffffff"/></svg>',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32]
+        });
+        
+        // Функция скрытия данных
+        function hideWeatherData() {
+          document.getElementById('weather-data').style.display = 'none';
+          if (lastMarker) {
+            map.removeLayer(lastMarker);
+            lastMarker = null;
+          }
+        }
         
         // Base light map layer
-        L.tileLayer(
-          'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-          { maxZoom: 19, minZoom: 3, subdomains: 'abcd' }
-        ).addTo(map);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 19,
+          minZoom: 3,
+          attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, ' +
+            'AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
         
-        let weatherLayer = null;
-        let legendControl = null;
-
+        L.tileLayer('https://{s}.google.com/vt/lyrs=h&x={x}&y={y}&z={z}', {
+          maxZoom: 19,
+          subdomains:['mt0','mt1','mt2','mt3'],
+          attribution: 'Google Maps'
+        }).addTo(map);
+        
         // Add scale
         L.control.scale({
           position: 'bottomleft',
           imperial: false
         }).addTo(map);
+        
+        let weatherLayer = null;        
         
         // Function to display legend
         function addLegend(layerType) {
@@ -242,16 +279,25 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         
         // Function to display weather data
         function displayWeatherData(data) {
-          log('Displaying weather data');
-          
+          const weatherDataDiv = document.getElementById('weather-data');
+  
           if (!data) {
-            log('No weather data to display');
-            document.getElementById('weather-data').style.display = 'none';
+            hideWeatherData();
             return;
           }
           
-          const weatherDataDiv = document.getElementById('weather-data');
-          let html = '<h3>' + data.name + '</h3>';
+          if (lastMarker) {
+            map.removeLayer(lastMarker);
+          }
+          
+          lastMarker = L.marker({lat: data.latitude, lng: data.longitude}, { 
+            icon: arrowIcon,
+            title: 'Selected Location'
+          }).addTo(map);
+
+          let html = '<div class="close-btn" onclick="hideWeatherData()">×</div>'
+            + '<h3>' + data.name + '</h3>'
+          ;
           
           if (data.current) {
             // Get weather description by code
@@ -280,6 +326,14 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             
             if (data.daily && data.daily.precipitation_probability_max && data.daily.precipitation_probability_max[0] !== undefined) {
               html += '<div>${translations.weatherData.precipitationProbability}: ' + data.daily.precipitation_probability_max[0] + '%</div>';
+            }
+            
+            if (data.latitude) {
+                html += '<div>${translations.weatherData.latitude}: ' + data.latitude.toFixed(4) + '</div>';
+            }
+            
+            if (data.longitude) {
+                html += '<div>${translations.weatherData.longitude}: ' + data.longitude.toFixed(4) + '</div>';
             }
           }
           
@@ -402,7 +456,8 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         
         // Map click handler
         map.on('click', function(e) {
-          log('Map clicked at coordinates: ' + e.latlng.lat + ', ' + e.latlng.lng);
+          
+          // Отправляем запрос на получение данных
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'FETCH_WEATHER',
             latitude: e.latlng.lat,
@@ -422,14 +477,14 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         window.addEventListener('message', function(event) {
           try {
             const data = JSON.parse(event.data);
-            log('Received message: ' + JSON.stringify(data));
             
             if (data.type === 'SET_LAYER') {
               setWeatherLayer(data.layerType);
             } else if (data.type === 'SET_WEATHER_DATA') {
               displayWeatherData(data.weatherData);
             } else if (data.type === 'SET_CENTER') {
-              map.setView([data.latitude, data.longitude], data.zoom || 10);
+              const zoom = Math.min(Math.max(data.zoom || 10, 3), 18); // Ограничение зума
+              map.setView([data.latitude, data.longitude], zoom);
             }
           } catch (error) {
             log('Error processing message: ' + error.message);

@@ -81,7 +81,9 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
             pressure: t('weatherMap.weatherData.pressure'),
             precipitation: t('weatherMap.weatherData.precipitation'),
             cloudCover: t('weatherMap.weatherData.cloudCover'),
-            precipitationProbability: t('weatherMap.weatherData.precipitationProbability')
+            precipitationProbability: t('weatherMap.weatherData.precipitationProbability'),
+            latitude: t('weatherMap.weatherData.latitude'),
+            longitude: t('weatherMap.weatherData.longitude'),
         },
         legend: {
             title: t('weatherMap.legend.title'),
@@ -153,7 +155,7 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
 
             const {latitude, longitude} = result;
 
-            centerMap(latitude, longitude);
+            centerMap(latitude, longitude, 15);
 
             const weatherResult = await dispatch(fetchMapWeather({latitude, longitude})).unwrap();
 
@@ -231,11 +233,12 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
                 case 'FETCH_WEATHER':
                     setIsLoading(true);
                     try {
+                        const normalizedLng = ((message.longitude % 360) + 540) % 360 - 180;
                         // Внутри также спрашивается за геолокацию, здесь выскакивает ошибка геолокации
                         // и идет в catch с rejectWithValue!
                         const result = await dispatch(fetchMapWeather({
                             latitude: message.latitude,
-                            longitude: message.longitude
+                            longitude: normalizedLng
                         })).unwrap();
 
                         setWeatherData(result);

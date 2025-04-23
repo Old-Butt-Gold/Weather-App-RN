@@ -13,10 +13,10 @@ export const fetchCurrentLocation = createAppAsyncThunk<Coordinates>(
                 return rejectWithValue({ message: 'Location permission not granted' });
             }
 
+            // TODO THERE IS A PROBLEM WHEN YOU CLICK SO FAST TO GET CURRENT LOCATION
             const location = await Location.getCurrentPositionAsync({
-                accuracy: LocationAccuracy.BestForNavigation
+                accuracy: LocationAccuracy.Balanced
             });
-
 
             const coordinates: Coordinates = {
                 latitude: location.coords.latitude,

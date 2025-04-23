@@ -181,7 +181,9 @@
       "pressure": "Pressure",
       "precipitation": "Precipitation",
       "cloudCover": "Cloud cover",
-      "precipitationProbability": "Precip. probability"
+      "precipitationProbability": "Precip. probability",
+      "latitude": "latitude",
+      "longitude": "longitude"
     },
     "legend": {
       "title": "Legend",

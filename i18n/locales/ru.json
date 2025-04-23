@@ -181,7 +181,9 @@
       "pressure": "Давление",
       "precipitation": "Осадки",
       "cloudCover": "Облачность",
-      "precipitationProbability": "Вер. осадков"
+      "precipitationProbability": "Вер. осадков",
+      "latitude": "Широта",
+      "longitude": "Долгота"
     },
     "legend": {
       "title": "Легенда",
