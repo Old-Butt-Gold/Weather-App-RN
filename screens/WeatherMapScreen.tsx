@@ -228,6 +228,9 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
                     setIsLoading(false);
                     console.log('Map loaded in WebView');
                     break;
+                case 'LOG':
+                    console.log('WebView Log:', message.message);
+                    break;
                 case 'FETCH_WEATHER':
                     setIsLoading(true);
                     try {

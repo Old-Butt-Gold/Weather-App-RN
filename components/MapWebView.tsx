@@ -82,7 +82,11 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: an
       
       <script>
         function log(message) {
-          console.log(message);
+          // Отправляем сообщение в React Native вместо консоли WebView
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'LOG',
+            message: message
+          }));
         }
         // Initialize map
         const map = L.map('map', {
@@ -205,7 +209,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: an
           }
           
           // Create URL for OpenWeatherMap layer
-          const weatherLayerUrl = '${process.env.EXPO_PUBLIC_OPENWEATHER_API_URL}' + layerType + '/{z}/{x}/{y}.png?appid=${process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY}';
+          const weatherLayerUrl = '${process.env.EXPO_PUBLIC_OPENWEATHER_API_URL}/' + layerType + '/{z}/{x}/{y}.png?appid=${process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY}';
           log('Weather layer URL template: ' + weatherLayerUrl);
           
           // Create new layer
