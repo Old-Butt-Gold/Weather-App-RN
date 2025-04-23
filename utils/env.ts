@@ -56,6 +56,7 @@ declare global {
     interface ProcessEnv {
       EXPO_PUBLIC_OPENWEATHER_API_KEY: string;
       EXPO_PUBLIC_OPENMETEO_API_URL: string;
+      EXPO_PUBLIC_OPENWEATHER_API_URL: string;
     }
   }
 }

@@ -42,6 +42,9 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const [weatherData, setWeatherData] = useState<WeatherMapData | null>(null);
 
+    const currentWeatherLocation = useAppSelector(x => x.weather.location);
+    const {latitude, longitude} = currentWeatherLocation!;
+
     // Create translations object for the WebView
     const weatherMapTranslations = {
         weatherDescription: {
@@ -259,8 +262,8 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
             {/* Map WebView Component */}
             <MapWebView
                 ref={webViewRef}
-                initialLatitude={DEFAULT_LATITUDE}
-                initialLongitude={DEFAULT_LONGITUDE}
+                initialLatitude={latitude}
+                initialLongitude={longitude}
                 translations={weatherMapTranslations}
                 onMessage={handleWebViewMessage}
             />
