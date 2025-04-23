@@ -23,6 +23,7 @@ const locationSlice = createSlice({
         // Для очистки результатов поиска, например, после выбора города
         clearSearchResults(state) {
             state.searchResults = [];
+            state.status = 'idle';
         },
     },
     extraReducers: (builder) => {
