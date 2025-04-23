@@ -97,6 +97,48 @@ export interface LocationResult {
     admin1: string;
 }
 
+// Weather map types
+export enum MapLayerType {
+    TEMPERATURE = 'temp_new',
+    PRECIPITATION = 'precipitation_new',
+    CLOUDS = 'clouds_new',
+    PRESSURE = 'pressure_new',
+    WIND = 'wind_new',
+    SNOW = 'snow_new',
+    NONE = 'none'
+}
+
+// Map layer data
+export interface MapLayerData {
+    layerType: MapLayerType;
+    opacity: number;
+    visible: boolean;
+}
+
+// Weather map data for display
+export interface WeatherMapData {
+    name: string;
+    latitude: number;
+    longitude: number;
+    current: {
+        temperature_2m: number;
+        weather_code: number;
+        wind_speed_10m: number;
+        relative_humidity_2m: number;
+        is_day: number;
+        pressure_msl?: number;
+        precipitation?: number;
+        cloudcover?: number;
+    };
+    daily: {
+        temperature_2m_max: number[];
+        temperature_2m_min: number[];
+        weather_code: number[];
+        precipitation_sum?: number[];
+        precipitation_probability_max?: number[];
+    };
+}
+
 export interface AirQuality {
     time: string[],
     us_aqi: number[],
