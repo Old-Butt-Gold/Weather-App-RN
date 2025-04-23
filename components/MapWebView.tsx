@@ -147,6 +147,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         
         L.tileLayer('https://{s}.google.com/vt/lyrs=h&x={x}&y={y}&z={z}', {
           maxZoom: 19,
+          minZoom: 3,
           subdomains:['mt0','mt1','mt2','mt3'],
           attribution: 'Google Maps'
         }).addTo(map);
@@ -260,6 +261,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           // Create new layer
           weatherLayer = L.tileLayer(weatherLayerUrl, {
             maxZoom: 19,
+            minZoom: 3,
             opacity: 0.85,
             tileSize: 512,
             zoomOffset: -1
