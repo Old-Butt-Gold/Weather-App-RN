@@ -115,7 +115,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
 
             navigation.navigate('Home');
         } catch (error) {
-            console.error('Error applying location:', error);
             Alert.alert(t('weatherMap.error'), t('weatherMap.locationApplyError'));
         } finally {
             setIsLoading(false);

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import Svg, {Circle, Defs, Line, Path, Polygon, RadialGradient, Stop, Text as SvgText, TSpan} from 'react-native-svg';
 import {BlurView} from "expo-blur";
@@ -19,8 +19,28 @@ const LINE_PATTERN = [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0];
 const ANGLE_PER_HOUR = 15;
 const ANGLE_OFFSET = 7.5;
 
+const TypeSelectorButton = React.memo(
+    ({ type, selectedType, setSelectedType, icon }: { type: WeatherDataType; selectedType: WeatherDataType; setSelectedType: (t: WeatherDataType) => void; icon: React.ReactNode }) => {
+        const onPress = useCallback(() => setSelectedType(type), [type, setSelectedType]);
+        return (
+            <TouchableOpacity
+                onPress={onPress}
+                style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: selectedType === type ? 'rgba(18,144,216,0.3)' : 'rgba(255,255,255,0.2)'
+                }}
+            >
+                {icon}
+            </TouchableOpacity>
+        );
+    }
+);
+
 export const ClockComponent = () => {
-    const dispatch = useAppDispatch();
     const weatherState = useAppSelector(x => x.weather);
 
     const today = new Date();
@@ -29,17 +49,6 @@ export const ClockComponent = () => {
 
     const [time, setTime] = useState(today);
     const [selectedType, setSelectedType] = useState<WeatherDataType>('temperature');
-
-    const TypeSelectorButton = ({ type, icon }: { type: WeatherDataType, icon: React.ReactNode }) => (
-        <TouchableOpacity
-            onPress={() => setSelectedType(type)}
-            className={`w-[30] h-[30] rounded-[15] items-center justify-center ${
-                selectedType === type ? 'bg-[#1290d8]/30' : 'bg-white/20'
-            }`}
-        >
-            {icon}
-        </TouchableOpacity>
-    );
 
     const TimeDisplay = () => (
         <View className="flex absolute top-[65px] h-[35px] rounded-[35px] z-[999] justify-center items-center flex-col">
@@ -106,22 +115,6 @@ export const ClockComponent = () => {
             <Text className="text-[16px] text-gray-100/60 font-manrope-medium mb-1">
                 {t('clock.hourlyForecast')}
             </Text>
-        </View>
-    );
-    const TypeSelector = () => (
-        <View className="absolute top-[60px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
-            <TypeSelectorButton
-                type="temperature"
-                icon={<FontAwesome6 name="temperature-three-quarters" size={16} color="white" />}
-            />
-            <TypeSelectorButton
-                type="wind"
-                icon={<FontAwesome5 name="wind" size={16} color="white" />}
-            />
-            <TypeSelectorButton
-                type="precipitation"
-                icon={<Entypo name="cloud" size={16} color="white" />}
-            />
         </View>
     );
 
@@ -256,7 +249,11 @@ export const ClockComponent = () => {
             />
             <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
             <Infolabel/>
-            <TypeSelector />
+            <View className="absolute top-[60px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
+                <TypeSelectorButton type="temperature" selectedType={selectedType} setSelectedType={setSelectedType} icon={<FontAwesome6 name="temperature-three-quarters" size={16} color="white" />} />
+                <TypeSelectorButton type="wind" selectedType={selectedType} setSelectedType={setSelectedType} icon={<FontAwesome5 name="wind" size={16} color="white" />} />
+                <TypeSelectorButton type="precipitation" selectedType={selectedType} setSelectedType={setSelectedType} icon={<Entypo name="cloud" size={16} color="white" />} />
+            </View>
             <TimeDisplay />
             <DateIndicator />
 
