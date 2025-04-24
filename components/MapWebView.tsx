@@ -1,6 +1,7 @@
 ﻿import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
+import LoadingOverlay from "./LoadingOverlay";
 
 // WebView props
 interface MapWebViewProps {
@@ -524,6 +525,7 @@ const MapWebView = forwardRef<WebView, MapWebViewProps>(
             domStorageEnabled={true}
             incognito={true}
             cacheEnabled={false}
+            startInLoadingState={true}
         />
     );
 });
