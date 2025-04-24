@@ -148,11 +148,8 @@ const WeatherHeader = () => {
     const { loading } = useAppSelector(state => state.weather);
     const currentLanguage = useAppSelector(state => state.appSettings.language);
 
-    const handleSearchPress = async () => {
+    const handleRefreshPress = async () => {
         try {
-            // Обновляем геолокацию
-            await dispatch(fetchLocationByIP(currentLanguage));
-
             // Параллельно обновляем все данные
             await Promise.all([
                 dispatch(fetchWeather()),
@@ -173,7 +170,7 @@ const WeatherHeader = () => {
                     {weekdayShort} {date.getDate()} {monthShort} {date.getFullYear()}
                 </Text>
             </View>
-            <TouchableOpacity onPress={async () => await handleSearchPress()} className="p-2 rounded-[15] bg-white/20">
+            <TouchableOpacity onPress={async () => await handleRefreshPress()} className="p-2 rounded-[15] bg-white/20">
                 <Ionicons name="reload-circle-sharp" size={24} color="white" />
             </TouchableOpacity>
         </View>

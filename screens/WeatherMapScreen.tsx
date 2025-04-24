@@ -103,7 +103,7 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         try {
             setIsLoading(true);
 
-            dispatch(setLocation(weatherData));
+            dispatch(setLocation({longitude: weatherData.longitude, latitude: weatherData.latitude}));
 
             dispatch(setCurrentCity(weatherData.name));
 
