@@ -1,33 +1,172 @@
-// bgImages.ts
-const bgImages: { [key: number]: any } = {
-    0: require('../assets/0.png'),     // Ясно
-    1: require('../assets/1.png'),     // В основном ясно
-    2: require('../assets/2.png'),     // Местами облачно
-    3: require('../assets/3.png'),     // Пасмурно
-    45: require('../assets/45.png'),   // Туман
-    48: require('../assets/45.png'),   // Изморозь
-    51: require('../assets/51.png'),   // Лёгкая морось
-    53: require('../assets/53.png'),   // Умеренная морось
-    55: require('../assets/55.png'),   // Сильная морось
-    56: require('../assets/56.png'),   // Лёгкая изморозь
-    57: require('../assets/57.png'),   // Сильная изморозь
-    61: require('../assets/61.png'),   // Лёгкий дождь
-    63: require('../assets/63.png'),   // Умеренный дождь
-    65: require('../assets/65.png'),   // Сильный дождь
-    66: require('../assets/65.png'),   // Лёгкий ледяной дождь
-    67: require('../assets/65.png'),   // Сильный ледяной дождь
-    71: require('../assets/71.png'),   // Лёгкий снег
-    73: require('../assets/73.png'),   // Умеренный снег
-    75: require('../assets/75.png'),   // Сильный снег
-    77: require('../assets/77.png'),   // Снежные зёрна
-    80: require('../assets/80.png'),   // Лёгкий дождевой ливень
-    81: require('../assets/63.png'),   // Умеренный дождевой ливень
-    82: require('../assets/82.png'),   // Проливной дождевой ливень
-    85: require('../assets/61.png'),   // Лёгкий снежный ливень
-    86: require('../assets/61.png'),   // Сильный снежный ливень
-    95: require('../assets/95.png'),   // Гроза
-    96: require('../assets/96.png'),   // Гроза с лёгким градом
-    99: require('../assets/95.png'),   // Гроза с сильным градом
+const bgImages: { [key: number]: { [key: string]: any } } = {
+    0: {
+        sunrise: require('../assets/0_sunrise.png'),
+        day: require('../assets/0_day.png'),
+        sunset: require('../assets/0_sunset.png'),
+        night: require('../assets/1_night.png'),
+    },
+    1: {
+        sunrise: require('../assets/0_sunrise.png'),
+        day: require('../assets/1_day.png'),
+        sunset: require('../assets/0_sunset.png'),
+        night: require('../assets/1_night.png'),
+    },
+    2: {
+        sunrise: require('../assets/2_sunrise.png'),
+        day: require('../assets/2_day.png'),
+        sunset: require('../assets/2_sunset.png'),
+        night: require('../assets/2_night.png'),
+    },
+    3: {
+        sunrise: require('../assets/2_sunrise.png'),
+        day: require('../assets/3_day.png'),
+        sunset: require('../assets/2_sunset.png'),
+        night: require('../assets/2_night.png'),
+    },
+    45: {
+        sunrise: require('../assets/2_sunrise.png'),
+        day: require('../assets/45_day.png'),
+        sunset: require('../assets/2_sunset.png'),
+        night: require('../assets/2_night.png'),
+    },
+    48: {
+        sunrise: require('../assets/2_sunrise.png'),
+        day: require('../assets/45_day.png'),
+        sunset: require('../assets/2_sunset.png'),
+        night: require('../assets/2_night.png'),
+    },
+    51: {
+        sunrise: require('../assets/2_sunrise.png'),
+        day: require('../assets/51_day.png'),
+        sunset: require('../assets/2_sunset.png'),
+        night: require('../assets/2_night.png'),
+    },
+    53: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/53_day.png'),
+        sunset: require('../assets/53_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    55: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/55_day.png'),
+        sunset: require('../assets/55_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    56: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/56_day.png'),
+        sunset: require('../assets/53_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    57: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/57_day.png'),
+        sunset: require('../assets/55_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    61: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/61_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/61_night.png'),
+    },
+    63: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/63_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    65: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/65_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    66: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/65_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    67: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/65_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    71: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/71_day.png'),
+        sunset: require('../assets/55_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    73: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/73_day.png'),
+        sunset: require('../assets/55_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    75: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/75_day.png'),
+        sunset: require('../assets/55_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    77: {
+        sunrise: require('../assets/53_sunrise.png'),
+        day: require('../assets/77_day.png'),
+        sunset: require('../assets/55_sunset.png'),
+        night: require('../assets/53_night.png'),
+    },
+    80: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/80_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    81: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/63_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    82: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/82_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    85: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/61_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    86: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/61_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/63_night.png'),
+    },
+    95: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/95_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/95_night.png'),
+    },
+    96: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/96_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/95_night.png'),
+    },
+    99: {
+        sunrise: require('../assets/61_sunrise.png'),
+        day: require('../assets/99_day.png'),
+        sunset: require('../assets/61_sunset.png'),
+        night: require('../assets/95_night.png'),
+    },
 };
 
 export default bgImages;

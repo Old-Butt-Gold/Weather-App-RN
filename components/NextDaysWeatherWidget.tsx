@@ -20,61 +20,80 @@ type ForecastItem = {
     relative_humidity_2m_mean: number;   // Добавим влажность для примера
 };
 
+// --- ForecastProps теперь знает про индекс
 type ForecastProps = {
     item: ForecastItem,
     isFirst: boolean,
     isLast: boolean,
+    index: number,
 }
 
 const ForecastCard = (props: ForecastProps) => {
-    const marginLeft = props.isFirst ? 0 : 10;
-    const marginRight = props.isLast ? 12 : 0;
+    const { item, isFirst, isLast, index } = props;
 
-    const { item } = props;
+    const marginLeft = isFirst ? 0 : 10;
+    const marginRight = isLast ? 12 : 0;
+
+    let bottomLabel = "";
+    if (index === 0) bottomLabel = t('clock.yesterday');
+    else if (index === 1) bottomLabel = t('clock.today');
+    else if (index === 2) bottomLabel = t('clock.tomorrow');
 
     return (
-        <View
-            className="bg-[#45576170]/25 rounded-2xl flex-col items-center justify-center px-3 py-3 w-[130] relative overflow-hidden"
-            style={{ marginLeft, marginRight }}
-        >
-            <BlurView
-                intensity={15}
-                tint="light"
-                className="absolute w-80 h-80 z-0 overflow-hidden"
-            />
-            <View className="absolute w-[40] justify-center items-center top-[70px] left-3">
-                <WeatherIcon code={item.weather_code} isDay={true} size={50} fill="white" />
-            </View>
-            <Text className="absolute top-0 right-1 text-white font-manrope-bold text-[32px] leading-11">
-                {item.temperature_2m_mean}&deg;
-            </Text>
-            <Text className="absolute top-24 right-1 text-white/60 font-manrope-bold text-[12px] leading-11">
-                {`${Math.round(item.temperature_2m_max)}° / ${Math.round(item.temperature_2m_min)}°`}
-            </Text>
-            <View className="flex-row w-full ">
-                <View className="flex-col items-start h-40 w-[50%]">
-                    <Text className="text-white font-manrope-extrabold text-[20px] text-center ml-1 leading-7">
-                        {item.dayOfWeek}
-                    </Text>
-                    <Text className="text-white font-manrope-extrabold text-[9px] text-center ml-1">
-                        {item.date}
+        <View style={{ marginLeft, marginRight }}>
+            <View
+                className={`bg-[#45576170]/25 rounded-2xl flex-col items-center justify-center px-3 py-3 w-[130] relative overflow-hidden ${
+                    index === 1 ? 'border-2 border-primary/70' : ''
+                }`}
+            >
+                <BlurView
+                    intensity={15}
+                    tint="light"
+                    className="absolute w-80 h-80 z-0 overflow-hidden"
+                />
+                <View className="absolute w-[40] justify-center items-center top-[84px] left-3">
+                    <WeatherIcon code={item.weather_code} isDay={true} size={50} fill="white" />
+                </View>
+                <Text className="absolute top-0 right-1 text-white font-manrope-bold text-[32px] leading-11">
+                    {item.temperature_2m_mean}&deg;
+                </Text>
+                <Text className="absolute top-24 right-1 text-white/60 font-manrope-bold text-[12px] leading-11">
+                    {`${Math.round(item.temperature_2m_max)}° / ${Math.round(item.temperature_2m_min)}°`}
+                </Text>
+                <View className="flex-row w-full">
+                    <View className="flex-col items-start h-44 w-[50%]">
+                        <Text className="text-white font-manrope-extrabold text-[20px] text-center ml-1 leading-7">
+                            {item.dayOfWeek}
+                        </Text>
+                        <Text className="text-white font-manrope-extrabold text-[9px] text-center ml-1">
+                            {item.date}
+                        </Text>
+                    </View>
+                </View>
+
+                <View className="absolute bottom-2 left-3 flex-row gap-1">
+                    <WeatherIndicator type="rainChance" value={item.precipitation_probability_mean} />
+                    <WeatherIndicator type="humidity" value={item.relative_humidity_2m_mean} />
+                    <WeatherIndicator type="windSpeed" value={item.wind_speed_10m_mean} />
+                </View>
+
+                <View className="absolute top-16 left-3 flex-row">
+                    <Text className="text-white/60 font-manrope-bold text-[9px]">
+                        {t("clock.weather_code_descriptions." + item.weather_code)}
                     </Text>
                 </View>
             </View>
 
-            <View className="absolute bottom-2 left-3 flex-row gap-1">
-                <WeatherIndicator type="rainChance" value={item.precipitation_probability_mean} />
-                <WeatherIndicator type="humidity" value={item.relative_humidity_2m_mean} />
-                <WeatherIndicator type="windSpeed" value={item.wind_speed_10m_mean} />
-            </View>
-            <View className="absolute top-16 left-3 flex-row">
-                <Text className="text-white/60 font-manrope-bold text-[9px]">
-                    {t("clock.weather_code_descriptions." + item.weather_code)}
+            {/* Здесь выводим надпись снизу */}
+            {bottomLabel !== "" && (
+                <Text className="w-full text-center text-white mt-1 font-manrope-bold text-xs">
+                    {bottomLabel}
                 </Text>
-            </View>
+            )}
         </View>
     );
 };
+
 
 export const NextDaysWeatherWidget = () => {
     const weatherState = useAppSelector(x => x.weather);
@@ -112,6 +131,7 @@ export const NextDaysWeatherWidget = () => {
                         item={item}
                         isFirst={index === 0}
                         isLast={index === dayForecastInfo.length - 1}
+                        index={index}
                     />
                 )}
                 horizontal

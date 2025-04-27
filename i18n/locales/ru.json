@@ -105,7 +105,8 @@
     "dateFormat": "D.M",
     "hourlyForecast": "Почасовой прогноз",
     "today": "Сегодня",
-    "tomorrow": "Завтра"
+    "tomorrow": "Завтра",
+    "yesterday": "Вчера"
   },
   "airComposition": {
     "AQI": "ИКВ",

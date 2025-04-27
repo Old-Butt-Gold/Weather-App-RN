@@ -11,7 +11,7 @@ import { SunMoonWidget } from "../components/SunMoonWidget";
 import { AirCompositionWidget } from "../components/AirCompositionWidget";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-    getCurrentHumidity,
+    getCurrentHumidity, getCurrentLocalDateFromWeatherState,
     getCurrentRainChance,
     getCurrentTemperature,
     getCurrentTemperatureApparrent,
@@ -107,13 +107,14 @@ const LocationTitle = () => {
 
 // Компонент заголовка погоды
 const WeatherHeader = () => {
-    const date = new Date();
+    const weatherState = useAppSelector(state => state.weather);
+    const localNowDate = getCurrentLocalDateFromWeatherState(weatherState);
 
-    const weekdayShort = t(`date.weekdayShort.${date.getDay()}`);
-    const monthShort = t(`date.monthShort.${date.getMonth()}`);
+    const weekdayShort = t(`date.weekdayShort.${localNowDate.getUTCDay()}`);
+    const monthShort = t(`date.monthShort.${localNowDate.getUTCMonth()}`);
 
     const dispatch = useAppDispatch();
-    const { loading } = useAppSelector(state => state.weather);
+
     const currentLanguage = useAppSelector(state => state.appSettings.language);
 
     const handleSearchPress = async () => {
@@ -134,7 +135,7 @@ const WeatherHeader = () => {
             <View className="flex-row items-center gap-2">
                 <Entypo name="calendar" size={20} color="white" />
                 <Text className="text-primary font-manrope-semibold text-[14px]">
-                    {weekdayShort} {date.getDate()} {monthShort} {date.getFullYear()}
+                    {weekdayShort} {localNowDate.getUTCDate()} {monthShort} {localNowDate.getUTCFullYear()}
                 </Text>
             </View>
             <TouchableOpacity onPress={async () => await handleSearchPress()} className="p-2 rounded-[15] bg-white/20">

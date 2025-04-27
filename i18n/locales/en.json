@@ -105,7 +105,8 @@
     "dateFormat": "M.D",
     "hourlyForecast": "Hourly forecast",
     "today": "Today",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday"
   },
   "airComposition": {
     "AQI": "AQI",
