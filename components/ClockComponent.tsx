@@ -11,7 +11,12 @@ import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
 import {t} from "i18next";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {formatDate, getCurrentWindUnit, getWeatherCodeForHour} from "../store/utils/weatherUtils";
+import {
+    formatDate,
+    getCurrentLocalDateFromWeatherState,
+    getCurrentWindUnit,
+    getWeatherCodeForHour
+} from "../store/utils/weatherUtils";
 
 export type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 
@@ -43,11 +48,13 @@ const TypeSelectorButton = React.memo(
 export const ClockComponent = () => {
     const weatherState = useAppSelector(x => x.weather);
 
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+    // const today = new Date();
+    // console.log("simple-",today);
+    const localNowDate = getCurrentLocalDateFromWeatherState(weatherState);
+    const tomorrow = new Date(localNowDate);
+    tomorrow.setDate(localNowDate.getDate() + 1);
 
-    const [time, setTime] = useState(today);
+    const [time, setTime] = useState(localNowDate);
     const [selectedType, setSelectedType] = useState<WeatherDataType>('temperature');
 
     const TimeDisplay = () => (
@@ -70,13 +77,14 @@ export const ClockComponent = () => {
 
     // Таймер
     useEffect(() => {
-        const timer = setInterval(() => setTime(new Date()), 1000);
+        const timer = setInterval(() => setTime(getCurrentLocalDateFromWeatherState(weatherState)), 1000);
         return () => clearInterval(timer);
-    }, []);
+    }, [weatherState.data?.utc_offset_seconds]);
 
     // Текущие значения
-    const currentHour = time.getHours();
-    const currentMinute = time.getMinutes();
+    const currentHour = time.getUTCHours();
+
+    const currentMinute = time.getUTCMinutes();
 
     const HOUR_MARKS = Array.from({ length: 24 }, (_, i) => (currentHour + i) % 24);
 
@@ -92,16 +100,15 @@ export const ClockComponent = () => {
     const currentWindDirection = weatherState.data!.hourly.wind_direction_10m[0];
     const angleRad = useMemo(() => ((currentWindDirection - 90) * Math.PI) / 180, [currentWindDirection]);
     const segments = currentHour > 17 ? 25 : undefined;
-
     const offsetSeconds = weatherState.data!.utc_offset_seconds;
     const hours = offsetSeconds / 3600;
     const utc: string = `UTC${hours >= 0 ? '+' : '-'}${Math.abs(hours)}`;
 
     const DateIndicator = () => (
-        <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
+        <View className="absolute top-[60px] left-[10px] w-[120px] gap-3 h-[40px] rounded-[35px] bg-white/15 z-[999] justify-center items-center flex-row">
             <View className="flex flex-row justify-center items-center gap-x-1">
                 <View className="rounded-full bg-[rgba(229,229,234,0.4)] w-2 h-2"/>
-                <Text className="text-white/80 font-manrope-semibold text-sm">{formatDate(today)}</Text>
+                <Text className="text-white/80 font-manrope-semibold text-sm">{formatDate(localNowDate)}</Text>
             </View>
             <View className="flex flex-row justify-center items-center gap-x-1">
                 <View className="rounded-full bg-[rgba(18,144,216,0.4)] w-2 h-2"/>
@@ -239,15 +246,11 @@ export const ClockComponent = () => {
 
     return (
         <View
-            className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full"
+            className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full bg-[#45576170]/25"
             style={{ height: svgSize + topMargin }}
         >
-            <BlurView
-                intensity={44}
-                tint="light"
-                className="absolute w-full h-full z-0 overflow-hidden rounded-[35]"
-            />
-            <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
+
+
             <Infolabel/>
             <View className="absolute top-[60px] right-[10px] w-[120px] gap-1 h-[40px] rounded-[35px] bg-white/20 z-[999] justify-center items-center flex-row">
                 <TypeSelectorButton type="temperature" selectedType={selectedType} setSelectedType={setSelectedType} icon={<FontAwesome6 name="temperature-three-quarters" size={16} color="white" />} />
@@ -262,7 +265,7 @@ export const ClockComponent = () => {
 
                     {/* Основные элементы */}
                     <Path d={describeFullRing(50, 50, 38, 26)} fill="rgba(17, 24, 39, 0.05)" />
-                    <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.1)" />
+                    <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.15)" />
 
                     {/* Центральная информация */}
                     <SvgText
@@ -274,7 +277,7 @@ export const ClockComponent = () => {
                         fontFamily="Poppins-SemiBold"
                         dy=".3em"
                     >
-                        {`${currentTemperature}°`}
+                        {`${~~currentTemperature}°`}
                     </SvgText>
                     <SvgText
                         x="50.5"
