@@ -95,7 +95,18 @@ export interface LocationResult {
     country: string;
     country_code: string;
     admin1: string;
+    weatherInfo: LocationWeatherInfo
 }
+
+export interface LocationWeatherInfo {
+    utc_offset_seconds: number | null;
+    temperature_current: number | null;
+    weather_code: number | null;
+    is_day: boolean | null;
+    temperature_max: number | null;
+    temperature_min: number | null;
+}
+
 
 // Weather map types
 export enum MapLayerType {

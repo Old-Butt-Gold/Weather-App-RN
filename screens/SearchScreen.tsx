@@ -19,6 +19,7 @@ const SearchScreen = () => {
     const { searchResults, loading } = useAppSelector(state => state.location);
     const { language } = useAppSelector(state => state.appSettings);
     const [searchQuery, setSearchQuery] = useState('');
+    const temperatureUnit = useAppSelector(state => state.weather.temperatureUnit);
 
     useEffect(() => {
         return () => {
@@ -30,7 +31,7 @@ const SearchScreen = () => {
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             if (searchQuery.length > 2) {
-                dispatch(fetchLocation({ query: searchQuery, language }));
+                dispatch(fetchLocation({ query: searchQuery, language, temperatureUnit }));
             }
         }, 500);
 
