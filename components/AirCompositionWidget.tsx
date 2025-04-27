@@ -94,13 +94,9 @@ export const AirCompositionWidget = () => {
 
     return (
 
-    <View className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full">
-        <BlurView
-            intensity={44}
-            tint="light"
-            className="absolute w-full h-full z-0 overflow-hidden rounded-[35]"
-        />
-        <View className="absolute w-full h-full bg-[rgba(90,139,171,0.1)] rounded-[35]" />
+    <View className="flex mt-8 items-center relative overflow-hidden rounded-[35] w-full bg-[#45576170]/25">
+
+        <View className="absolute w-full h-full bg-[rgba(90,139,171,0.05)] rounded-[35]" />
         <Infolabel />
 
         <View
@@ -180,7 +176,7 @@ export const AirCompositionWidget = () => {
         <Text className="text-white/70 font-manrope-semibold text-xs text-center mt-10 w-[80%]">
             {t(`airComposition.description.${levelKey}`)}
         </Text>
-        <View className="p-4 bg-white/20 w-[85%] rounded-[35] mt-6 mb-8 flex-row flex-wrap justify-between gap-y-6">
+        <View className="p-4 bg-white/25 w-[85%] rounded-[35] mt-6 mb-8 flex-row flex-wrap justify-between gap-y-6">
             {airComposition.map((item, index) => (
                 <View
                     key={index}
@@ -190,7 +186,7 @@ export const AirCompositionWidget = () => {
                         <Text className="text-white font-poppins-medium text-2xl leading-9 h-10">
                             {item.value}
                         </Text>
-                        <Text className="text-[#004b5870]/40 font-poppins-medium text-[12px] leading-5">
+                        <Text className="text-white/70 font-poppins-medium text-[12px] leading-5">
                             {item.label}
                         </Text>
                     </View>

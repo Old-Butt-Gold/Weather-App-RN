@@ -20,19 +20,8 @@ import { t } from 'i18next';
 import { sendQuestion } from '../store/slices/chatSlice';
 import { ChatMessage } from '../api/openai';
 import {useAppDispatch, useAppSelector} from "../store/hooks";
+import BackgroundImage from "../components/BackgroundImage";
 
-// Компонент для фонового изображения
-const BackgroundImage = () => (
-  <View className="absolute top-0 left-0 right-0 bottom-0">
-    <Image
-      source={require("../assets/bg.png")}
-      style={{ flex: 1, width: '100%', height: '100%' }}
-      blurRadius={6}
-      resizeMode="cover"
-    />
-    <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/10" />
-  </View>
-);
 
 // Компонент размытого фона
 const BlurBackground = () => (
@@ -140,7 +129,10 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
   return (
     <>
       <StatusBar style="light" />
-      <BackgroundImage />
+      <BackgroundImage
+          blurRadius={5}
+          overlayColor="rgba(25, 50, 75, 0.2)"
+      />
       
       <SafeAreaView className="flex-1">
         <View className="flex-1">
