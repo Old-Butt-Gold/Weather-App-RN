@@ -17,7 +17,7 @@ export const fetchLocation = createAppAsyncThunk<LocationResult[], FetchLocation
 
             const requestParams = {
                 name: query,
-                count: 5,
+                count: 10,
                 language: language,
                 format: 'json',
             };

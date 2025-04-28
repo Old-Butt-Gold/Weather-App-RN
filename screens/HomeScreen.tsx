@@ -400,6 +400,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <BackgroundImage
                 blurRadius={5}
                 overlayColor="rgba(25, 50, 75, 0.2)"
+                isPage={true}
             />
 
             {/* Фиксированный хедер с анимированным фоном */}
@@ -417,11 +418,11 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                     <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
                 <LocationTitle/>
+                </TouchableOpacity>
                 <View className="flex-row gap-2">
-                    <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
-                        <IconButton icon={<Ionicons name="planet" size={24} color="white"/>}/>
-                    </TouchableOpacity>
+
                     <TouchableOpacity onPress={() => navigation.navigate('Search')}>
                         <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
                     </TouchableOpacity>

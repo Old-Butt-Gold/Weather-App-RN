@@ -5,7 +5,9 @@
   "search": {
     "title": "Поиск локации",
     "placeholder": "Введите название города...",
-    "noResults": "Ничего не найдено"
+    "noResults": "Ничего не найдено",
+    "minLabel": "мин.",
+    "maxLabel": "Макс."
   },
   "weather": {
     "feelsLike": "Ощущается как",
@@ -26,7 +28,7 @@
   "windUnit": {
     "km/h":  "км/ч",
     "m/s": "м/c",
-    "mph": "м/ч"
+    "mph": "мил/ч"
   },
   "sunMoon": {
     "daylightTime": "Световое время",

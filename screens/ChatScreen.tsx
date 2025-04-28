@@ -132,6 +132,7 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
       <BackgroundImage
           blurRadius={5}
           overlayColor="rgba(25, 50, 75, 0.2)"
+          isPage={true}
       />
       
       <SafeAreaView className="flex-1">

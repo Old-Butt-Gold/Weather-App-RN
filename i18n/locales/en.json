@@ -5,7 +5,9 @@
   "search": {
     "title": "Search Location",
     "placeholder": "Enter city name...",
-    "noResults": "No locations found"
+    "noResults": "No locations found",
+    "minLabel": "min.",
+    "maxLabel": "Max."
   },
   "settings": {
     "title": "Settings",
