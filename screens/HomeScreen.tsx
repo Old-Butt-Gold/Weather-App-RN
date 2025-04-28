@@ -421,6 +421,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
                 <LocationTitle/>
                 </TouchableOpacity>
+
                 <View className="flex-row gap-2">
 
                     <TouchableOpacity onPress={() => navigation.navigate('Search')}>

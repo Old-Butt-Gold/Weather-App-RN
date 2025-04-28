@@ -4,6 +4,7 @@ import {locationReducer} from "./slices/locationSlice";
 import chatReducer from './slices/chatSlice';
 import {appSettingsReducer} from "./slices/appSettingsSlice";
 import {weatherMapReducer} from "./slices/weatherMapSlice";
+import {favoritesReducer} from "./slices/favoritesSlice";
 
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
         location: locationReducer,
         appSettings: appSettingsReducer,
         weatherMap: weatherMapReducer,
+        favorites: favoritesReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

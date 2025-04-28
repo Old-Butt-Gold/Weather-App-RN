@@ -1,3 +1,4 @@
+// SearchScreen.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { t } from 'i18next';
@@ -13,94 +14,27 @@ import { fetchAirQuality } from "../store/actions/fetchAirQuality";
 import { useNavigation } from '@react-navigation/native';
 import BackgroundImage from "../components/BackgroundImage";
 import {getLocalDateByOffsetSeconds} from "../store/utils/convertUtils";
-import {getWeatherCodeForHour} from "../store/utils/weatherUtils";
 import { Keyboard } from 'react-native';
-
-// const mockSearchResults: LocationResult[] = [
-//     {
-//         id: 1,
-//         name: "New York",
-//         country: "USA",
-//         country_code: "US",
-//         admin1: "New York",
-//         latitude: 40.7128,
-//         longitude: -74.0060,
-//         weatherInfo: {
-//             weather_code: 61,
-//             temperature_current: 21,
-//             temperature_min: 17,
-//             temperature_max: 25,
-//             utc_offset_seconds: -14400,
-//             is_day: true,
-//         },
-//     },
-//     {
-//         id: 2,
-//         name: "London",
-//         country: "UK",
-//         country_code: "GB",
-//         admin1: "England",
-//         latitude: 51.5072,
-//         longitude: -0.1276,
-//         weatherInfo: {
-//             weather_code: 1,
-//             temperature_current: 14,
-//             temperature_min: 10,
-//             temperature_max: 18,
-//             utc_offset_seconds: 0,
-//             is_day: false,
-//         },
-//     },
-//     {
-//         id: 3,
-//         name: "TokyoTokyoTokyoTokyo ",
-//         country: "Japan",
-//         country_code: "JP",
-//         admin1: "TokyoTokyoTokyoTokyo ",
-//         latitude: 35.6762,
-//         longitude: 139.6503,
-//         weatherInfo: {
-//             weather_code: 82,
-//             temperature_current: 23,
-//             temperature_min: 19,
-//             temperature_max: 26,
-//             utc_offset_seconds: 32400,
-//             is_day: true,
-//         },
-//     },
-//     {
-//         id: 4,
-//         name: "Paris",
-//         country: "France",
-//         country_code: "FR",
-//         admin1: "Île-de-France",
-//         latitude: 48.8566,
-//         longitude: 2.3522,
-//         weatherInfo: {
-//             weather_code: 2,
-//             temperature_current: 17,
-//             temperature_min: 12,
-//             temperature_max: 20,
-//             utc_offset_seconds: 7200,
-//             is_day: false,
-//         },
-//     },
-// ];
+import { loadFavorites, addFavorite, removeFavorite, saveFavorites } from '../store/slices/favoritesSlice';
 
 interface SearchResultCardProps {
     item: LocationResult;
     onPress: () => void;
+    isFavorite: boolean;
+    onFavoritePress: () => void;
 }
-const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress }) => {
+
+const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFavorite, onFavoritePress }) => {
     const localDate = item.weatherInfo.utc_offset_seconds !== null
         ? getLocalDateByOffsetSeconds(item.weatherInfo.utc_offset_seconds)
         : null;
     const temperatureText = item.weatherInfo.temperature_current !== null
         ? `${~~item.weatherInfo.temperature_current}°`
         : '-';
+
     return (
         <TouchableOpacity
-            className="bg-white/10 rounded-3xl px-4 py-2 mb-3 h-40 flex-col"
+            className="bg-white/10 rounded-3xl px-4 py-2 mb-3 h-40 flex-col relative"
             onPress={onPress}
         >
             <BackgroundImage
@@ -111,6 +45,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress }) =>
                 isPage={false}
                 weatherCodeOverride={item.weatherInfo.weather_code ?? undefined}
             />
+            <TouchableOpacity onPress={onFavoritePress} className="absolute right-1 top-1/2 z-50">
+                <Ionicons
+                    name={isFavorite ? "heart" : "heart-outline"}
+                    size={30}
+                    color={isFavorite ? "white" : "white"}
+                />
+            </TouchableOpacity>
             <View className="flex-row w-full justify-between h-[70%] items-start">
                 <View className="flex-col">
                     <Text
@@ -125,11 +66,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress }) =>
                     <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{item.country}</Text>
                     <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">{`${localDate?.getUTCHours().toString().padStart(2, '0')}:${localDate?.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>
-                <Text className="text-white font-manrope-regular text-[50px] leading-[65px]">{temperatureText}</Text>
+                <View className="flex-row items-center">
+                    <Text className="text-white font-manrope-regular text-[50px] leading-[65px] mr-2">{temperatureText}</Text>
+
+                </View>
             </View>
             <View className="flex-row w-full justify-between items-start">
-                    <Text className="text-white font-manrope-medium text-[13px] max-w-60 text-left">{t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}</Text>
-                    <Text className="text-white/80 font-manrope-bold text-[13px]">{`${t("search.maxLabel")}:${~~item.weatherInfo.temperature_max!}°,${t("search.minLabel")}:${~~item.weatherInfo.temperature_min!}°`}</Text>
+                <Text className="text-white font-manrope-medium text-[13px] max-w-60 text-left">{t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}</Text>
+                <Text className="text-white/80 font-manrope-bold text-[13px]">{`${t("search.maxLabel")}:${~~item.weatherInfo.temperature_max!}°,${t("search.minLabel")}:${~~item.weatherInfo.temperature_min!}°`}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -139,12 +83,15 @@ const SearchScreen = () => {
     const dispatch = useAppDispatch();
     const navigation = useNavigation();
     const { searchResults, loading } = useAppSelector(state => state.location);
+    const { favorites } = useAppSelector(state => state.favorites);
     const { language } = useAppSelector(state => state.appSettings);
     const [searchQuery, setSearchQuery] = useState('');
     const temperatureUnit = useAppSelector(state => state.weather.temperatureUnit);
-    // const [useMockData, setUseMockData] = useState(false); // переключалка
-    // const displayedResults = useMockData ? mockSearchResults : searchResults;
+
     useEffect(() => {
+        // Загружаем избранные при монтировании
+        dispatch(loadFavorites());
+
         return () => {
             setSearchQuery('');
             dispatch(clearSearchResults());
@@ -162,6 +109,7 @@ const SearchScreen = () => {
     }, [searchQuery, language]);
 
     const handleSelectLocation = async (location: LocationResult) => {
+        Keyboard.dismiss();
         dispatch(setLocation({
             latitude: location.latitude,
             longitude: location.longitude
@@ -176,6 +124,25 @@ const SearchScreen = () => {
 
         navigation.goBack();
     };
+
+    const toggleFavorite = async (location: LocationResult) => {
+        const isFavorite = favorites.some(fav => fav.id === location.id);
+
+        if (isFavorite) {
+            dispatch(removeFavorite(location.id));
+        } else {
+            dispatch(addFavorite(location));
+        }
+
+        // Сохраняем обновленные избранные в AsyncStorage
+        const updatedFavorites = isFavorite
+            ? favorites.filter(fav => fav.id !== location.id)
+            : [...favorites, location];
+
+        dispatch(saveFavorites(updatedFavorites));
+    };
+
+    const displayedResults = searchQuery.length > 0 ? searchResults : favorites;
 
     return (
         <View className="flex-1 p-4 pt-14">
@@ -211,17 +178,21 @@ const SearchScreen = () => {
             ) : (
                 <FlatList
                     keyboardShouldPersistTaps="handled"
-                    data={searchResults}
+                    data={displayedResults}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
                         <SearchResultCard
                             item={item}
                             onPress={async () => await handleSelectLocation(item)}
+                            isFavorite={favorites.some(fav => fav.id === item.id)}
+                            onFavoritePress={() => toggleFavorite(item)}
                         />
                     )}
                     ListEmptyComponent={
                         <Text className="text-white/60 text-center font-manrope-medium">
-                            {t('search.noResults')}
+                            {searchQuery.length > 0
+                                ? t('search.noResults')
+                                : t('search.noFavorites')}
                         </Text>
                     }
                 />

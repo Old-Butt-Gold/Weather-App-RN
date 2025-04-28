@@ -6,6 +6,7 @@
     "title": "Search Location",
     "placeholder": "Enter city name...",
     "noResults": "No locations found",
+    "noFavorites": "No favorites yet. Search for cities to add them to favorites.",
     "minLabel": "min.",
     "maxLabel": "Max."
   },
