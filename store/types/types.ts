@@ -92,9 +92,9 @@ export interface LocationResult {
     name: string | null;
     latitude: number;
     longitude: number;
-    country: string;
-    country_code: string;
-    admin1: string;
+    country?: string;
+    country_code?: string;
+    admin1?: string;
     weatherInfo: LocationWeatherInfo
 }
 

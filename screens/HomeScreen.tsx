@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
 import { View, ScrollView, TouchableOpacity, Text, Image, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
@@ -10,6 +10,7 @@ import { NextDaysWeatherWidget } from "../components/NextDaysWeatherWidget";
 import { SunMoonWidget } from "../components/SunMoonWidget";
 import { AirCompositionWidget } from "../components/AirCompositionWidget";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+
 import {
     getCurrentHumidity, getCurrentLocalDateFromWeatherState,
     getCurrentRainChance,
@@ -23,6 +24,9 @@ import { fetchWeather } from "../store/actions/fetchWeather";
 import { fetchMoonPhase } from "../store/actions/fetchMoonPhase";
 import { fetchAirQuality } from "../store/actions/fetchAirQuality";
 import BackgroundImage from "../components/BackgroundImage";
+import {addFavorite, loadFavorites, removeFavorite, saveFavorites} from "../store/slices/favoritesSlice";
+import {LocationResult} from "../store/types/types";
+import {LocationTitle} from "../components/RunningLine";
 
 // Константы анимаций
 const ANIMATIONS = [
@@ -91,16 +95,16 @@ const IconButton = ({ icon }: { icon: React.ReactNode }) => (
 );
 
 // Компонент заголовка местоположения
-const LocationTitle = () => {
-    const weatherCity = useAppSelector(state => state.weather.currentCity);
-
-    return (
-        <View className="flex-col items-center">
-            <Text className="font-manrope-extrabold text-2xl text-accent">{weatherCity}</Text>
-            <View className="w-20 h-2 bg-[#004b5870]/15 rounded-2xl"></View>
-        </View>
-    );
-};
+// const LocationTitle = () => {
+//     const weatherCity = useAppSelector(state => state.weather.currentCity);
+//
+//     return (
+//         <View className="flex-col items-center">
+//             <Text className="font-manrope-extrabold text-2xl text-accent">{weatherCity}</Text>
+//             <View className="w-20 h-2 bg-[#004b5870]/15 rounded-2xl"></View>
+//         </View>
+//     );
+// };
 
 // Компонент размытого фона
 
@@ -334,12 +338,58 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     // DON'T DELETE IT ALL APP WORK ON THIS LINE
     const { language } = useAppSelector(state => state.appSettings);
     const weatherState = useAppSelector(x => x.weather);
+    const { favorites } = useAppSelector(state => state.favorites);
     const [animationState, setAnimationState] = useState<AnimationState>({
         currentIndex: 0,
         repeatCount: 0,
         animationKey: 0,
         clickAnimation: null
     });
+
+    useEffect(() => {
+        dispatch(loadFavorites());
+    }, []);
+
+    const isCurrentFavorite = favorites.some(fav =>
+        fav.name === weatherState.currentCity
+    );
+
+    // В функции toggleFavorite заменим на:
+    const toggleFavorite = async () => {
+        if (!weatherState.location || !weatherState.currentCity) return;
+
+        const location: LocationResult = {
+            id: Date.now(), // временный ID
+            name: weatherState.currentCity,
+            country: '', // можно добавить из weatherState если есть
+            latitude: weatherState.location.latitude,
+            longitude: weatherState.location.longitude,
+            weatherInfo: {
+                temperature_current: weatherState.data?.current.temperature_2m || 0,
+                temperature_max: weatherState.data?.daily.temperature_2m_max[0] || 0,
+                temperature_min: weatherState.data?.daily.temperature_2m_min[0] || 0,
+                weather_code: weatherState.data?.current.weather_code || 0,
+                is_day: weatherState.data?.current.is_day === 1,
+                utc_offset_seconds: weatherState.data?.utc_offset_seconds || 0
+            }
+        };
+
+        if (isCurrentFavorite) {
+            const favToRemove = favorites.find(fav =>
+                fav.name === weatherState.currentCity
+            );
+            if (favToRemove) {
+                dispatch(removeFavorite(favToRemove.id));
+                // Сохраняем обновленные избранные
+                const updatedFavorites = favorites.filter(fav => fav.id !== favToRemove.id);
+                dispatch(saveFavorites(updatedFavorites));
+            }
+        } else {
+            dispatch(addFavorite(location));
+            // Сохраняем обновленные избранные
+            dispatch(saveFavorites([...favorites, location]));
+        }
+    };
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const isNightTime = weatherState.data!.current.is_day === 0;
@@ -415,15 +465,26 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     }),
                 }}
             >
+                <View className="flex-row gap-2">
                 <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                     <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
+                        <IconButton icon={<Ionicons name="planet" size={24} color="white"/>}/>
+                    </TouchableOpacity>
+                </View>
                 <LocationTitle/>
-                </TouchableOpacity>
 
                 <View className="flex-row gap-2">
-
+                    <TouchableOpacity onPress={toggleFavorite}>
+                        <IconButton icon={
+                            <Ionicons
+                                name={isCurrentFavorite ? "heart" : "heart-outline"}
+                                size={24}
+                                color={isCurrentFavorite ? "white" : "white"}
+                            />
+                        }/>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Search')}>
                         <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
                     </TouchableOpacity>

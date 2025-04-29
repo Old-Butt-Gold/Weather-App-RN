@@ -19,8 +19,14 @@ const favoritesSlice = createSlice({
         setFavorites: (state, action: PayloadAction<LocationResult[]>) => {
             state.favorites = action.payload;
         },
+        // Изменим редьюсер addFavorite:
         addFavorite: (state, action: PayloadAction<LocationResult>) => {
-            if (!state.favorites.some(fav => fav.id === action.payload.id)) {
+            // Проверяем по имени и координатам, чтобы избежать дубликатов
+            if (!state.favorites.some(fav =>
+                fav.name === action.payload.name &&
+                fav.latitude === action.payload.latitude &&
+                fav.longitude === action.payload.longitude
+            )) {
                 state.favorites.push(action.payload);
             }
         },
@@ -40,11 +46,14 @@ export const loadFavorites = createAppAsyncThunk(
     'favorites/loadFavorites',
     async (_, { dispatch }) => {
         try {
+            console.log('Loading favorites...');
             const savedFavorites = await AsyncStorage.getItem('@favorites');
             if (savedFavorites) {
                 const parsedFavorites = JSON.parse(savedFavorites) as LocationResult[];
+                console.log('Loaded favorites:', parsedFavorites);
                 return parsedFavorites;
             }
+            console.log('No favorites found in storage');
             return [];
         } catch (error) {
             console.error('Failed to load favorites', error);
@@ -57,7 +66,9 @@ export const saveFavorites = createAppAsyncThunk(
     'favorites/saveFavorites',
     async (favorites: LocationResult[], _) => {
         try {
+            console.log('Saving favorites:', favorites);
             await AsyncStorage.setItem('@favorites', JSON.stringify(favorites));
+            console.log('Favorites saved successfully');
         } catch (error) {
             console.error('Failed to save favorites', error);
             throw error;

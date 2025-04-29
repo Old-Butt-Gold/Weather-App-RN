@@ -1,4 +1,3 @@
-// SearchScreen.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { t } from 'i18next';
@@ -15,16 +14,15 @@ import { useNavigation } from '@react-navigation/native';
 import BackgroundImage from "../components/BackgroundImage";
 import {getLocalDateByOffsetSeconds} from "../store/utils/convertUtils";
 import { Keyboard } from 'react-native';
-import { loadFavorites, addFavorite, removeFavorite, saveFavorites } from '../store/slices/favoritesSlice';
+import { loadFavorites } from '../store/slices/favoritesSlice';
 
 interface SearchResultCardProps {
     item: LocationResult;
     onPress: () => void;
     isFavorite: boolean;
-    onFavoritePress: () => void;
 }
 
-const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFavorite, onFavoritePress }) => {
+const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFavorite }) => {
     const localDate = item.weatherInfo.utc_offset_seconds !== null
         ? getLocalDateByOffsetSeconds(item.weatherInfo.utc_offset_seconds)
         : null;
@@ -45,13 +43,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFa
                 isPage={false}
                 weatherCodeOverride={item.weatherInfo.weather_code ?? undefined}
             />
-            <TouchableOpacity onPress={onFavoritePress} className="absolute right-1 top-1/2 z-50">
-                <Ionicons
-                    name={isFavorite ? "heart" : "heart-outline"}
-                    size={30}
-                    color={isFavorite ? "white" : "white"}
-                />
-            </TouchableOpacity>
+
+
             <View className="flex-row w-full justify-between h-[70%] items-start">
                 <View className="flex-col">
                     <Text
@@ -64,16 +57,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFa
                         {item.name}
                     </Text>
                     <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{item.country}</Text>
-                    <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">{`${localDate?.getUTCHours().toString().padStart(2, '0')}:${localDate?.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
+                    <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">
+                        {`${localDate?.getUTCHours().toString().padStart(2, '0')}:${localDate?.getUTCMinutes().toString().padStart(2, '0')}`}
+                    </Text>
                 </View>
                 <View className="flex-row items-center">
-                    <Text className="text-white font-manrope-regular text-[50px] leading-[65px] mr-2">{temperatureText}</Text>
-
+                    <Text className="text-white font-manrope-regular text-[50px] leading-[65px] mr-2">
+                        {temperatureText}
+                    </Text>
                 </View>
             </View>
             <View className="flex-row w-full justify-between items-start">
-                <Text className="text-white font-manrope-medium text-[13px] max-w-60 text-left">{t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}</Text>
-                <Text className="text-white/80 font-manrope-bold text-[13px]">{`${t("search.maxLabel")}:${~~item.weatherInfo.temperature_max!}°,${t("search.minLabel")}:${~~item.weatherInfo.temperature_min!}°`}</Text>
+                <Text className="text-white font-manrope-medium text-[13px] max-w-60 text-left">
+                    {t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}
+                </Text>
+                <Text className="text-white/80 font-manrope-bold text-[13px]">
+                    {`${t("search.maxLabel")}:${~~item.weatherInfo.temperature_max!}°,${t("search.minLabel")}:${~~item.weatherInfo.temperature_min!}°`}
+                </Text>
             </View>
         </TouchableOpacity>
     );
@@ -87,7 +87,10 @@ const SearchScreen = () => {
     const { language } = useAppSelector(state => state.appSettings);
     const [searchQuery, setSearchQuery] = useState('');
     const temperatureUnit = useAppSelector(state => state.weather.temperatureUnit);
-
+    useEffect(() => {
+        console.log('Favorites loaded:', favorites); // Добавим для отладки
+        dispatch(loadFavorites());
+    }, []);
     useEffect(() => {
         // Загружаем избранные при монтировании
         dispatch(loadFavorites());
@@ -114,7 +117,7 @@ const SearchScreen = () => {
             latitude: location.latitude,
             longitude: location.longitude
         }));
-        dispatch(setCurrentCity(location.name || location.country));
+        dispatch(setCurrentCity(location.name || location.country || null));
 
         await Promise.all([
             dispatch(fetchWeather()),
@@ -123,23 +126,6 @@ const SearchScreen = () => {
         ]);
 
         navigation.goBack();
-    };
-
-    const toggleFavorite = async (location: LocationResult) => {
-        const isFavorite = favorites.some(fav => fav.id === location.id);
-
-        if (isFavorite) {
-            dispatch(removeFavorite(location.id));
-        } else {
-            dispatch(addFavorite(location));
-        }
-
-        // Сохраняем обновленные избранные в AsyncStorage
-        const updatedFavorites = isFavorite
-            ? favorites.filter(fav => fav.id !== location.id)
-            : [...favorites, location];
-
-        dispatch(saveFavorites(updatedFavorites));
     };
 
     const displayedResults = searchQuery.length > 0 ? searchResults : favorites;
@@ -185,7 +171,6 @@ const SearchScreen = () => {
                             item={item}
                             onPress={async () => await handleSelectLocation(item)}
                             isFavorite={favorites.some(fav => fav.id === item.id)}
-                            onFavoritePress={() => toggleFavorite(item)}
                         />
                     )}
                     ListEmptyComponent={
