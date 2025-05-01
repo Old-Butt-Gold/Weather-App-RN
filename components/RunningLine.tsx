@@ -1,28 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Text, View, Easing, Dimensions } from 'react-native';
-import { useAppSelector } from '../store/hooks';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 type LocationTitleProps = {
-    maxWidth?: number; // Добавлен проп для максимальной ширины
+    title: string | null;
+    maxWidth?: number;
+    scrollThreshold?: number; // Новый пропс для порога включения анимации
 };
 
-export const LocationTitle = ({ maxWidth = 100 }: LocationTitleProps) => {
-    const weatherCity = useAppSelector(state => state.weather.currentCity);
+export const LocationTitle = ({
+                                  title,
+                                  maxWidth = 150,
+                                  scrollThreshold = 10 // Значение по умолчанию
+                              }: LocationTitleProps) => {
     const [shouldScroll, setShouldScroll] = useState(false);
     const animatedValue = useRef(new Animated.Value(0)).current;
     const textWidth = useRef(0);
 
     useEffect(() => {
-        if (weatherCity && weatherCity.length >= 10) {
+        if (title && title.length >= scrollThreshold) { // Используем scrollThreshold
             setShouldScroll(true);
         } else {
             setShouldScroll(false);
             animatedValue.stopAnimation();
             animatedValue.setValue(0);
         }
-    }, [weatherCity]);
+    }, [title, scrollThreshold]); // Добавляем scrollThreshold в зависимости
 
     useEffect(() => {
         if (shouldScroll && textWidth.current > 0) {
@@ -43,40 +47,50 @@ export const LocationTitle = ({ maxWidth = 100 }: LocationTitleProps) => {
     };
 
     const getTranslateX = () => {
-        const distance = textWidth.current + maxWidth; // весь путь прокрутки
         return animatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -distance],
+            outputRange: [maxWidth, -textWidth.current],
         });
     };
 
+    if (title === null) {
+        return null;
+    }
+
     return (
-        <View className="items-center" style={{ maxWidth }}>
+        <View
+            className="items-center overflow-hidden"
+            style={{
+                maxWidth,
+            }}
+        >
             {shouldScroll ? (
-                <View
-                    className="overflow-hidden h-[30px] justify-center"
-                    style={{ maxWidth }}
+                <Animated.View
+                    style={{
+                        transform: [{ translateX: getTranslateX() }],
+                        flexDirection: 'row',
+                    }}
+                    onLayout={(event) => {
+                        textWidth.current = event.nativeEvent.layout.width;
+                        if (shouldScroll) startAnimation();
+                    }}
                 >
-                    <Animated.Text
-                        onLayout={(e) => {
-                            textWidth.current = e.nativeEvent.layout.width;
-                        }}
+                    <Text
+                        className="text-2xl font-extrabold text-white"
+                        numberOfLines={1}
+                        adjustsFontSizeToFit={false}
                         style={{
-                            transform: [{ translateX: getTranslateX() }],
+                            minWidth: 400,
                         }}
-                        className="text-2xl font-extrabold text-[#00A3AD]"
                     >
-                        {weatherCity}
-                    </Animated.Text>
-                </View>
+                        {title}
+                    </Text>
+                </Animated.View>
             ) : (
                 <Text
-                    className="text-2xl font-extrabold text-[#00A3AD]"
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={{ maxWidth }}
+                    className="text-2xl font-extrabold text-white text-center items-center"
                 >
-                    {weatherCity}
+                    {title}
                 </Text>
             )}
             <View className="w-20 h-2 bg-[#004b5870] rounded-full opacity-15" />

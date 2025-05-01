@@ -15,6 +15,7 @@ import BackgroundImage from "../components/BackgroundImage";
 import {getLocalDateByOffsetSeconds} from "../store/utils/convertUtils";
 import { Keyboard } from 'react-native';
 import { loadFavorites } from '../store/slices/favoritesSlice';
+import {LocationTitle} from "../components/RunningLine";
 
 interface SearchResultCardProps {
     item: LocationResult;
@@ -46,16 +47,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFa
 
 
             <View className="flex-row w-full justify-between h-[70%] items-start">
-                <View className="flex-col">
-                    <Text
-                        className={`text-white font-manrope-bold ${
-                            item.name!.length > 20 ? 'text-[16px]' :
-                                item.name!.length > 13 ? 'text-[20px]' :
-                                    'text-[24px]'
-                        } h-[40px]`}
-                    >
-                        {item.name}
-                    </Text>
+                <View className="flex-col ">
+                    <LocationTitle
+                        title={item.name}
+                        maxWidth={220}
+                        scrollThreshold={20}
+                    />
                     <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{item.country}</Text>
                     <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">
                         {`${localDate?.getUTCHours().toString().padStart(2, '0')}:${localDate?.getUTCMinutes().toString().padStart(2, '0')}`}

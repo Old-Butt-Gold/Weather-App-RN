@@ -27,25 +27,8 @@ import BackgroundImage from "../components/BackgroundImage";
 import {addFavorite, loadFavorites, removeFavorite, saveFavorites} from "../store/slices/favoritesSlice";
 import {LocationResult} from "../store/types/types";
 import {LocationTitle} from "../components/RunningLine";
+import {AnimatedWeatherCloud} from "../components/WeatherAnimation";
 
-// Константы анимаций
-const ANIMATIONS = [
-    { source: require("../assets/svg-icons/animations/cloudSpeaks.json"), repeats: 3 },
-    { source: require("../assets/svg-icons/animations/cloudyStatic.json"), repeats: 2 },
-    { source: require("../assets/svg-icons/animations/cloudSpeaks.json"), repeats: 1 },
-    { source: require("../assets/svg-icons/animations/cloudyStart.json"), repeats: 1 },
-    { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 }
-];
-
-const CLICK_ANIMATIONS = {
-    day: { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 },
-    night: { source: require("../assets/svg-icons/animations/angryCloud.json"), repeats: 1 }
-};
-
-const NIGHT_ANIMATION = {
-    source: require("../assets/svg-icons/animations/sleepingCloudNew.json"),
-    repeats: 1
-};
 
 type WeatherDetailsItem = {
     icon: any,
@@ -58,30 +41,8 @@ type WeatherButtonsProps = {
     onChatPress: () => void;
 };
 
-// Фильтры цветов для Lottie
-const LOTTIE_COLOR_FILTERS = [
-    { keypath: "mouth", color: "#2B3F56" },
-    { keypath: "eye_r", color: "#2B3F56" },
-    { keypath: "eye_l", color: "#2B3F56" },
-    { keypath: "hand", color: "#FFFFFF" },
-    { keypath: "hand Container", color: "#FFFFFF" },
-    { keypath: "cloud", color: "#FFFFFF" },
-];
-
-// Типы
-type AnimationState = {
-    currentIndex: number;
-    repeatCount: number;
-    animationKey: number;
-    clickAnimation: { source: any; repeats: number } | null;
-};
-
 type WeatherCardProps = {
     isNightTime: boolean;
-    currentAnimation: any;
-    animationKey: number;
-    onAnimationPress: () => void;
-    onAnimationFinish: () => void;
     onChatPress: () => void;
 };
 
@@ -89,7 +50,6 @@ type HomeScreenProps = {
     navigation: any;
 };
 
-// Компонент кнопки с иконкой
 const IconButton = ({ icon }: { icon: React.ReactNode }) => (
     <View className="p-3 rounded-[15] bg-[#004b5870]/15">{icon}</View>
 );
@@ -105,8 +65,6 @@ const IconButton = ({ icon }: { icon: React.ReactNode }) => (
 //         </View>
 //     );
 // };
-
-// Компонент размытого фона
 
 
 // Компонент заголовка погоды
@@ -277,12 +235,7 @@ const WeatherDetails = () => {
 };
 
 // Компонент контента погоды
-const WeatherContent = ({
-                            currentAnimation,
-                            animationKey,
-                            onAnimationPress,
-                            onAnimationFinish,
-                        }: Omit<WeatherCardProps, 'isNightTime' | 'onChatPress'>) => (
+const WeatherContent = ({ isNightTime,onChatPress  }: Omit<WeatherCardProps, 'onChatPress | currentAnimation | animationKey | onAnimationPress | onAnimationFinish'>) => (
     <View className="flex-col">
         <View className="flex-row justify-between">
             <TemperatureDisplay />
@@ -291,17 +244,7 @@ const WeatherContent = ({
                     className="rounded-xl overflow-hidden ml-2"
                     style={{ width: 170, height: 120 }}
                 >
-                    <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
-                        <LottieView
-                            key={animationKey}
-                            source={currentAnimation}
-                            autoPlay
-                            loop={false}
-                            style={{ width: '100%', height: '100%' }}
-                            onAnimationFinish={onAnimationFinish}
-                            colorFilters={LOTTIE_COLOR_FILTERS}
-                        />
-                    </TouchableOpacity>
+                    <AnimatedWeatherCloud isNightTime={isNightTime}  />
                 </View>
             </View>
         </View>
@@ -311,20 +254,14 @@ const WeatherContent = ({
 // Компонент карточки погоды
 const WeatherCard = ({
                          isNightTime,
-                         currentAnimation,
-                         animationKey,
-                         onAnimationPress,
-                         onAnimationFinish,
                          onChatPress
                      }: WeatherCardProps) => (
     <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25] bg-[#45576170]/25">
         <View className="w-full z-10">
             <WeatherHeader />
             <WeatherContent
-                currentAnimation={currentAnimation}
-                animationKey={animationKey}
-                onAnimationPress={onAnimationPress}
-                onAnimationFinish={onAnimationFinish}
+                isNightTime={isNightTime}
+                onChatPress={onChatPress}
             />
             <WeatherButtons onChatPress={onChatPress}/>
             <WeatherDetails />
@@ -339,12 +276,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const { language } = useAppSelector(state => state.appSettings);
     const weatherState = useAppSelector(x => x.weather);
     const { favorites } = useAppSelector(state => state.favorites);
-    const [animationState, setAnimationState] = useState<AnimationState>({
-        currentIndex: 0,
-        repeatCount: 0,
-        animationKey: 0,
-        clickAnimation: null
-    });
 
     useEffect(() => {
         dispatch(loadFavorites());
@@ -394,41 +325,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const isNightTime = weatherState.data!.current.is_day === 0;
 
-    const handleAnimationPress = useCallback(() => {
-        setAnimationState(prev => ({
-            ...prev,
-            clickAnimation: isNightTime ? CLICK_ANIMATIONS.night : CLICK_ANIMATIONS.day,
-            animationKey: prev.animationKey + 1
-        }));
-    }, [isNightTime]);
-
-    const handleAnimationFinish = useCallback(() => {
-        setAnimationState(prev => {
-            if (prev.clickAnimation) {
-                return { ...prev, clickAnimation: null };
-            }
-
-            if (isNightTime) {
-                return { ...prev, animationKey: prev.animationKey + 1 };
-            }
-
-            if (prev.repeatCount < ANIMATIONS[prev.currentIndex].repeats - 1) {
-                return {
-                    ...prev,
-                    repeatCount: prev.repeatCount + 1,
-                    animationKey: prev.animationKey + 1
-                };
-            }
-
-            return {
-                ...prev,
-                repeatCount: 0,
-                currentIndex: (prev.currentIndex + 1) % ANIMATIONS.length,
-                animationKey: prev.animationKey + 1
-            };
-        });
-    }, [isNightTime]);
-
     const handleChatPress = useCallback(() => {
         navigation.navigate('Chat');
     }, [navigation]);
@@ -473,7 +369,9 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                         <IconButton icon={<Ionicons name="planet" size={24} color="white"/>}/>
                     </TouchableOpacity>
                 </View>
-                <LocationTitle/>
+                <LocationTitle
+                    title={weatherState.currentCity}
+                />
 
                 <View className="flex-row gap-2">
                     <TouchableOpacity onPress={toggleFavorite}>
@@ -504,10 +402,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <View className="flex-1 justify-center items-center px-4 w-full relative pb-5">
                     <WeatherCard
                         isNightTime={isNightTime}
-                        currentAnimation={getCurrentAnimation(animationState, isNightTime)}
-                        animationKey={animationState.animationKey}
-                        onAnimationPress={handleAnimationPress}
-                        onAnimationFinish={handleAnimationFinish}
                         onChatPress={handleChatPress}
                     />
                     <ClockComponent />
@@ -518,14 +412,4 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             </Animated.ScrollView>
         </>
     );
-};
-
-// Вспомогательная функция для получения текущей анимации
-const getCurrentAnimation = (
-    state: AnimationState,
-    isNightTime: boolean
-) => {
-    if (state.clickAnimation) return state.clickAnimation.source;
-    if (isNightTime) return NIGHT_ANIMATION.source;
-    return ANIMATIONS[state.currentIndex].source;
 };
