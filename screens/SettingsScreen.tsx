@@ -45,8 +45,9 @@ export const SettingsScreen = () => {
     const { temperatureUnit, windSpeedUnit } = useAppSelector(state => state.weather);
     const { language } = useAppSelector(state => state.appSettings);
 
-    const handleLanguageChange = async (settings: AppSettingsState) => {
-        dispatch(setLanguage(settings.language));
+    const handleLanguageChange = (newLanguage: 'ru' | 'en') => {
+        dispatch(setLanguage(newLanguage));
+        i18n.changeLanguage(newLanguage);
     };
 
     return (
@@ -78,12 +79,12 @@ export const SettingsScreen = () => {
                                 <SettingButton
                                     label="Русский"
                                     isActive={language === 'ru'}
-                                    onPress={async () => await handleLanguageChange({language: 'ru'})}
+                                    onPress={() => handleLanguageChange('ru')}
                                 />
                                 <SettingButton
                                     label="English"
                                     isActive={language === 'en'}
-                                    onPress={async () => await handleLanguageChange({language: 'en'})}
+                                    onPress={() => handleLanguageChange('en')}
                                 />
                             </View>
                         </SettingSection>

@@ -1,32 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Text, View, Easing, Dimensions } from 'react-native';
+import {useRoute} from "@react-navigation/native";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 type LocationTitleProps = {
     title: string | null;
     maxWidth?: number;
-    scrollThreshold?: number; // Новый пропс для порога включения анимации
+    scrollThreshold?: number;
 };
 
 export const LocationTitle = ({
                                   title,
                                   maxWidth = 150,
-                                  scrollThreshold = 10 // Значение по умолчанию
+                                  scrollThreshold = 10
                               }: LocationTitleProps) => {
     const [shouldScroll, setShouldScroll] = useState(false);
     const animatedValue = useRef(new Animated.Value(0)).current;
     const textWidth = useRef(0);
-
+    const currentScreenName = useRoute().name;
     useEffect(() => {
-        if (title && title.length >= scrollThreshold) { // Используем scrollThreshold
+        if (title && title.length >= scrollThreshold) {
             setShouldScroll(true);
         } else {
             setShouldScroll(false);
             animatedValue.stopAnimation();
             animatedValue.setValue(0);
         }
-    }, [title, scrollThreshold]); // Добавляем scrollThreshold в зависимости
+    }, [title, scrollThreshold]);
 
     useEffect(() => {
         if (shouldScroll && textWidth.current > 0) {
@@ -88,12 +89,15 @@ export const LocationTitle = ({
                 </Animated.View>
             ) : (
                 <Text
-                    className="text-2xl font-extrabold text-white text-center items-center"
+                    className="text-2xl font-extrabold text-white text-center self-start"
                 >
                     {title}
                 </Text>
             )}
-            <View className="w-20 h-2 bg-[#004b5870] rounded-full opacity-15" />
+            {(currentScreenName === "Home") &&
+                ( <View className="w-20 h-2 bg-[#004b5870] rounded-full opacity-15" />)
+            }
+
         </View>
     );
 };

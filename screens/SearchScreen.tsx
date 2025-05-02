@@ -49,7 +49,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => 
                     <LocationTitle
                         title={item.name}
                         maxWidth={220}
-                        scrollThreshold={20}
+                        scrollThreshold={15}
                     />
                     <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{item.country}</Text>
                     <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">

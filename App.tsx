@@ -8,14 +8,15 @@ import {useCustomFonts} from "./utils/loads/fonts";
 import * as SplashScreen from 'expo-splash-screen';
 import {Provider} from "react-redux";
 import {store} from "./store/store";
-import {useAppDispatch} from "./store/hooks";
+import {useAppDispatch, useAppSelector} from "./store/hooks";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ChatScreen} from "./screens/ChatScreen";
 import { SettingsScreen } from './screens/SettingsScreen';
 import { WeatherMapScreen } from './screens/WeatherMapScreen';
-
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistor } from './store/store';
 const Stack = createNativeStackNavigator();
 
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
@@ -29,11 +30,12 @@ SplashScreen.preventAutoHideAsync();
 const Initializer = () => {
     const dispatch = useAppDispatch();
     const [initFinished, setInitFinished] = useState(false);
-
+    const { language } = useAppSelector(state => state.appSettings);
+    const { temperatureUnit, windSpeedUnit } = useAppSelector(state => state.weather);
     useEffect(() => {
         async function initialize() {
             try {
-                dispatch(setLanguage('ru'));
+                i18n.changeLanguage(language);
 
                 await dispatch(fetchLocationByIP(i18n.language));
 
@@ -104,11 +106,13 @@ export default function App() {
 
     return (
         <Provider store={store}>
+            <PersistGate loading={<ActivityIndicator size="large" />} persistor={persistor}>
             <I18nextProvider i18n={i18n}>
                 <SafeAreaView className="flex-1" style={{paddingTop: Platform.OS === 'ios' ? 0 : 0}}>
                     <Initializer />
                 </SafeAreaView>
             </I18nextProvider>
+            </PersistGate>
         </Provider>
     );
 }

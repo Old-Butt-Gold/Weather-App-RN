@@ -34,7 +34,6 @@ const BackgroundImage: React.FC<BackgroundImageProps> = ({
 
     const currentHour = hourOverride ?? defaultLocalNowDate.getUTCHours();
     const weatherCode = weatherCodeOverride ?? defaultWeatherCode;
-
     let timeOfDay: 'sunrise' | 'day' | 'sunset' | 'night' = 'day';
     if (hourOverride !== undefined) {
         if (currentHour >= 6 && currentHour < 8) {
