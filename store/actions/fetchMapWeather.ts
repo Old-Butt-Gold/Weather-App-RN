@@ -45,10 +45,12 @@ export const fetchMapWeather = createAppAsyncThunk<WeatherMapData, Coordinates>(
                 return rejectWithValue({ message: 'Location permission not granted' });
             }
 
-            const locationName = await getLocationName(latitude, longitude);
+            const locationInfo = await getLocationName(latitude, longitude);
 
             const weatherMapData: WeatherMapData = {
-                name: locationName,
+                name: locationInfo.city,
+                country: locationInfo.country,
+                isoCountryCode: locationInfo.isoCountryCode,
                 latitude,
                 longitude,
                 current: response.data.current,
@@ -62,8 +64,14 @@ export const fetchMapWeather = createAppAsyncThunk<WeatherMapData, Coordinates>(
     }
 );
 
+interface LocationInfo {
+    city: string;
+    country: string;
+    isoCountryCode: string;
+}
+
 // Helper function to get location name from coordinates
-const getLocationName = async (latitude: number, longitude: number): Promise<string> => {
+const getLocationName = async (latitude: number, longitude: number): Promise<LocationInfo> => {
     try {
         // Use reverse geocoding to get location name
         const location = await Location.reverseGeocodeAsync({
@@ -72,17 +80,32 @@ const getLocationName = async (latitude: number, longitude: number): Promise<str
         });
 
         if (location && location.length > 0) {
-            const { city, district, street, region, country } = location[0];
+            const { city, district, street, region, country, isoCountryCode } = location[0];
 
-            if (city) return city;
-            if (district) return district;
-            if (street) return street;
-            if (region) return region;
-            if (country) return country;
+            let locationName: string = "";
+            let countryName: string = "";
+            let postalCodeName: string = "";
+
+            if (city)
+                locationName = city;
+            else if (district)
+                locationName = district;
+            else if (street)
+                locationName = street;
+            else if (region)
+                locationName = region;
+
+            if (country)
+                countryName = country;
+
+            if (isoCountryCode)
+                postalCodeName = isoCountryCode;
+
+            return {city: locationName, country: countryName, isoCountryCode: postalCodeName};
         }
 
-        return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+        return {city: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, country: "", isoCountryCode: ""};
     } catch (error) {
-        return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+        return {city: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, country: "", isoCountryCode: ""};
     }
 };

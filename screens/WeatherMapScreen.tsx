@@ -12,7 +12,7 @@ import ActionButton from '../components/ActionButton';
 
 // Import actions
 import { fetchMapWeather } from '../store/actions/fetchMapWeather';
-import { setLocation, setCurrentCity } from '../store/slices/weatherSlice';
+import {setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode} from '../store/slices/weatherSlice';
 import { fetchWeather } from '../store/actions/fetchWeather';
 import { fetchMoonPhase } from '../store/actions/fetchMoonPhase';
 import { fetchAirQuality } from '../store/actions/fetchAirQuality';
@@ -106,6 +106,8 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
             dispatch(setLocation({longitude: weatherData.longitude, latitude: weatherData.latitude}));
 
             dispatch(setCurrentCity(weatherData.name));
+            dispatch(setCurrentCountry(weatherData.country));
+            dispatch(setCurrentIsoCountryCode(weatherData.isoCountryCode));
 
             await Promise.all([
                 dispatch(fetchWeather()),

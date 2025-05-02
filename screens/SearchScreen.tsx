@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchLocation } from '../store/actions/fetchLocation';
 import { clearSearchResults } from '../store/slices/locationSlice';
-import { setLocation, setCurrentCity } from '../store/slices/weatherSlice';
+import {setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode} from '../store/slices/weatherSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { LocationResult } from "../store/types/types";
 import { fetchWeather } from "../store/actions/fetchWeather";
@@ -20,10 +20,9 @@ import {LocationTitle} from "../components/RunningLine";
 interface SearchResultCardProps {
     item: LocationResult;
     onPress: () => void;
-    isFavorite: boolean;
 }
 
-const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFavorite }) => {
+const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => {
     const localDate = item.weatherInfo.utc_offset_seconds !== null
         ? getLocalDateByOffsetSeconds(item.weatherInfo.utc_offset_seconds)
         : null;
@@ -44,7 +43,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFa
                 isPage={false}
                 weatherCodeOverride={item.weatherInfo.weather_code ?? undefined}
             />
-
 
             <View className="flex-row w-full justify-between h-[70%] items-start">
                 <View className="flex-col ">
@@ -69,7 +67,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, isFa
                     {t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}
                 </Text>
                 <Text className="text-white/80 font-manrope-bold text-[13px]">
-                    {`${t("search.maxLabel")}:${~~item.weatherInfo.temperature_max!}°,${t("search.minLabel")}:${~~item.weatherInfo.temperature_min!}°`}
+                    {`${t("search.maxLabel")} : ${~~item.weatherInfo.temperature_max!}°, ${t("search.minLabel")} : ${~~item.weatherInfo.temperature_min!}°`}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -110,11 +108,15 @@ const SearchScreen = () => {
 
     const handleSelectLocation = async (location: LocationResult) => {
         Keyboard.dismiss();
+
         dispatch(setLocation({
             latitude: location.latitude,
             longitude: location.longitude
         }));
-        dispatch(setCurrentCity(location.name || location.country || null));
+
+        dispatch(setCurrentCity(location.name ?? ""));
+        dispatch(setCurrentCountry(location.country ?? ""));
+        dispatch(setCurrentIsoCountryCode(location.country_code ?? ""))
 
         await Promise.all([
             dispatch(fetchWeather()),
@@ -167,7 +169,6 @@ const SearchScreen = () => {
                         <SearchResultCard
                             item={item}
                             onPress={async () => await handleSelectLocation(item)}
-                            isFavorite={favorites.some(fav => fav.id === item.id)}
                         />
                     )}
                     ListEmptyComponent={

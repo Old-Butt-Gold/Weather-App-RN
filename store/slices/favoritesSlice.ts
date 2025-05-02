@@ -4,8 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAppAsyncThunk } from '../hooks';
 import {fetchLocation} from "../actions/fetchLocation";
 
+export type ExtendedLocationResult = LocationResult & {
+    utc_offset_seconds: number;
+};
+
 interface FavoritesState {
-    favorites: LocationResult[];
+    favorites: ExtendedLocationResult[];
 }
 
 const initialState: FavoritesState = {
@@ -16,14 +20,17 @@ const favoritesSlice = createSlice({
     name: 'favorites',
     initialState,
     reducers: {
-        setFavorites: (state, action: PayloadAction<LocationResult[]>) => {
+        setFavorites: (state, action: PayloadAction<ExtendedLocationResult[]>) => {
             state.favorites = action.payload;
         },
         // Изменим редьюсер addFavorite:
-        addFavorite: (state, action: PayloadAction<LocationResult>) => {
+        addFavorite: (state, action: PayloadAction<ExtendedLocationResult>) => {
             // Проверяем по имени и координатам, чтобы избежать дубликатов
             if (!state.favorites.some(fav =>
+                fav.utc_offset_seconds === action.payload.utc_offset_seconds &&
                 fav.name === action.payload.name &&
+                fav.country == action.payload.country &&
+                fav.country_code == action.payload.country_code &&
                 fav.latitude === action.payload.latitude &&
                 fav.longitude === action.payload.longitude
             )) {
@@ -49,7 +56,7 @@ export const loadFavorites = createAppAsyncThunk(
             console.log('Loading favorites...');
             const savedFavorites = await AsyncStorage.getItem('@favorites');
             if (savedFavorites) {
-                const parsedFavorites = JSON.parse(savedFavorites) as LocationResult[];
+                const parsedFavorites = JSON.parse(savedFavorites) as ExtendedLocationResult[];
                 console.log('Loaded favorites:', parsedFavorites);
                 return parsedFavorites;
             }
@@ -64,7 +71,7 @@ export const loadFavorites = createAppAsyncThunk(
 
 export const saveFavorites = createAppAsyncThunk(
     'favorites/saveFavorites',
-    async (favorites: LocationResult[], _) => {
+    async (favorites: ExtendedLocationResult[], _) => {
         try {
             console.log('Saving favorites:', favorites);
             await AsyncStorage.setItem('@favorites', JSON.stringify(favorites));

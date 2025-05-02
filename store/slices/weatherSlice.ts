@@ -14,6 +14,7 @@ import {fetchMoonPhase} from "../actions/fetchMoonPhase";
 import {fetchAirQuality} from "../actions/fetchAirQuality";
 import {convertTemperature, convertWindSpeed} from "../utils/convertUtils";
 import {fetchLocationByIP} from "../actions/fetchLocationByIp";
+import {act} from "react";
 
 export interface WeatherState {
     data: WeatherData | null;
@@ -24,6 +25,8 @@ export interface WeatherState {
     temperatureUnit: TemperatureUnit;
     windSpeedUnit: WindSpeedUnit;
     currentCity: string | null;
+    currentCountry: string | null;
+    currentIsoCountryCode: string | null;
     moonPhase: number | null;
     airQuality: AirQuality | null;
 }
@@ -37,6 +40,8 @@ const initialState: WeatherState = {
     temperatureUnit: '°C',
     windSpeedUnit: 'km/h',
     currentCity: null,
+    currentCountry: null,
+    currentIsoCountryCode: null,
     moonPhase: null,
     airQuality: null,
 };
@@ -93,6 +98,12 @@ const weatherSlice = createSlice({
         setCurrentCity(state, action: PayloadAction<string | null>) {
             state.currentCity = action.payload;
         },
+        setCurrentCountry(state, action: PayloadAction<string | null>) {
+            state.currentCountry = action.payload;
+        },
+        setCurrentIsoCountryCode(state, action: PayloadAction<string | null>) {
+            state.currentIsoCountryCode = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -153,6 +164,8 @@ const weatherSlice = createSlice({
                 state.loading = false;
                 state.location = action.payload;
                 state.currentCity = action.payload.city;
+                state.currentCountry = action.payload.country;
+                state.currentIsoCountryCode = action.payload.countryCode;
             })
             .addCase(fetchLocationByIP.rejected, (state, action) => {
                 state.status = 'failed';
@@ -166,5 +179,5 @@ const weatherSlice = createSlice({
 
 const DEFAULT_COORDINATES = { latitude: 53.9, longitude: 27.56667, city: "Минск" };
 
-export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity } = weatherSlice.actions;
+export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode } = weatherSlice.actions;
 export const weatherReducer = weatherSlice.reducer;

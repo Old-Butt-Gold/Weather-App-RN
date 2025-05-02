@@ -92,9 +92,9 @@ export interface LocationResult {
     name: string | null;
     latitude: number;
     longitude: number;
-    country?: string;
-    country_code?: string;
-    admin1?: string;
+    country: string | null;
+    country_code: string | null;
+    admin1: string | null;
     weatherInfo: LocationWeatherInfo
 }
 
@@ -131,6 +131,8 @@ export interface WeatherMapData {
     name: string;
     latitude: number;
     longitude: number;
+    country: string;
+    isoCountryCode: string;
     current: {
         temperature_2m: number;
         weather_code: number;
@@ -163,6 +165,8 @@ export interface AirQuality {
 
 export interface LocationData extends Coordinates {
     city: string;
+    country: string;
+    countryCode: string;
 }
 
 export interface AppSettingsState {
