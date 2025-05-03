@@ -133,6 +133,7 @@ export interface WeatherMapData {
     longitude: number;
     country: string;
     isoCountryCode: string;
+    admin1: string;
     windSpeedUnit: WindSpeedUnit;
     temperatureUnit: TemperatureUnit;
     current: {

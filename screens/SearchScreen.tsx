@@ -4,7 +4,13 @@ import { t } from 'i18next';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchLocation } from '../store/actions/fetchLocation';
 import { clearSearchResults } from '../store/slices/locationSlice';
-import {setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode} from '../store/slices/weatherSlice';
+import {
+    setLocation,
+    setCurrentCity,
+    setCurrentCountry,
+    setCurrentIsoCountryCode,
+    setCurrentAdmin1
+} from '../store/slices/weatherSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { LocationResult } from "../store/types/types";
 import { fetchWeather } from "../store/actions/fetchWeather";
@@ -30,6 +36,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => 
         ? `${~~item.weatherInfo.temperature_current}°`
         : '-';
 
+    const formatLocation = () => {
+        const parts : string[] = [];
+        if (item.country) parts.push(item.country);
+        if (item.admin1?.trim()) parts.push(item.admin1);
+
+        return parts.join(' • '); // Используем красивый разделитель
+    };
+
     return (
         <TouchableOpacity
             className="bg-white/10 rounded-3xl px-4 py-2 mb-3 h-40 flex-col relative"
@@ -51,7 +65,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => 
                         maxWidth={220}
                         scrollThreshold={15}
                     />
-                    <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{item.country}</Text>
+                    <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{formatLocation()}</Text>
                     <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">
                         {`${localDate?.getUTCHours().toString().padStart(2, '0')}:${localDate?.getUTCMinutes().toString().padStart(2, '0')}`}
                     </Text>
@@ -116,7 +130,8 @@ const SearchScreen = () => {
 
         dispatch(setCurrentCity(location.name ?? ""));
         dispatch(setCurrentCountry(location.country ?? ""));
-        dispatch(setCurrentIsoCountryCode(location.country_code ?? ""))
+        dispatch(setCurrentIsoCountryCode(location.country_code ?? ""));
+        dispatch(setCurrentAdmin1(location.admin1 ?? ""));
 
         await Promise.all([
             dispatch(fetchWeather()),

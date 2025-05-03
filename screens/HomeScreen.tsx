@@ -292,6 +292,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         && fav.country == weatherState.currentCountry
         && fav.country_code == weatherState.currentIsoCountryCode
         && fav.utc_offset_seconds == weatherState.data!.utc_offset_seconds
+        && fav.admin1 == weatherState.currentAdmin1
     );
 
     // В функции toggleFavorite заменим на:
@@ -304,7 +305,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             name: weatherState.currentCity,
             country: weatherState.currentCountry,
             country_code: weatherState.currentIsoCountryCode,
-            admin1: null,
+            admin1: weatherState.currentAdmin1,
             latitude: weatherState.location.latitude,
             longitude: weatherState.location.longitude,
             weatherInfo: {
@@ -323,6 +324,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 && fav.country == weatherState.currentCountry
                 && fav.country_code == weatherState.currentIsoCountryCode
                 && fav.utc_offset_seconds == weatherState.data!.utc_offset_seconds
+                && fav.admin1 == weatherState.currentAdmin1
             );
             if (favToRemove) {
                 dispatch(removeFavorite(favToRemove.id));

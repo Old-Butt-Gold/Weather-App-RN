@@ -26,6 +26,7 @@ export interface WeatherState {
     windSpeedUnit: WindSpeedUnit;
     currentCity: string | null;
     currentCountry: string | null;
+    currentAdmin1: string | null;
     currentIsoCountryCode: string | null;
     moonPhase: number | null;
     airQuality: AirQuality | null;
@@ -40,6 +41,7 @@ const initialState: WeatherState = {
     temperatureUnit: '°C',
     windSpeedUnit: 'km/h',
     currentCity: null,
+    currentAdmin1: null,
     currentCountry: null,
     currentIsoCountryCode: null,
     moonPhase: null,
@@ -103,6 +105,9 @@ const weatherSlice = createSlice({
         },
         setCurrentIsoCountryCode(state, action: PayloadAction<string | null>) {
             state.currentIsoCountryCode = action.payload;
+        },
+        setCurrentAdmin1(state, action: PayloadAction<string | null>) {
+            state.currentAdmin1 = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -166,6 +171,7 @@ const weatherSlice = createSlice({
                 state.currentCity = action.payload.city;
                 state.currentCountry = action.payload.country;
                 state.currentIsoCountryCode = action.payload.countryCode;
+                state.currentAdmin1 = "";
             })
             .addCase(fetchLocationByIP.rejected, (state, action) => {
                 state.status = 'failed';
@@ -179,5 +185,5 @@ const weatherSlice = createSlice({
 
 const DEFAULT_COORDINATES = { latitude: 53.9, longitude: 27.56667, city: "Минск" };
 
-export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode } = weatherSlice.actions;
+export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode, setCurrentAdmin1 } = weatherSlice.actions;
 export const weatherReducer = weatherSlice.reducer;

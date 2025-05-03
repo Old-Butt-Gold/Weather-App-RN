@@ -32,7 +32,8 @@ const favoritesSlice = createSlice({
                 fav.country == action.payload.country &&
                 fav.country_code == action.payload.country_code &&
                 fav.latitude === action.payload.latitude &&
-                fav.longitude === action.payload.longitude
+                fav.longitude === action.payload.longitude &&
+                fav.admin1 == action.payload.admin1
             )) {
                 state.favorites.push(action.payload);
             }
