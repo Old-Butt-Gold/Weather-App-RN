@@ -48,6 +48,8 @@ export const fetchMapWeather = createAppAsyncThunk<WeatherMapData, Coordinates>(
             const locationInfo = await getLocationName(latitude, longitude);
 
             const weatherMapData: WeatherMapData = {
+                temperatureUnit: currentTempUnit,
+                windSpeedUnit: currentWindUnit,
                 name: locationInfo.city,
                 country: locationInfo.country,
                 isoCountryCode: locationInfo.isoCountryCode,

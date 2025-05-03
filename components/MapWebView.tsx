@@ -365,8 +365,26 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             html += '<div>' + weatherDesc + '</div>';
             html += '</div>';
             
-            html += '<div>${translations.weatherData.temperature}: ' + Math.round(data.current.temperature_2m) + '°C</div>';
-            html += '<div>${translations.weatherData.wind}: ' + data.current.wind_speed_10m.toFixed(1) + ' m/s</div>';
+            const tempUnit = data.temperatureUnit;
+            const windUnit = data.windSpeedUnit;
+            
+            log(tempUnit);
+            log(windUnit);
+            
+            let translationWindUnit = "";
+            
+            if (windUnit === 'km/h') {
+                translationWindUnit = '${translations.weatherDescription.kilometersHour}';
+            }
+            if (windUnit === 'm/s') {
+                translationWindUnit = '${translations.weatherDescription.metersSeconds}';
+            }
+            if (windUnit === 'mph') {
+                translationWindUnit = '${translations.weatherDescription.mph}';
+            }
+            
+            html += '<div>${translations.weatherData.temperature}: ' + Math.round(data.current.temperature_2m) + ' ' + tempUnit + '</div>';
+            html += '<div>${translations.weatherData.wind}: ' + data.current.wind_speed_10m.toFixed(1) + ' ' + translationWindUnit + '</div>';
             html += '<div>${translations.weatherData.humidity}: ' + data.current.relative_humidity_2m + '%</div>';
             
             if (data.current.pressure_msl) {

@@ -48,6 +48,9 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
     // Create translations object for the WebView
     const weatherMapTranslations = {
         weatherDescription: {
+            kilometersHour: t('windUnit.km/h'),
+            metersSeconds: t('windUnit.m/s'),
+            mph: t('windUnit.mph'),
             clear: t('weatherMap.weatherDescription.clear'),
             mainlyClear: t('weatherMap.weatherDescription.mainlyClear'),
             partlyCloudy: t('weatherMap.weatherDescription.partlyCloudy'),
