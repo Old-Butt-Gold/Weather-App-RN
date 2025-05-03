@@ -40,9 +40,9 @@ const WEATHER_ANIMATIONS: Record<WeatherType, WeatherAnimationGroup> = {
         ],
         click: {
             day: { source: require("../assets/svg-icons/animations/sunny/TouchSun.json"), repeats: 1 },
-            night: { source: require("../assets/svg-icons/animations/sunny/TouchSun.json"), repeats: 1 }
+            night: { source: require("../assets/svg-icons/animations/moon/FallingStar.json"), repeats: 1 }
         },
-        night: { source: require("../assets/svg-icons/animations/sunny/TouchSun.json"), repeats: 1 }
+        night: { source: require("../assets/svg-icons/animations/moon/Moon.json"), repeats: 1 }
     },
     // partly_cloudy: {
     //     idle: [
