@@ -1,5 +1,4 @@
-﻿// Weather map state interface
-import {Coordinates, MapLayerType, Status, WeatherMapData} from "../types/types";
+﻿import {Coordinates, MapLayerType, Status, WeatherMapData} from "../types/types";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchCurrentLocation} from "../actions/fetchCurrentLocation";
 import {fetchMapWeather} from "../actions/fetchMapWeather";
@@ -55,7 +54,6 @@ const weatherMapSlice = createSlice({
                 state.loading = true;
                 state.error = action.payload ? (action.payload as { message: string }).message : action.error.message || null;
             })
-            // Handle fetchCurrentLocation
             .addCase(fetchCurrentLocation.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;

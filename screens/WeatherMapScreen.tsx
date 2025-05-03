@@ -2,35 +2,24 @@
 import { View, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
-
-// Import components
 import MapWebView from '../components/MapWebView';
 import LayerButtons from '../components/LayerButtons';
 import WeatherHeader from '../components/WeatherHeader';
 import LoadingOverlay from '../components/LoadingOverlay';
 import ActionButton from '../components/ActionButton';
-
-// Import actions
 import { fetchMapWeather } from '../store/actions/fetchMapWeather';
 import {setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode} from '../store/slices/weatherSlice';
 import { fetchWeather } from '../store/actions/fetchWeather';
 import { fetchMoonPhase } from '../store/actions/fetchMoonPhase';
 import { fetchAirQuality } from '../store/actions/fetchAirQuality';
-
-// Import types
 import { MapLayerType, WeatherMapData } from '../store/types/types';
 import { t } from 'i18next';
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {fetchCurrentLocation} from "../store/actions/fetchCurrentLocation";
 
-// Type for screen props
 type WeatherMapScreenProps = {
     navigation: any;
 };
-
-// Initial map coordinates (Minsk)
-const DEFAULT_LATITUDE = 53.9;
-const DEFAULT_LONGITUDE = 27.6;
 
 export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
     const dispatch = useAppDispatch();
@@ -45,7 +34,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
     const currentWeatherLocation = useAppSelector(x => x.weather.location);
     const {latitude, longitude} = currentWeatherLocation!;
 
-    // Create translations object for the WebView
     const weatherMapTranslations = {
         weatherDescription: {
             kilometersHour: t('windUnit.km/h'),
@@ -99,7 +87,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     };
 
-    // Handle button press - Apply the selected location
     const handleApplyLocation = async () => {
         if (!weatherData) return;
 
@@ -126,7 +113,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     };
 
-    // Change map layer type
     const handleLayerChange = (type: MapLayerType) => {
         console.log(`Changing map layer to: ${type}`);
         setActiveLayer(type);
@@ -149,7 +135,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     };
 
-    // Get current location and weather data
     const handleLocationRequest = async () => {
         try {
             setIsLoading(true);
@@ -172,7 +157,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     };
 
-    // Center map on coordinates
     const centerMap = (latitude: number, longitude: number, zoom = 10) => {
         if (webViewRef.current) {
             const script = `
@@ -193,7 +177,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     };
 
-    // Update weather data in the WebView
     const updateWeatherDataInWebView = (weatherData: WeatherMapData) => {
         if (webViewRef.current) {
             const script = `
@@ -212,7 +195,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     };
 
-    // Set initial layer after map load
     useEffect(() => {
         if (mapLoaded) {
             // Set active layer after map load
@@ -220,7 +202,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         }
     }, [mapLoaded]);
 
-    // WebView message handler
     const handleWebViewMessage = async (event: any) => {
         try {
             const message = JSON.parse(event.nativeEvent.data);
@@ -265,7 +246,6 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
         <View style={styles.container}>
             <StatusBar style="light" />
 
-            {/* Map WebView Component */}
             <MapWebView
                 ref={webViewRef}
                 initialLatitude={latitude}
@@ -274,27 +254,23 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
                 onMessage={handleWebViewMessage}
             />
 
-            {/* Layer Buttons Component */}
             <LayerButtons
                 activeLayer={activeLayer}
                 onLayerChange={handleLayerChange}
                 onLocationRequest={handleLocationRequest}
             />
 
-            {/* Header Component */}
             <WeatherHeader
                 title={t('weatherMap.title')}
                 onBack={() => navigation.goBack()}
             />
 
-            {/* Action Button - only visible when weather data is available */}
             <ActionButton
                 title={t('weatherMap.actionButton')}
                 visible={!!weatherData}
                 onPress={handleApplyLocation}
             />
 
-            {/* Loading Overlay Component */}
             <LoadingOverlay isVisible={isLoading} />
         </View>
     );

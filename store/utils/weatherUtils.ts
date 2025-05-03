@@ -1,4 +1,4 @@
-﻿import {weatherReducer, WeatherState} from "../slices/weatherSlice";
+﻿import {WeatherState} from "../slices/weatherSlice";
 
 export const getWeatherCodeForHour = (weatherState: WeatherState, hour: number) => {
     return weatherState.data!.hourly.weather_code[hour];
@@ -39,13 +39,10 @@ export function formatDate(date: Date): string {
 }
 
 export const getCurrentLocalDateFromWeatherState = (weatherState: WeatherState): Date => {
-    // Получаем текущее UTC время (оно же по нулевому меридиану)
     const utcNow = new Date();
 
-    // Смещение в секундах (например, 10800 = 3 часа)
     const offsetSeconds = weatherState.data!.utc_offset_seconds;
 
-    // Получаем локальное время с учётом смещения
     const localTime = new Date(utcNow.getTime() + offsetSeconds * 1000);
 
     return localTime;

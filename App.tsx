@@ -11,7 +11,6 @@ import {store} from "./store/store";
 import {useAppDispatch, useAppSelector} from "./store/hooks";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ChatScreen} from "./screens/ChatScreen";
 import { SettingsScreen } from './screens/SettingsScreen';
 import { WeatherMapScreen } from './screens/WeatherMapScreen';
@@ -23,7 +22,6 @@ const Stack = createStackNavigator();
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 import {fetchLocationByIP} from "./store/actions/fetchLocationByIp";
-import {setLanguage} from "./store/slices/appSettingsSlice";
 import SearchScreen from "./screens/SearchScreen";
 import {createStackNavigator} from "@react-navigation/stack";
 

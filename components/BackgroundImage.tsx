@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleProp, ImageStyle, ViewStyle, Animated, Easing, StyleSheet } from 'react-native';
+import { View, Image, StyleProp, ImageStyle, ViewStyle, Animated, StyleSheet } from 'react-native';
 import { useAppSelector } from '../store/hooks';
 import { getCurrentLocalDateFromWeatherState, getWeatherCodeForHour } from '../store/utils/weatherUtils';
 import bgImages from "../utils/bgConverter";
 import { useRoute } from "@react-navigation/native";
-import { LinearGradient } from 'expo-linear-gradient'; // Если ты на Expo
+import { LinearGradient } from 'expo-linear-gradient';
 
 type BackgroundImageProps = {
     blurRadius?: number;
@@ -17,16 +17,17 @@ type BackgroundImageProps = {
     hourOverride?: number;
 };
 
-const BackgroundImage: React.FC<BackgroundImageProps> = ({
-                                                             blurRadius = 6,
-                                                             overlayColor = 'rgba(0, 0, 0, 0.1)',
-                                                             imageStyle,
-                                                             containerStyle,
-                                                             isPage,
-                                                             resizeMode = 'cover',
-                                                             weatherCodeOverride,
-                                                             hourOverride,
-                                                         }) => {
+const BackgroundImage: React.FC<BackgroundImageProps> = (
+    {
+        blurRadius = 6,
+        overlayColor = 'rgba(0, 0, 0, 0.1)',
+        imageStyle,
+        containerStyle,
+        isPage,
+        resizeMode = 'cover',
+        weatherCodeOverride,
+        hourOverride,
+    }) => {
     const weatherState = useAppSelector(x => x.weather);
     const defaultWeatherCode = getWeatherCodeForHour(weatherState, 0);
     const defaultLocalNowDate = getCurrentLocalDateFromWeatherState(weatherState);

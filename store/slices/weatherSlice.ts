@@ -1,20 +1,11 @@
-// src/redux/slices/weatherSlice.ts
 
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {
-    AirQuality,
-    Coordinates,
-    Status,
-    TemperatureUnit,
-    WeatherData,
-    WindSpeedUnit
-} from "../types/types";
+import {AirQuality, Coordinates, Status, TemperatureUnit, WeatherData, WindSpeedUnit} from "../types/types";
 import {fetchWeather} from "../actions/fetchWeather";
 import {fetchMoonPhase} from "../actions/fetchMoonPhase";
 import {fetchAirQuality} from "../actions/fetchAirQuality";
 import {convertTemperature, convertWindSpeed} from "../utils/convertUtils";
 import {fetchLocationByIP} from "../actions/fetchLocationByIp";
-import {act} from "react";
 
 export interface WeatherState {
     data: WeatherData | null;
@@ -112,7 +103,6 @@ const weatherSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Обработка fetchWeather
             .addCase(fetchWeather.pending, (state) => {
                 state.status = 'loading';
                 state.loading = true;
@@ -128,7 +118,6 @@ const weatherSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload ? action.payload.message : 'Ошибка запроса';
             })
-            // Обработка fetchMoonPhase
             .addCase(fetchMoonPhase.pending, (state) => {
                 state.status = 'loading';
                 state.loading = true;

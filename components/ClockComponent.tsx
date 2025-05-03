@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import Svg, {Circle, Defs, Line, Path, Polygon, RadialGradient, Stop, Text as SvgText, TSpan} from 'react-native-svg';
-import {BlurView} from "expo-blur";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -10,7 +9,7 @@ import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
 import {t} from "i18next";
-import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {useAppSelector} from "../store/hooks";
 import {
     formatDate,
     getCurrentLocalDateFromWeatherState,
@@ -48,8 +47,6 @@ const TypeSelectorButton = React.memo(
 export const ClockComponent = () => {
     const weatherState = useAppSelector(x => x.weather);
 
-    // const today = new Date();
-    // console.log("simple-",today);
     const localNowDate = getCurrentLocalDateFromWeatherState(weatherState);
     const tomorrow = new Date(localNowDate);
     tomorrow.setDate(localNowDate.getDate() + 1);
@@ -71,17 +68,14 @@ export const ClockComponent = () => {
     const temperatures = weatherState.data!.hourly.temperature_2m;
     const windSpeeds = weatherState.data!.hourly.wind_speed_10m;
 
-    // Размеры
     const svgSize = Dimensions.get('window').width;
     const topMargin = 95;
 
-    // Таймер
     useEffect(() => {
         const timer = setInterval(() => setTime(getCurrentLocalDateFromWeatherState(weatherState)), 1000);
         return () => clearInterval(timer);
     }, [weatherState.data?.utc_offset_seconds]);
 
-    // Текущие значения
     const currentHour = time.getUTCHours();
 
     const currentMinute = time.getUTCMinutes();
@@ -219,8 +213,7 @@ export const ClockComponent = () => {
         const rad = (angle * Math.PI) / 180;
         const iconRadius = 32;
 
-        // Пример генерации weatherCode и isDay. Ты можешь подставлять реальные данные.
-        const weatherCode = getWeatherCodeForHour(weatherState, index); // например, '63'
+        const weatherCode = getWeatherCodeForHour(weatherState, index);
         const isDay = weatherState.data!.hourly.is_day[index] === 1;
 
         return (
@@ -263,11 +256,9 @@ export const ClockComponent = () => {
             <View style={{ marginTop: topMargin }}>
                 <Svg width={svgSize} height={svgSize} viewBox="0 0 100 100">
 
-                    {/* Основные элементы */}
                     <Path d={describeFullRing(50, 50, 38, 26)} fill="rgba(17, 24, 39, 0.05)" />
                     <Path d={describeFullRing(50, 50, 46, 38)} fill="rgba(255, 255, 255, 0.15)" />
 
-                    {/* Центральная информация */}
                     <SvgText
                         x="52"
                         y="43"
@@ -293,7 +284,6 @@ export const ClockComponent = () => {
 
                     {[12, 102, 192, 282].map(renderDirectionIndicator)}
 
-                    {/* Кольца с градиентом */}
                     <RingWithGradient
                         radiusInner={22}
                         radiusOuter={26}
@@ -359,7 +349,6 @@ export const ClockComponent = () => {
                     />
 
                     <Svg>
-                        {/* Тень (размытый круг под основным) */}
                         <Defs>
                             <RadialGradient
                                 id="shadowGlow"
@@ -374,7 +363,6 @@ export const ClockComponent = () => {
                             </RadialGradient>
                         </Defs>
 
-                        {/* Фоновая тень */}
                         <Circle
                             cx={50}
                             cy={63}
@@ -384,7 +372,6 @@ export const ClockComponent = () => {
 
 
                     </Svg>
-                    {/* Стрелка направления ветра */}
                     <Polygon
                         points={`
                           ${50 + (5.5 * 1.35) * Math.cos(angleRad)},${63 + (5.5 * 1.35) * Math.sin(angleRad)} 
@@ -395,7 +382,6 @@ export const ClockComponent = () => {
                         fill="white"
                     />
 
-                    {/* Круг на конце линии ветра */}
                     <Circle
                         cx={50 + (5.5 + 1) * Math.cos(angleRad + Math.PI)}
                         cy={63 + (5.5 + 1) * Math.sin(angleRad + Math.PI)}
@@ -428,7 +414,6 @@ export const ClockComponent = () => {
                 </Svg>
             </View>
 
-            {/* Иконки осадков */}
             {selectedType === 'precipitation' && HOUR_MARKS.map(renderPrecipitationIcon)}
         </View>
     );

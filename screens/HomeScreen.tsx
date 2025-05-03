@@ -1,8 +1,6 @@
-import React, {useState, useCallback, useRef, useEffect} from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Image, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import React, {useCallback, useRef} from 'react';
+import { View, TouchableOpacity, Text, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { BlurView } from 'expo-blur';
-import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { t } from 'i18next';
@@ -19,7 +17,6 @@ import {
     getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
-import { fetchLocationByIP } from "../store/actions/fetchLocationByIp";
 import { fetchWeather } from "../store/actions/fetchWeather";
 import { fetchMoonPhase } from "../store/actions/fetchMoonPhase";
 import { fetchAirQuality } from "../store/actions/fetchAirQuality";
@@ -27,11 +24,9 @@ import BackgroundImage from "../components/BackgroundImage";
 import {
     addFavorite,
     ExtendedLocationResult,
-    loadFavorites,
     removeFavorite,
     saveFavorites
 } from "../store/slices/favoritesSlice";
-import {LocationResult} from "../store/types/types";
 import {LocationTitle} from "../components/RunningLine";
 import {AnimatedWeatherCloud} from "../components/WeatherAnimation";
 
@@ -60,20 +55,6 @@ const IconButton = ({ icon }: { icon: React.ReactNode }) => (
     <View className="p-3 rounded-[15] bg-[#004b5870]/15">{icon}</View>
 );
 
-// Компонент заголовка местоположения
-// const LocationTitle = () => {
-//     const weatherCity = useAppSelector(state => state.weather.currentCity);
-//
-//     return (
-//         <View className="flex-col items-center">
-//             <Text className="font-manrope-extrabold text-2xl text-accent">{weatherCity}</Text>
-//             <View className="w-20 h-2 bg-[#004b5870]/15 rounded-2xl"></View>
-//         </View>
-//     );
-// };
-
-
-// Компонент заголовка погоды
 const WeatherHeader = () => {
     const weatherState = useAppSelector(state => state.weather);
     const localNowDate = getCurrentLocalDateFromWeatherState(weatherState);
@@ -82,12 +63,11 @@ const WeatherHeader = () => {
     const monthShort = t(`date.monthShort.${localNowDate.getUTCMonth()}`);
 
     const dispatch = useAppDispatch();
-
-    const currentLanguage = useAppSelector(state => state.appSettings.language);
+    useAppSelector(state => state.appSettings.language);
 
     const handleRefreshPress = async () => {
         try {
-            // Параллельно обновляем все данные
+
             await Promise.all([
                 dispatch(fetchWeather()),
                 dispatch(fetchMoonPhase()),
@@ -113,7 +93,6 @@ const WeatherHeader = () => {
     );
 };
 
-// Компонент диапазона температур
 const TemperatureRange = () => {
     const weatherState = useAppSelector(state => state.weather);
     const max = ~~weatherState.data?.daily.temperature_2m_max[1]!;
@@ -170,7 +149,6 @@ const TemperatureDisplay = () => {
     );
 };
 
-// Компонент карточки деталей погоды
 const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
     return (
         <View className="w-[48%] bg-white/15 rounded-[20px] px-3 py-4">
@@ -200,7 +178,6 @@ const WeatherButtons = ({ onChatPress }: WeatherButtonsProps) => (
     </View>
 );
 
-// Компонент деталей погоды
 const WeatherDetails = () => {
     const weatherState = useAppSelector(x => x.weather);
     const weatherDetails: WeatherDetailsItem[] = [];
@@ -240,7 +217,6 @@ const WeatherDetails = () => {
     </View>
 };
 
-// Компонент контента погоды
 const WeatherContent = ({ isNightTime,onChatPress  }: Omit<WeatherCardProps, 'onChatPress | currentAnimation | animationKey | onAnimationPress | onAnimationFinish'>) => (
     <View className="flex-col">
         <View className="flex-row justify-between">
@@ -257,7 +233,6 @@ const WeatherContent = ({ isNightTime,onChatPress  }: Omit<WeatherCardProps, 'on
     </View>
 );
 
-// Компонент карточки погоды
 const WeatherCard = ({
                          isNightTime,
                          onChatPress
@@ -275,7 +250,6 @@ const WeatherCard = ({
     </View>
 );
 
-// Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const dispatch = useAppDispatch();
     // DON'T DELETE IT ALL APP WORK ON THIS LINE
@@ -291,7 +265,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
         && fav.admin1 == weatherState.currentAdmin1
     );
 
-    // В функции toggleFavorite заменим на:
     const toggleFavorite = async () => {
         if (!weatherState.location) return;
 
@@ -354,7 +327,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 isPage={true}
             />
 
-            {/* Фиксированный хедер с анимированным фоном */}
             <Animated.View
                 className="w-full flex-row justify-between items-center px-4 pt-10 pb-4 absolute top-0 left-0 right-0 z-50"
                 style={{

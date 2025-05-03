@@ -4,15 +4,9 @@ import { t } from 'i18next';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchLocation } from '../store/actions/fetchLocation';
 import { clearSearchResults } from '../store/slices/locationSlice';
-import {
-    setLocation,
-    setCurrentCity,
-    setCurrentCountry,
-    setCurrentIsoCountryCode,
-    setCurrentAdmin1
-} from '../store/slices/weatherSlice';
+import {setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode, setCurrentAdmin1} from '../store/slices/weatherSlice';
 import { Ionicons } from '@expo/vector-icons';
-import { LocationResult } from "../store/types/types";
+import {LocationResult, TemperatureUnit} from "../store/types/types";
 import { fetchWeather } from "../store/actions/fetchWeather";
 import { fetchMoonPhase } from "../store/actions/fetchMoonPhase";
 import { fetchAirQuality } from "../store/actions/fetchAirQuality";
@@ -26,14 +20,15 @@ import {LocationTitle} from "../components/RunningLine";
 interface SearchResultCardProps {
     item: LocationResult;
     onPress: () => void;
+    temperatureUnit: TemperatureUnit;
 }
 
-const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => {
+const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, temperatureUnit} : SearchResultCardProps) => {
     const localDate = item.weatherInfo.utc_offset_seconds !== null
         ? getLocalDateByOffsetSeconds(item.weatherInfo.utc_offset_seconds)
         : null;
     const temperatureText = item.weatherInfo.temperature_current !== null
-        ? `${~~item.weatherInfo.temperature_current}°`
+        ? `${~~item.weatherInfo.temperature_current}${temperatureUnit}`
         : '-';
 
     const formatLocation = () => {
@@ -41,7 +36,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => 
         if (item.country) parts.push(item.country);
         if (item.admin1?.trim()) parts.push(item.admin1);
 
-        return parts.join(' • '); // Используем красивый разделитель
+        return parts.join(' • ');
     };
 
     return (
@@ -81,7 +76,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress}) => 
                     {t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}
                 </Text>
                 <Text className="text-white/80 font-manrope-bold text-[13px]">
-                    {`${t("search.maxLabel")} : ${~~item.weatherInfo.temperature_max!}°, ${t("search.minLabel")} : ${~~item.weatherInfo.temperature_min!}°`}
+                    {`${t("search.maxLabel")} : ${~~item.weatherInfo.temperature_max!}${temperatureUnit}, ${t("search.minLabel")} : ${~~item.weatherInfo.temperature_min!}${temperatureUnit}`}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -98,7 +93,6 @@ const SearchScreen = () => {
     const temperatureUnit = useAppSelector(state => state.weather.temperatureUnit);
 
     useEffect(() => {
-        // Загружаем избранные при монтировании
         dispatch(loadFavorites());
 
         return () => {
@@ -156,7 +150,6 @@ const SearchScreen = () => {
                 <View style={{ width: 24 }} />
             </View>
 
-            {/* Search Input */}
             <View className="bg-white/10 rounded-xl p-1 mb-4 flex-row items-center">
                 <Ionicons name="search" size={20} color="white" style={{ marginRight: 8 }} />
                 <TextInput
@@ -169,7 +162,6 @@ const SearchScreen = () => {
                 />
             </View>
 
-            {/* Results List */}
             {loading ? (
                 <ActivityIndicator size="large" color="white" />
             ) : (
@@ -181,6 +173,7 @@ const SearchScreen = () => {
                         <SearchResultCard
                             item={item}
                             onPress={async () => await handleSelectLocation(item)}
+                            temperatureUnit={temperatureUnit}
                         />
                     )}
                     ListEmptyComponent={

@@ -4,9 +4,9 @@ import geocodingApi from "../../api/geocodingApi";
 import {fetchRawWeather} from "../utils/weatherService";
 
 export interface FetchLocationParams {
-    query: string; //введенное значение в поле
-    language: string; //язык i18next
-    temperatureUnit: TemperatureUnit; // температурный Unit
+    query: string;
+    language: string;
+    temperatureUnit: TemperatureUnit;
 }
 
 export const fetchLocation = createAppAsyncThunk<LocationResult[], FetchLocationParams>(
@@ -22,14 +22,12 @@ export const fetchLocation = createAppAsyncThunk<LocationResult[], FetchLocation
                 format: 'json',
             };
 
-            // 1) геокодим
             const geoRes = await geocodingApi.get("", {
                 params: requestParams,
             });
 
             const rawLocations = (geoRes.data.results || []) as LocationResult[];
 
-            // 2) для каждого location параллельно притягиваем погоду
             const enriched: LocationResult[] = await Promise.all(
                 rawLocations.map(async loc => {
                     const w = await fetchRawWeather(loc.latitude, loc.longitude, temperatureUnit);

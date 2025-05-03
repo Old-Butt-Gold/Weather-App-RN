@@ -15,24 +15,25 @@ interface RingWithGradientProps {
     }[];
     defaultColor?: string;
     opacity?: number;
-    cx?: number; // Центр по X
-    cy?: number; // Центр по Y
-    rotationDeg?: number; // Новый параметр для поворота сектора
+    cx?: number;
+    cy?: number;
+    rotationDeg?: number;
 }
 
-const RingWithGradient: React.FC<RingWithGradientProps> = ({
-                                                               radiusInner,
-                                                               radiusOuter,
-                                                               startAngle,
-                                                               endAngle,
-                                                               segments = 200,
-                                                               gradientRanges,
-                                                               defaultColor = "gray",
-                                                               opacity = 1,
-                                                               cx = 50, // По умолчанию 50
-                                                               cy = 50,
-                                                               rotationDeg = 0, // По умолчанию 0
-                                                           }) => {
+const RingWithGradient: React.FC<RingWithGradientProps> = (
+    {
+        radiusInner,
+        radiusOuter,
+        startAngle,
+        endAngle,
+        segments = 200,
+        gradientRanges,
+        defaultColor = "gray",
+        opacity = 1,
+        cx = 50,
+        cy = 50,
+        rotationDeg = 0,
+    }) => {
     const toRad = (deg: number) => (Math.PI / 180) * deg;
 
     const getColor = (angle: number): string => {

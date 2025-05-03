@@ -1,5 +1,4 @@
-﻿// Асинхронный thunk для получения данных погоды по координатам
-import {createAppAsyncThunk} from "../hooks";
+﻿import {createAppAsyncThunk} from "../hooks";
 import {TemperatureUnit, WeatherData, WindSpeedUnit} from "../types/types";
 import meteoApi from "../../api/meteoApi";
 

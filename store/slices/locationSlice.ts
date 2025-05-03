@@ -20,7 +20,6 @@ const locationSlice = createSlice({
     name: 'location',
     initialState,
     reducers: {
-        // Для очистки результатов поиска, например, после выбора города
         clearSearchResults(state) {
             state.searchResults = [];
             state.status = 'idle';

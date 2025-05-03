@@ -1,9 +1,7 @@
 ﻿import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import LoadingOverlay from "./LoadingOverlay";
 
-// WebView props
 interface MapWebViewProps {
     initialLatitude: number;
     initialLongitude: number;
@@ -11,7 +9,6 @@ interface MapWebViewProps {
     onMessage: (event: any) => void;
 }
 
-// Generates HTML for the map
 const getWeatherMapHtml = (latitude: number, longitude: number, translations: Record<string, any>) => {
     return `
     <!DOCTYPE html>
@@ -21,7 +18,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Weather Map</title>
       
-      <!-- Leaflet CSS -->
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
       
       <style>
@@ -106,7 +102,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
       <div id="map"></div>
       <div id="weather-data" class="weather-data" style="display: none;"></div>
       
-      <!-- Leaflet JS -->
       <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
       
       <script>
@@ -117,7 +112,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             message: message
           }));
         }
-        // Initialize map
         const map = L.map('map', { zoomControl: false, attributionControl: false })
       .setView([${latitude}, ${longitude}], 12);
         
@@ -129,7 +123,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           popupAnchor: [0, -32]
         });
         
-        // Функция скрытия данных
         function hideWeatherData() {
           document.getElementById('weather-data').style.display = 'none';
           if (lastMarker) {
@@ -138,7 +131,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }
         }
         
-        // Base light map layer
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
           minZoom: 3,
@@ -153,7 +145,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           attribution: 'Google Maps'
         }).addTo(map);
         
-        // Add scale
         L.control.scale({
           position: 'bottomleft',
           imperial: false
@@ -161,9 +152,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         
         let weatherLayer = null;        
         
-        // Function to display legend
         function addLegend(layerType) {
-          // Remove existing legend if any
           if (window.legend) {
             map.removeControl(window.legend);
             window.legend = null;
@@ -171,7 +160,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           
           if (layerType === 'none') return;
           
-          // Create new legend based on layer type
           window.legend = L.control({position: 'bottomright'});
           
           window.legend.onAdd = function(map) {
@@ -272,10 +260,8 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             div.innerHTML = '<h4>' + title + '</h4>';
             
             if (gradient !== 'none') {
-              // Add gradient
               div.innerHTML += '<div style="height: 30px; background: ' + gradient + '; margin-bottom: 5px;"></div>';
               
-              // Add labels
               let stopsHtml = '<div class="labels">';
               for (let i = 0; i < stops.length; i++) {
                 stopsHtml += '<span>' + stops[i] + '</span>';
@@ -288,32 +274,21 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           };
           
           window.legend.addTo(map);
-          log('Added legend for ' + layerType);
         }
         
-        // Function to set weather layer
         function setWeatherLayer(layerType) {
-          log('Setting weather layer: ' + layerType);
-          
-          // Remove current weather layer if any
           if (weatherLayer) {
             map.removeLayer(weatherLayer);
             weatherLayer = null;
-            log('Removed previous weather layer');
           }
           
-          // If NONE layer selected, exit
           if (layerType === 'none') {
-            log('No weather layer selected');
             addLegend('none');
             return;
           }
           
-          // Create URL for OpenWeatherMap layer
           const weatherLayerUrl = '${process.env.EXPO_PUBLIC_OPENWEATHER_API_URL}/' + layerType + '/{z}/{x}/{y}.png?appid=${process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY}';
-          log('Weather layer URL template: ' + weatherLayerUrl);
           
-          // Create new layer
           weatherLayer = L.tileLayer(weatherLayerUrl, {
             maxZoom: 19,
             minZoom: 3,
@@ -326,15 +301,11 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             log('Error loading tile: ' + tile._url);
           });
           
-          // Add layer to map
           weatherLayer.addTo(map);
-          log('Weather layer added to map');
           
-          // Add legend
           addLegend(layerType);
         }
         
-        // Function to display weather data
         function displayWeatherData(data) {
           const weatherDataDiv = document.getElementById('weather-data');
   
@@ -357,7 +328,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           ;
           
           if (data.current) {
-            // Get weather description by code
             const weatherDesc = getWeatherDescription(data.current.weather_code);
             
             html += '<div style="display: flex; align-items: center; margin-bottom: 3px;">';
@@ -416,7 +386,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           weatherDataDiv.style.display = 'block';
         }
         
-        // Get weather icon by code
         function getWeatherIcon(code, isDay) {
           isDay = isDay === 1;
           
@@ -469,7 +438,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }
         }
         
-        // Get weather description by code
         function getWeatherDescription(code) {
           switch(code) {
             case 0:
@@ -529,10 +497,8 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }
         }
         
-        // Map click handler
         map.on('click', function(e) {
           
-          // Отправляем запрос на получение данных
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'FETCH_WEATHER',
             latitude: e.latlng.lat,
@@ -540,15 +506,12 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }));
         });
         
-        // Tell React Native that map is loaded
         map.whenReady(function() {
-          log('Map ready');
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'MAP_LOADED'
           }));
         });
         
-        // Message handler from React Native
         window.addEventListener('message', function(event) {
           try {
             const data = JSON.parse(event.data);
@@ -558,7 +521,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             } else if (data.type === 'SET_WEATHER_DATA') {
               displayWeatherData(data.weatherData);
             } else if (data.type === 'SET_CENTER') {
-              const zoom = Math.min(Math.max(data.zoom || 10, 3), 18); // Ограничение зума
+              const zoom = Math.min(Math.max(data.zoom || 10, 3), 19); 
               map.setView([data.latitude, data.longitude], zoom);
             }
           } catch (error) {
@@ -571,7 +534,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
   `;
 };
 
-// MapWebView component with forwardRef to allow parent to access the WebView ref
 const MapWebView = forwardRef<WebView, MapWebViewProps>(
     (
         {

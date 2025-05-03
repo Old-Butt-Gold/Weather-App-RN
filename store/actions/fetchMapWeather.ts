@@ -73,10 +73,8 @@ interface LocationInfo {
     isoCountryCode: string;
 }
 
-// Helper function to get location name from coordinates
 const getLocationName = async (latitude: number, longitude: number): Promise<LocationInfo> => {
     try {
-        // Use reverse geocoding to get location name
         const location = await Location.reverseGeocodeAsync({
             latitude,
             longitude

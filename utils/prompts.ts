@@ -1,9 +1,6 @@
-// This file contains system prompts for the ChatGPT model
 import {WeatherState} from "../store/slices/weatherSlice";
 
-// Helper function to get weather condition text from code
 export const getWeatherConditionText = (code: number): string => {
-  // WMO Weather interpretation codes (WW)
   const weatherCodes: Record<number, string> = {
     0: 'Clear sky',
     1: 'Mainly clear',
@@ -38,7 +35,6 @@ export const getWeatherConditionText = (code: number): string => {
   return weatherCodes[code] || 'Unknown';
 };
 
-// Base system prompt that defines the assistant's personality and constraints
 export const BASE_SYSTEM_PROMPT = `You are a friendly weather assistant in a mobile app.
 You provide helpful, concise, and friendly responses to weather-related questions.
 Keep your answers relatively short (2-3 paragraphs maximum) and conversational.
@@ -46,7 +42,6 @@ Be enthusiastic but not overly verbose.
 You can be creative and personable.
 If asked about specific weather conditions, you'll respond based on the current conditions shown in the app.`;
 
-// Generate context string about current weather conditions with proper units
 export const generateWeatherContext = (weatherState: WeatherState): string => {
   if (!weatherState.data) {
     return "Current weather data is not available.";
@@ -56,7 +51,6 @@ export const generateWeatherContext = (weatherState: WeatherState): string => {
     const current = weatherState.data.current;
     const daily = weatherState.data.daily;
     
-    // Get units from the data
     const tempUnit: string = weatherState.temperatureUnit;
     const windUnit: string = weatherState.windSpeedUnit;
     const humidityUnit: string = weatherState.data.current_units?.relative_humidity_2m || "%";
@@ -65,26 +59,20 @@ export const generateWeatherContext = (weatherState: WeatherState): string => {
     const isDay = current.is_day === 1;
     const timeOfDay = isDay ? "day" : "night";
     
-    // Today's min/max
     const todayMaxTemp = daily.temperature_2m_max[1];
     const todayMinTemp = daily.temperature_2m_min[1];
     
-    // Precipitation probability for the day
     const precipProbability = daily.precipitation_probability_mean[1];
     
-    // Wind speed
     const windSpeed = current.wind_speed_10m;
     
-    // Humidity
     const humidity = current.relative_humidity_2m;
     
-    // UV index (from hourly data if available)
     const uvIndex = weatherState.data.hourly.uv_index[0];
     
-    // Sunrise and sunset
-    const sunrise = daily.sunrise[1].split('T')[1].substring(0, 5); // Format: HH:MM
-    const sunset = daily.sunset[1].split('T')[1].substring(0, 5); // Format: HH:MM
-    
+    const sunrise = daily.sunrise[1].split('T')[1].substring(0, 5);
+    const sunset = daily.sunset[1].split('T')[1].substring(0, 5);
+
     return `Current weather: ${currentCondition}, ${current.temperature_2m}${tempUnit} (feels like ${current.apparent_temperature}${tempUnit})
     Time of day: ${timeOfDay}
     Today's temperature range: ${todayMinTemp}${tempUnit} to ${todayMaxTemp}${tempUnit}
@@ -99,7 +87,6 @@ export const generateWeatherContext = (weatherState: WeatherState): string => {
   }
 };
 
-// Specific prompt templates for different question types
 export const WHAT_TO_WEAR_PROMPT = `${BASE_SYSTEM_PROMPT}
 When suggesting clothing options, consider the following weather conditions:
 
@@ -139,20 +126,16 @@ Include a brief explanation of why each activity would be good for this weather.
 Consider time of day, UV index, precipitation probability, and temperature when making recommendations.
 If the conditions aren't ideal for outdoor activities, suggest suitable alternatives.`;
 
-// Function to generate the appropriate prompt based on question type
 export const getPromptForQuestion = (
   questionType: string,
   weatherData: WeatherState
 ): string => {
-  // Generate weather context with proper units
   const weatherContext = generateWeatherContext(weatherData);
   
-  // Replace placeholder with actual weather context
   const replacePlaceholders = (prompt: string) => {
     return prompt.replace('WEATHER_CONTEXT', weatherContext);
   };
 
-  // Select appropriate prompt based on question type
   switch (questionType) {
     case 'whatToWear':
       return replacePlaceholders(WHAT_TO_WEAR_PROMPT);

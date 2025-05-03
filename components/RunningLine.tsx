@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Text, View, Easing, Dimensions } from 'react-native';
+import { Animated, Text, View, Easing } from 'react-native';
 import {useRoute} from "@react-navigation/native";
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
 
 type LocationTitleProps = {
     title: string | null;
