@@ -283,10 +283,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const weatherState = useAppSelector(x => x.weather);
     const { favorites } = useAppSelector(state => state.favorites);
 
-    useEffect(() => {
-        dispatch(loadFavorites());
-    }, []);
-
     const isCurrentFavorite = favorites.some(fav =>
         fav.name === weatherState.currentCity
         && fav.country == weatherState.currentCountry
@@ -343,12 +339,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const handleChatPress = useCallback(() => {
         navigation.navigate('Chat');
     }, [navigation]);
-
-    const headerBackgroundOpacity = scrollY.interpolate({
-        inputRange: [0, 50],
-        outputRange: [0, 0.7],
-        extrapolate: 'clamp',
-    });
 
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],

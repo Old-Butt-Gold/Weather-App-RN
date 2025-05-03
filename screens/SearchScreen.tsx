@@ -96,10 +96,7 @@ const SearchScreen = () => {
     const { language } = useAppSelector(state => state.appSettings);
     const [searchQuery, setSearchQuery] = useState('');
     const temperatureUnit = useAppSelector(state => state.weather.temperatureUnit);
-    useEffect(() => {
-        console.log('Favorites loaded:', favorites); // Добавим для отладки
-        dispatch(loadFavorites());
-    }, []);
+
     useEffect(() => {
         // Загружаем избранные при монтировании
         dispatch(loadFavorites());
