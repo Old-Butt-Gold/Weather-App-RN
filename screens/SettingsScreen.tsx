@@ -47,7 +47,6 @@ export const SettingsScreen = () => {
 
     const handleLanguageChange = (newLanguage: 'ru' | 'en') => {
         dispatch(setLanguage(newLanguage));
-        i18n.changeLanguage(newLanguage);
     };
 
     return (

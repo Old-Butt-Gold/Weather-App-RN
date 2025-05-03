@@ -31,11 +31,10 @@ const Initializer = () => {
     const dispatch = useAppDispatch();
     const [initFinished, setInitFinished] = useState(false);
     const { language } = useAppSelector(state => state.appSettings);
-    const { temperatureUnit, windSpeedUnit } = useAppSelector(state => state.weather);
     useEffect(() => {
         async function initialize() {
             try {
-                i18n.changeLanguage(language);
+                await i18n.changeLanguage(language);
 
                 await dispatch(fetchLocationByIP(i18n.language));
 

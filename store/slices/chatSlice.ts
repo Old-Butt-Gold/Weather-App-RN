@@ -120,12 +120,6 @@ const chatSlice = createSlice({
         console.log('[CHAT SLICE] Request fulfilled, adding messages');
         state.isLoading = false;
         
-        // Add user question to messages
-        state.messages.push({
-          role: 'user',
-          content: action.payload.questionText,
-        });
-        
         // Add assistant response to messages
         state.messages.push({
           role: 'assistant',
