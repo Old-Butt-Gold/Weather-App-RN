@@ -177,6 +177,7 @@ const SearchScreen = () => {
                     keyboardShouldPersistTaps="handled"
                     data={displayedResults}
                     keyExtractor={(item) => item.id.toString()}
+                    removeClippedSubviews={false}
                     renderItem={({ item }) => (
                         <SearchResultCard
                             item={item}

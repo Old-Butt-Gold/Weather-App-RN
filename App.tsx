@@ -17,13 +17,13 @@ import { WeatherMapScreen } from './screens/WeatherMapScreen';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from './store/store';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 import {fetchLocationByIP} from "./store/actions/fetchLocationByIp";
 import SearchScreen from "./screens/SearchScreen";
-import {createStackNavigator} from "@react-navigation/stack";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -64,7 +64,7 @@ const Initializer = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator detachInactiveScreens={false}
+            <Stack.Navigator
                 screenOptions={{
                     headerShown: false,
                     gestureEnabled: true,
