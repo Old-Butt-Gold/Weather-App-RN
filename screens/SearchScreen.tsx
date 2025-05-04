@@ -15,7 +15,7 @@ import BackgroundImage from "../components/BackgroundImage";
 import {getLocalDateByOffsetSeconds} from "../store/utils/convertUtils";
 import { Keyboard } from 'react-native';
 import { loadFavorites } from '../store/slices/favoritesSlice';
-import {LocationTitle} from "../components/RunningLine";
+import {RunningLine} from "../components/RunningLine";
 
 interface SearchResultCardProps {
     item: LocationResult;
@@ -55,12 +55,18 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, temp
 
             <View className="flex-row w-full justify-between h-[70%] items-start">
                 <View className="flex-col ">
-                    <LocationTitle
+                    <RunningLine
                         title={item.name}
                         maxWidth={220}
                         scrollThreshold={15}
+                        textClassName="text-2xl font-extrabold text-white"
                     />
-                    <Text className="text-white/40 font-poppins-regular text-[12px] h-5 leading-4">{formatLocation()}</Text>
+                    <RunningLine
+                        title={formatLocation()}
+                        maxWidth={200}
+                        scrollThreshold={20}
+                        textClassName="text-white/40 font-poppins-regular text-[12px] h-5 leading-4"
+                    />
                     <Text className="text-white font-poppins-regular text-[13px] text-left leading-[35px]">
                         {`${localDate?.getUTCHours().toString().padStart(2, '0')}:${localDate?.getUTCMinutes().toString().padStart(2, '0')}`}
                     </Text>
@@ -72,9 +78,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, temp
                 </View>
             </View>
             <View className="flex-row w-full justify-between items-start">
-                <Text className="text-white font-manrope-medium text-[13px] max-w-60 text-left">
-                    {t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}
-                </Text>
+                    <RunningLine
+                        title= {t("clock.weather_code_descriptions." + item.weatherInfo.weather_code)}
+                        maxWidth={150}
+                        scrollThreshold={20}
+                        textClassName="text-white font-manrope-medium text-[13px] max-w-60 text-left"
+                    />
                 <Text className="text-white/80 font-manrope-bold text-[13px]">
                     {`${t("search.maxLabel")} : ${~~item.weatherInfo.temperature_max!}${temperatureUnit}, ${t("search.minLabel")} : ${~~item.weatherInfo.temperature_min!}${temperatureUnit}`}
                 </Text>

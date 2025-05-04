@@ -2,21 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Text, View, Easing } from 'react-native';
 import {useRoute} from "@react-navigation/native";
 
-type LocationTitleProps = {
+type RunningLineProps = {
     title: string | null;
     maxWidth?: number;
     scrollThreshold?: number;
+    textClassName?: string; // Новый пропс для классов текста
 };
 
-export const LocationTitle = ({
+export const RunningLine = ({
                                   title,
                                   maxWidth = 150,
-                                  scrollThreshold = 10
-                              }: LocationTitleProps) => {
+                                  scrollThreshold = 10,
+                                  textClassName = "text-2xl font-extrabold text-white"
+                              }: RunningLineProps) => {
     const [shouldScroll, setShouldScroll] = useState(false);
     const animatedValue = useRef(new Animated.Value(0)).current;
     const textWidth = useRef(0);
     const currentScreenName = useRoute().name;
+
     useEffect(() => {
         if (title && title.length >= scrollThreshold) {
             setShouldScroll(true);
@@ -75,7 +78,7 @@ export const LocationTitle = ({
                     }}
                 >
                     <Text
-                        className="text-2xl font-extrabold text-white"
+                        className={textClassName} // Применяем переданные классы
                         numberOfLines={1}
                         adjustsFontSizeToFit={false}
                         style={{
@@ -87,15 +90,14 @@ export const LocationTitle = ({
                 </Animated.View>
             ) : (
                 <Text
-                    className="text-2xl font-extrabold text-white text-center self-start"
+                    className={`${textClassName} text-center self-start`} // Добавляем дополнительные классы
                 >
                     {title}
                 </Text>
             )}
             {(currentScreenName === "Home") &&
-                ( <View className="w-20 h-2 bg-[#004b5870] rounded-full opacity-15" />)
+                ( <View className="w-20 h-2 bg-white/70 rounded-full opacity-15" />)
             }
-
         </View>
     );
 };

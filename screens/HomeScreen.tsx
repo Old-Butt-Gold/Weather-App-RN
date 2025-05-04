@@ -27,7 +27,7 @@ import {
     removeFavorite,
     saveFavorites
 } from "../store/slices/favoritesSlice";
-import {LocationTitle} from "../components/RunningLine";
+import {RunningLine} from "../components/RunningLine";
 import {AnimatedWeatherCloud} from "../components/WeatherAnimation";
 
 
@@ -350,8 +350,9 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                         <IconButton icon={<Ionicons name="planet" size={24} color="white"/>}/>
                     </TouchableOpacity>
                 </View>
-                <LocationTitle
+                <RunningLine
                     title={weatherState.currentCity}
+                    textClassName="text-2xl font-extrabold text-white"
                 />
 
                 <View className="flex-row gap-2">
