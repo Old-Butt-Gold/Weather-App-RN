@@ -5,7 +5,7 @@ import { useAppSelector } from "../store/hooks";
 
 // Типы погоды и соответствующие им группы анимаций
 //type WeatherType = 'clear' | 'partly_cloudy' | 'fog' | 'drizzle' | 'rain' | 'snow' | 'thunderstorm';
-type WeatherType = 'clear' | 'partly_cloudy';
+type WeatherType = 'clear' | 'partly_cloudy' | 'rain';
 interface WeatherAnimationGroup {
     idle: Array<{ source: any; repeats: number }>;
     click: {
@@ -44,18 +44,6 @@ const WEATHER_ANIMATIONS: Record<WeatherType, WeatherAnimationGroup> = {
         },
         night: { source: require("../assets/svg-icons/animations/moon/Moon.json"), repeats: 1 }
     },
-    // partly_cloudy: {
-    //     idle: [
-    //         { source: require('../assets/svg-icons/animations/cloudSpeaks.json'), repeats: 3 },
-    //         { source: require('../assets/svg-icons/animations/cloudyStatic.json'), repeats: 2 },
-    //         { source: require('../assets/svg-icons/animations/cloudyStart.json'), repeats: 1 }
-    //     ],
-    //     click: {
-    //         day: { source: require('../assets/svg-icons/animations/welcomeCloudy.json'), repeats: 1 },
-    //         night: { source: require('../assets/svg-icons/animations/angryCloud.json'), repeats: 1 }
-    //     },
-    //     night: { source: require('../assets/svg-icons/animations/partlyCloudyNight.json'), repeats: 1 }
-    // },
     // fog: {
     //     idle: [
     //         { source: require('../assets/svg-icons/animations/fogAnimation.json'), repeats: 3 }
@@ -76,17 +64,16 @@ const WEATHER_ANIMATIONS: Record<WeatherType, WeatherAnimationGroup> = {
     //     },
     //     night: { source: require('../assets/svg-icons/animations/drizzleNight.json'), repeats: 1 }
     // },
-    // rain: {
-    //     idle: [
-    //         { source: require('../assets/svg-icons/animations/rainAnimation.json'), repeats: 2 },
-    //         { source: require('../assets/svg-icons/animations/rainHeavy.json'), repeats: 1 }
-    //     ],
-    //     click: {
-    //         day: { source: require('../assets/svg-icons/animations/rainClick.json'), repeats: 1 },
-    //         night: { source: require('../assets/svg-icons/animations/rainNightClick.json'), repeats: 1 }
-    //     },
-    //     night: { source: require('../assets/svg-icons/animations/rainNight.json'), repeats: 1 }
-    // },
+    rain: {
+        idle: [
+            { source: require('../assets/svg-icons/animations/rain_sunny/Rain.json'), repeats: 1 },
+        ],
+        click: {
+            day: { source: require("../assets/svg-icons/animations/rain_sunny/RainClick.json"), repeats: 1 },
+            night: { source: require("../assets/svg-icons/animations/rain_night/RainSleepClickNight.json"), repeats: 1 }
+        },
+        night: { source: require("../assets/svg-icons/animations/rain_night/SleepRain.json"), repeats: 1 }
+    },
     // snow: {
     //     idle: [
     //         { source: require('../assets/svg-icons/animations/snowAnimation.json'), repeats: 3 }
@@ -133,12 +120,10 @@ type AnimatedWeatherCloudProps = {
 // Функция для определения типа погоды по коду
 const getWeatherType = (weatherCode: number): WeatherType => {
     if (weatherCode === 0 || weatherCode === 1) return 'clear';
-    // if (weatherCode >= 2 && weatherCode <= 3) return 'partly_cloudy';
-    // if (weatherCode === 45 || weatherCode === 48) return 'fog';
+    if ((weatherCode >= 2 && weatherCode <= 3) || weatherCode === 45) return 'partly_cloudy';
     // if (weatherCode >= 51 && weatherCode <= 57) return 'drizzle';
-    // if (weatherCode >= 61 && weatherCode <= 67 || weatherCode >= 80 && weatherCode <= 86) return 'rain';
+     if ((weatherCode >= 61 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 86) || (weatherCode >= 95 && weatherCode <= 99)) return 'rain';
     // if (weatherCode >= 71 && weatherCode <= 77) return 'snow';
-    // if (weatherCode >= 95 && weatherCode <= 99) return 'thunderstorm';
     return 'clear'; // fallback
 };
 
