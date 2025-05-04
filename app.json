@@ -30,7 +30,8 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.FOREGROUND_SERVICE"
-      ]
+      ],
+      "package": "com.oldbuttgold.WeatherAppRN"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -59,7 +60,6 @@
             "./assets/fonts/Poppins/Poppins-SemiBoldItalic.ttf",
             "./assets/fonts/Poppins/Poppins-Thin.ttf",
             "./assets/fonts/Poppins/Poppins-ThinItalic.ttf",
-
             "./assets/fonts/Manrope/Manrope-Bold.ttf",
             "./assets/fonts/Manrope/Manrope-ExtraBold.ttf",
             "./assets/fonts/Manrope/Manrope-ExtraLight.ttf",
@@ -70,6 +70,12 @@
           ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a9f2c738-6ec8-41a0-a19a-6c51e731ffe2"
+      }
+    },
+    "owner": "old-butt-gold"
   }
 }

@@ -53,3 +53,8 @@ export const convertWindSpeed = (
 
     return value;
 };
+
+export const getLocalDateByOffsetSeconds = (offsetSeconds: number): Date => {
+    const utcNow = new Date();
+    return new Date(utcNow.getTime() + offsetSeconds * 1000);
+};

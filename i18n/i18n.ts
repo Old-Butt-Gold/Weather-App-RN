@@ -1,8 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Локализованные ресурсы
-
 import enTranslation from './locales/en.json';
 import ruTranslation from './locales/ru.json';
 import {store} from "../store/store";
@@ -14,13 +12,13 @@ i18n
             en: { translation: enTranslation },
             ru: { translation: ruTranslation }
         },
-        lng: 'ru', // язык по умолчанию
+        lng: 'ru',
         fallbackLng: 'ru',
         interpolation: {
-            escapeValue: false // не экранировать HTML
+            escapeValue: false
         },
         react: {
-            useSuspense: false // отключить Suspense, если не используется
+            useSuspense: false
         }
     });
 

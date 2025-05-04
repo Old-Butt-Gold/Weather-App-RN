@@ -1,9 +1,7 @@
 ﻿import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import LoadingOverlay from "./LoadingOverlay";
 
-// WebView props
 interface MapWebViewProps {
     initialLatitude: number;
     initialLongitude: number;
@@ -11,7 +9,6 @@ interface MapWebViewProps {
     onMessage: (event: any) => void;
 }
 
-// Generates HTML for the map
 const getWeatherMapHtml = (latitude: number, longitude: number, translations: Record<string, any>) => {
     return `
     <!DOCTYPE html>
@@ -21,7 +18,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Weather Map</title>
       
-      <!-- Leaflet CSS -->
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
       
       <style>
@@ -106,7 +102,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
       <div id="map"></div>
       <div id="weather-data" class="weather-data" style="display: none;"></div>
       
-      <!-- Leaflet JS -->
       <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
       
       <script>
@@ -117,7 +112,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             message: message
           }));
         }
-        // Initialize map
         const map = L.map('map', { zoomControl: false, attributionControl: false })
       .setView([${latitude}, ${longitude}], 12);
         
@@ -129,7 +123,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           popupAnchor: [0, -32]
         });
         
-        // Функция скрытия данных
         function hideWeatherData() {
           document.getElementById('weather-data').style.display = 'none';
           if (lastMarker) {
@@ -138,7 +131,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }
         }
         
-        // Base light map layer
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
           minZoom: 3,
@@ -153,7 +145,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           attribution: 'Google Maps'
         }).addTo(map);
         
-        // Add scale
         L.control.scale({
           position: 'bottomleft',
           imperial: false
@@ -161,9 +152,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
         
         let weatherLayer = null;        
         
-        // Function to display legend
         function addLegend(layerType) {
-          // Remove existing legend if any
           if (window.legend) {
             map.removeControl(window.legend);
             window.legend = null;
@@ -171,7 +160,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           
           if (layerType === 'none') return;
           
-          // Create new legend based on layer type
           window.legend = L.control({position: 'bottomright'});
           
           window.legend.onAdd = function(map) {
@@ -181,47 +169,99 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             switch(layerType) {
               case 'temp_new':
                 title = '${translations.legend.temperature}';
-                gradient = 'linear-gradient(to right, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF9900, #FF0000)';
-                stops = ['< -20', '-10', '0', '10', '20', '30 >'];
+                gradient = 'linear-gradient(to right, ' +
+                  'rgba(130,22,146,1) 0%, ' +      // -65°C
+                  'rgba(130,22,146,1) 9%, ' +       // -55°C
+                  'rgba(130,22,146,1) 18%, ' +      // -45°C
+                  'rgba(130,22,146,1) 27%, ' +      // -40°C
+                  'rgba(130,87,219,1) 36%, ' +      // -30°C
+                  'rgba(32,140,236,1) 45%, ' +      // -20°C
+                  'rgba(32,196,232,1) 55%, ' +      // -10°C
+                  'rgba(35,221,221,1) 64%, ' +      // 0°C
+                  'rgba(194,255,40,1) 73%, ' +      // 10°C
+                  'rgba(255,240,40,1) 82%, ' +      // 20°C
+                  'rgba(255,194,40,1) 91%, ' +     // 25°C
+                  'rgba(252,128,20,1) 100%)';      // 30°C
+                stops = ['-65', '-40', '-20', '0', '10', '20', '30'];
                 break;
+            
               case 'precipitation_new':
                 title = '${translations.legend.precipitation}';
-                gradient = 'linear-gradient(to right, #FFFFFF, #A4F9FF, #00ECFF, #009BF9, #0059FF, #0400F2)';
-                stops = ['0', '0.5', '1', '2', '5', '10'];
+                gradient = 'linear-gradient(to right, ' +
+                  'rgba(225,200,100,0) 0%, ' +     // 0mm
+                  'rgba(200,150,150,0) 10%, ' +    // 0.1mm
+                  'rgba(150,150,170,0) 20%, ' +    // 0.2mm
+                  'rgba(120,120,190,0) 30%, ' +     // 0.5mm
+                  'rgba(110,110,205,0.3) 40%, ' +  // 1mm
+                  'rgba(80,80,225,0.7) 60%, ' +    // 10mm
+                  'rgba(20,20,255,0.9) 100%)';     // 140mm
+                stops = ['0', '0.5', '1', '10', '140'];
                 break;
+            
               case 'wind_new':
                 title = '${translations.legend.wind}';
-                gradient = 'linear-gradient(to right, #FFFFFF, #D9FF00, #33CC33, #00ECFF, #009BF9, #9A00F9)';
-                stops = ['0', '2', '5', '10', '15', '20+'];
+                gradient = 'linear-gradient(to right, ' +
+                  'rgba(255,255,255,0) 0%, ' +     // 1 m/s
+                  'rgba(238,206,206,0.4) 20%, ' +  // 5 m/s
+                  'rgba(179,100,188,0.7) 40%, ' + // 15 m/s
+                  'rgba(63,33,59,0.8) 60%, ' +    // 25 m/s
+                  'rgba(116,76,172,0.9) 80%, ' +  // 50 m/s
+                  'rgba(13,17,38,1) 100%)';        // 200 m/s
+                stops = ['1', '5', '15', '25', '50', '200'];
                 break;
+            
               case 'clouds_new':
                 title = '${translations.legend.clouds}';
-                gradient = 'linear-gradient(to right, #FFFFFF, #DDDDDD, #AAAAAA, #666666, #333333, #000000)';
+                gradient = 'linear-gradient(to right, ' +
+                  'rgba(255,255,255,0) 0%, ' +
+                  'rgba(253,253,255,0.1) 10%, ' +
+                  'rgba(252,251,255,0.2) 20%, ' +
+                  'rgba(250,250,255,0.3) 30%, ' +
+                  'rgba(249,248,255,0.4) 40%, ' +
+                  'rgba(247,247,255,0.5) 50%, ' +
+                  'rgba(246,245,255,0.75) 60%, ' +
+                  'rgba(244,244,255,1) 70%, ' +
+                  'rgba(243,242,255,1) 80%, ' +
+                  'rgba(242,241,255,1) 90%, ' +
+                  'rgba(240,240,255,1) 100%)';
                 stops = ['0', '20', '40', '60', '80', '100'];
                 break;
+            
               case 'pressure_new':
                 title = '${translations.legend.pressure}';
-                gradient = 'linear-gradient(to right, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF9900, #FF0000)';
-                stops = ['990', '1000', '1010', '1020', '1030', '1040'];
+                gradient = 'linear-gradient(to right, ' +
+                  'rgba(0,115,255,1) 0%, ' +      // 94000 Pa
+                  'rgba(0,170,255,1) 14%, ' +     // 96000 Pa
+                  'rgba(75,208,214,1) 28%, ' +    // 98000 Pa
+                  'rgba(141,231,199,1) 42%, ' +   // 100000 Pa
+                  'rgba(176,247,32,1) 56%, ' +    // 101000 Pa
+                  'rgba(240,184,0,1) 70%, ' +     // 102000 Pa
+                  'rgba(251,85,21,1) 84%, ' +     // 104000 Pa
+                  'rgba(198,0,0,1) 100%)';        // 108000 Pa
+                stops = ['940', '980', '1010', '1020', '1040', '1080'];
                 break;
+            
               case 'snow_new':
                 title = '${translations.legend.snow}';
-                gradient = 'linear-gradient(to right, #FFFFFF, #E6F5FF, #CCE5FF, #99CCFF, #66A3FF, #3366FF)';
-                stops = ['0', '1', '2', '5', '10', '20+'];
+                gradient = 'linear-gradient(to right, ' +
+                  'transparent 0%, ' +           // 0mm
+                  '#00d8ff 20%, ' +             // 5mm
+                  '#00b6ff 40%, ' +            // 10mm
+                  '#9549ff 100%)';             // 25mm
+                stops = ['0', '5', '10', '25'];
                 break;
+            
               default:
                 title = '${translations.legend.title}';
                 gradient = 'none';
                 stops = [];
-            }
+             }
             
             div.innerHTML = '<h4>' + title + '</h4>';
             
             if (gradient !== 'none') {
-              // Add gradient
               div.innerHTML += '<div style="height: 30px; background: ' + gradient + '; margin-bottom: 5px;"></div>';
               
-              // Add labels
               let stopsHtml = '<div class="labels">';
               for (let i = 0; i < stops.length; i++) {
                 stopsHtml += '<span>' + stops[i] + '</span>';
@@ -234,32 +274,21 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           };
           
           window.legend.addTo(map);
-          log('Added legend for ' + layerType);
         }
         
-        // Function to set weather layer
         function setWeatherLayer(layerType) {
-          log('Setting weather layer: ' + layerType);
-          
-          // Remove current weather layer if any
           if (weatherLayer) {
             map.removeLayer(weatherLayer);
             weatherLayer = null;
-            log('Removed previous weather layer');
           }
           
-          // If NONE layer selected, exit
           if (layerType === 'none') {
-            log('No weather layer selected');
             addLegend('none');
             return;
           }
           
-          // Create URL for OpenWeatherMap layer
           const weatherLayerUrl = '${process.env.EXPO_PUBLIC_OPENWEATHER_API_URL}/' + layerType + '/{z}/{x}/{y}.png?appid=${process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY}';
-          log('Weather layer URL template: ' + weatherLayerUrl);
           
-          // Create new layer
           weatherLayer = L.tileLayer(weatherLayerUrl, {
             maxZoom: 19,
             minZoom: 3,
@@ -272,15 +301,11 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             log('Error loading tile: ' + tile._url);
           });
           
-          // Add layer to map
           weatherLayer.addTo(map);
-          log('Weather layer added to map');
           
-          // Add legend
           addLegend(layerType);
         }
         
-        // Function to display weather data
         function displayWeatherData(data) {
           const weatherDataDiv = document.getElementById('weather-data');
   
@@ -303,7 +328,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           ;
           
           if (data.current) {
-            // Get weather description by code
             const weatherDesc = getWeatherDescription(data.current.weather_code);
             
             html += '<div style="display: flex; align-items: center; margin-bottom: 3px;">';
@@ -311,8 +335,26 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             html += '<div>' + weatherDesc + '</div>';
             html += '</div>';
             
-            html += '<div>${translations.weatherData.temperature}: ' + Math.round(data.current.temperature_2m) + '°C</div>';
-            html += '<div>${translations.weatherData.wind}: ' + data.current.wind_speed_10m.toFixed(1) + ' m/s</div>';
+            const tempUnit = data.temperatureUnit;
+            const windUnit = data.windSpeedUnit;
+            
+            log(tempUnit);
+            log(windUnit);
+            
+            let translationWindUnit = "";
+            
+            if (windUnit === 'km/h') {
+                translationWindUnit = '${translations.weatherDescription.kilometersHour}';
+            }
+            if (windUnit === 'm/s') {
+                translationWindUnit = '${translations.weatherDescription.metersSeconds}';
+            }
+            if (windUnit === 'mph') {
+                translationWindUnit = '${translations.weatherDescription.mph}';
+            }
+            
+            html += '<div>${translations.weatherData.temperature}: ' + Math.round(data.current.temperature_2m) + ' ' + tempUnit + '</div>';
+            html += '<div>${translations.weatherData.wind}: ' + data.current.wind_speed_10m.toFixed(1) + ' ' + translationWindUnit + '</div>';
             html += '<div>${translations.weatherData.humidity}: ' + data.current.relative_humidity_2m + '%</div>';
             
             if (data.current.pressure_msl) {
@@ -344,7 +386,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           weatherDataDiv.style.display = 'block';
         }
         
-        // Get weather icon by code
         function getWeatherIcon(code, isDay) {
           isDay = isDay === 1;
           
@@ -397,7 +438,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }
         }
         
-        // Get weather description by code
         function getWeatherDescription(code) {
           switch(code) {
             case 0:
@@ -457,10 +497,8 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }
         }
         
-        // Map click handler
         map.on('click', function(e) {
           
-          // Отправляем запрос на получение данных
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'FETCH_WEATHER',
             latitude: e.latlng.lat,
@@ -468,15 +506,12 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
           }));
         });
         
-        // Tell React Native that map is loaded
         map.whenReady(function() {
-          log('Map ready');
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'MAP_LOADED'
           }));
         });
         
-        // Message handler from React Native
         window.addEventListener('message', function(event) {
           try {
             const data = JSON.parse(event.data);
@@ -486,7 +521,7 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             } else if (data.type === 'SET_WEATHER_DATA') {
               displayWeatherData(data.weatherData);
             } else if (data.type === 'SET_CENTER') {
-              const zoom = Math.min(Math.max(data.zoom || 10, 3), 18); // Ограничение зума
+              const zoom = Math.min(Math.max(data.zoom || 10, 3), 19); 
               map.setView([data.latitude, data.longitude], zoom);
             }
           } catch (error) {
@@ -499,7 +534,6 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
   `;
 };
 
-// MapWebView component with forwardRef to allow parent to access the WebView ref
 const MapWebView = forwardRef<WebView, MapWebViewProps>(
     (
         {
@@ -509,26 +543,26 @@ const MapWebView = forwardRef<WebView, MapWebViewProps>(
             onMessage,
         }, ref
     ) => {
-    return (
-        <WebView
-            ref={ref}
-            style={styles.webView}
-            source={{
-                html: getWeatherMapHtml(
-                    initialLatitude,
-                    initialLongitude,
-                    translations
-                )
-            }}
-            onMessage={onMessage}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            incognito={true}
-            cacheEnabled={false}
-            startInLoadingState={true}
-        />
-    );
-});
+        return (
+            <WebView
+                ref={ref}
+                style={styles.webView}
+                source={{
+                    html: getWeatherMapHtml(
+                        initialLatitude,
+                        initialLongitude,
+                        translations
+                    )
+                }}
+                onMessage={onMessage}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                incognito={true}
+                cacheEnabled={false}
+                startInLoadingState={true}
+            />
+        );
+    });
 
 const styles = StyleSheet.create({
     webView: {

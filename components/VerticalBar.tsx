@@ -13,16 +13,17 @@ type VerticalBarProps = {
     fillOpacity?: number;
 };
 
-export const VerticalBar: React.FC<VerticalBarProps> = ({
-                                                            width,
-                                                            height,
-                                                            value,
-                                                            maxValue,
-                                                            color = 'orange',
-                                                            backgroundColor = '#333',
-                                                            backgroundOpacity = 1,
-                                                            fillOpacity = 1,
-                                                        }) => {
+export const VerticalBar: React.FC<VerticalBarProps> = (
+    {
+        width,
+        height,
+        value,
+        maxValue,
+        color = 'orange',
+        backgroundColor = '#333',
+        backgroundOpacity = 1,
+        fillOpacity = 1,
+    }) => {
     const clampedValue = Math.max(0, Math.min(value, maxValue));
     const fillHeight = (clampedValue / maxValue) * height;
     const radius = width / 2;
@@ -36,7 +37,6 @@ export const VerticalBar: React.FC<VerticalBarProps> = ({
                     </ClipPath>
                 </Defs>
 
-                {/* Фоновая шкала */}
                 <Rect
                     x={0}
                     y={0}
@@ -47,7 +47,6 @@ export const VerticalBar: React.FC<VerticalBarProps> = ({
                     fillOpacity={backgroundOpacity}
                 />
 
-                {/* Заполненная шкала */}
                 <Rect
                     x={0}
                     y={height - fillHeight}

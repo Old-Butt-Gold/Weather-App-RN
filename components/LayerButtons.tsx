@@ -67,7 +67,6 @@ const LayerButtons: React.FC<LayerButtonsProps> = (
                     <Text style={styles.layerButtonText}>🗺️</Text>
                 </TouchableOpacity>
 
-                {/* GPS button placed below layers */}
                 <TouchableOpacity
                     style={[styles.layerButton, styles.gpsButton]}
                     onPress={onLocationRequest}

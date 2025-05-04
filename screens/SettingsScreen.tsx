@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { t } from 'i18next';
@@ -6,9 +6,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setTemperatureUnit, setWindSpeedUnit } from '../store/slices/weatherSlice';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import i18n from '../i18n/i18n';
 import {setLanguage} from "../store/slices/appSettingsSlice";
-import {AppSettingsState} from "../store/types/types";
 import BackgroundImage from "../components/BackgroundImage";
 
 const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -20,11 +18,12 @@ const SettingSection = ({ title, children }: { title: string; children: React.Re
     </View>
 );
 
-const SettingButton = ({
-                           label,
-                           isActive,
-                           onPress,
-                       }: {
+const SettingButton = (
+    {
+        label,
+        isActive,
+        onPress,
+    }: {
     label: string;
     isActive: boolean;
     onPress: () => void;
@@ -45,8 +44,8 @@ export const SettingsScreen = () => {
     const { temperatureUnit, windSpeedUnit } = useAppSelector(state => state.weather);
     const { language } = useAppSelector(state => state.appSettings);
 
-    const handleLanguageChange = async (settings: AppSettingsState) => {
-        dispatch(setLanguage(settings.language));
+    const handleLanguageChange = (newLanguage: 'ru' | 'en') => {
+        dispatch(setLanguage(newLanguage));
     };
 
     return (
@@ -54,6 +53,7 @@ export const SettingsScreen = () => {
             <BackgroundImage
                 blurRadius={5}
                 overlayColor="rgba(25, 50, 75, 0.2)"
+                isPage={true}
             />
             <BlurView
                 intensity={50}
@@ -61,7 +61,6 @@ export const SettingsScreen = () => {
                 className="flex-1"
             >
                 <View className="p-4 pt-14">
-                    {/* Header */}
                     <View className="flex-row items-center justify-between mb-8">
                         <TouchableOpacity onPress={() => navigation.goBack()}>
                             <Ionicons name="arrow-back" size={24} color="white" />
@@ -71,23 +70,21 @@ export const SettingsScreen = () => {
                     </View>
 
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        {/* Language Settings */}
                         <SettingSection title={t('settings.language')}>
                             <View className="flex-row gap-2">
                                 <SettingButton
                                     label="Русский"
                                     isActive={language === 'ru'}
-                                    onPress={async () => await handleLanguageChange({language: 'ru'})}
+                                    onPress={() => handleLanguageChange('ru')}
                                 />
                                 <SettingButton
                                     label="English"
                                     isActive={language === 'en'}
-                                    onPress={async () => await handleLanguageChange({language: 'en'})}
+                                    onPress={() => handleLanguageChange('en')}
                                 />
                             </View>
                         </SettingSection>
 
-                        {/* Temperature Units */}
                         <SettingSection title={t('settings.temperatureUnit')}>
                             <View className="flex-row gap-2">
                                 <SettingButton
@@ -103,7 +100,6 @@ export const SettingsScreen = () => {
                             </View>
                         </SettingSection>
 
-                        {/* Wind Speed Units */}
                         <SettingSection title={t('settings.windSpeedUnit')}>
                             <View className="flex-row gap-2">
                                 <SettingButton

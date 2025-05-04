@@ -1,7 +1,6 @@
 import React, {useEffect, useState, useMemo} from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { Svg, Path, Defs, LinearGradient, Stop, Circle, ClipPath, G } from 'react-native-svg';
-import { BlurView } from 'expo-blur';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import RingWithGradient from "../utils/RingWithGradientProps";
 import {t} from "i18next";
@@ -155,7 +154,6 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
 {
     const weatherState = useAppSelector(x => x.weather);
 
-    // TODO parse data from store
     const sunMoonData : SunMoonData = {
         sunrise: new Date(weatherState.data!.daily.sunrise[1]),
         sunset: new Date(weatherState.data!.daily.sunset[1]),
@@ -273,7 +271,6 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
                         </ClipPath>
                     </Defs>
 
-                    {/* Sun path */}
                     {showSun && (
                         <>
                             <Path
@@ -308,7 +305,6 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
                         </>
                     )}
 
-                    {/* Moon path */}
                     {showMoon && (
                         <>
                             <Path
@@ -343,17 +339,14 @@ export const SunMoonWidget: React.FC<SunMoonWidgetProps> =
                         </>
                     )}
 
-                    {/* Position markers */}
                     <Circle cx={sunStartPos.x} cy={sunStartPos.y} r={6} fill="white" opacity={1} />
                     <Circle cx={sunEndPos.x} cy={sunEndPos.y} r={6} fill="white" opacity={1} />
 
-                    {/* Celestial bodies */}
                     {showSun && <CelestialIcon type="sun" x={sunCurrentPos.x} y={sunCurrentPos.y} />}
                     {showMoon && <CelestialIcon type="moon" x={moonCurrentPos.x} y={moonCurrentPos.y} />}
                 </Svg>
             </View>
 
-            {/* Center display - UV Index or Moon Phase */}
             <View className="absolute top-1/2 left-1/2" style={{
                 transform: [{ translateX: -30 }, { translateY: -30 }],
                 width: 60,

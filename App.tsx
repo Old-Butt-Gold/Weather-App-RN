@@ -8,32 +8,34 @@ import {useCustomFonts} from "./utils/loads/fonts";
 import * as SplashScreen from 'expo-splash-screen';
 import {Provider} from "react-redux";
 import {store} from "./store/store";
-import {useAppDispatch} from "./store/hooks";
+import {useAppDispatch, useAppSelector} from "./store/hooks";
 import {fetchWeather} from "./store/actions/fetchWeather";
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ChatScreen} from "./screens/ChatScreen";
 import { SettingsScreen } from './screens/SettingsScreen';
 import { WeatherMapScreen } from './screens/WeatherMapScreen';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistor } from './store/store';
 
 const Stack = createNativeStackNavigator();
 
 import {fetchMoonPhase} from "./store/actions/fetchMoonPhase";
 import {fetchAirQuality} from "./store/actions/fetchAirQuality";
 import {fetchLocationByIP} from "./store/actions/fetchLocationByIp";
-import {setLanguage} from "./store/slices/appSettingsSlice";
 import SearchScreen from "./screens/SearchScreen";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
 SplashScreen.preventAutoHideAsync();
 
 const Initializer = () => {
     const dispatch = useAppDispatch();
     const [initFinished, setInitFinished] = useState(false);
+    const { language } = useAppSelector(state => state.appSettings);
 
     useEffect(() => {
         async function initialize() {
             try {
-                dispatch(setLanguage('ru'));
+                await i18n.changeLanguage(language);
 
                 await dispatch(fetchLocationByIP(i18n.language));
 
@@ -65,14 +67,29 @@ const Initializer = () => {
             <Stack.Navigator
                 screenOptions={{
                     headerShown: false,
-                    animation: 'slide_from_right',
+                    gestureEnabled: true,
                 }}
             >
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen name="Chat" component={ChatScreen} />
-                <Stack.Screen name="Settings" component={SettingsScreen} />
-                <Stack.Screen name="WeatherMap" component={WeatherMapScreen} />
-                <Stack.Screen name="Search" component={SearchScreen} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{
+                    animation: 'fade',
+                    gestureEnabled: false
+                }}/>
+                <Stack.Screen name="Chat" component={ChatScreen} options={{
+                    animation: 'fade_from_bottom',
+                    gestureDirection: 'vertical',
+                }} />
+                <Stack.Screen name="Settings" component={SettingsScreen} options={{
+                    animation: 'slide_from_left',
+                    gestureDirection: 'horizontal'
+                }}/>
+                <Stack.Screen name="WeatherMap" component={WeatherMapScreen} options={{
+                    animation: 'slide_from_bottom',
+                    gestureDirection: 'vertical'
+                }}/>
+                <Stack.Screen name="Search" component={SearchScreen} options={{
+                    animation: 'slide_from_right',
+                    gestureDirection: 'horizontal'
+                }}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
@@ -104,11 +121,13 @@ export default function App() {
 
     return (
         <Provider store={store}>
+            <PersistGate loading={<ActivityIndicator size="large" />} persistor={persistor}>
             <I18nextProvider i18n={i18n}>
                 <SafeAreaView className="flex-1" style={{paddingTop: Platform.OS === 'ios' ? 0 : 0}}>
                     <Initializer />
                 </SafeAreaView>
             </I18nextProvider>
+            </PersistGate>
         </Provider>
     );
 }

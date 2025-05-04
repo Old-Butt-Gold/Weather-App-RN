@@ -1,8 +1,6 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Image, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import React, {useCallback, useEffect, useRef} from 'react';
+import { View, TouchableOpacity, Text, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { BlurView } from 'expo-blur';
-import LottieView from 'lottie-react-native';
 import { ClockComponent } from '../components/ClockComponent';
 import { Ionicons, FontAwesome, Entypo, AntDesign, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { t } from 'i18next';
@@ -10,6 +8,7 @@ import { NextDaysWeatherWidget } from "../components/NextDaysWeatherWidget";
 import { SunMoonWidget } from "../components/SunMoonWidget";
 import { AirCompositionWidget } from "../components/AirCompositionWidget";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+
 import {
     getCurrentHumidity, getCurrentLocalDateFromWeatherState,
     getCurrentRainChance,
@@ -18,30 +17,19 @@ import {
     getCurrentTemperatureUnit, getCurrentWindSpeed, getCurrentWindUnit,
     getWeatherCodeForHour
 } from "../store/utils/weatherUtils";
-import { fetchLocationByIP } from "../store/actions/fetchLocationByIp";
 import { fetchWeather } from "../store/actions/fetchWeather";
 import { fetchMoonPhase } from "../store/actions/fetchMoonPhase";
 import { fetchAirQuality } from "../store/actions/fetchAirQuality";
 import BackgroundImage from "../components/BackgroundImage";
+import {
+    addFavorite,
+    ExtendedLocationResult, loadFavorites,
+    removeFavorite,
+    saveFavorites
+} from "../store/slices/favoritesSlice";
+import {RunningLine} from "../components/RunningLine";
+import {AnimatedWeatherCloud} from "../components/WeatherAnimation";
 
-// Константы анимаций
-const ANIMATIONS = [
-    { source: require("../assets/svg-icons/animations/cloudSpeaks.json"), repeats: 3 },
-    { source: require("../assets/svg-icons/animations/cloudyStatic.json"), repeats: 2 },
-    { source: require("../assets/svg-icons/animations/cloudSpeaks.json"), repeats: 1 },
-    { source: require("../assets/svg-icons/animations/cloudyStart.json"), repeats: 1 },
-    { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 }
-];
-
-const CLICK_ANIMATIONS = {
-    day: { source: require("../assets/svg-icons/animations/welcomeCloudy.json"), repeats: 1 },
-    night: { source: require("../assets/svg-icons/animations/angryCloud.json"), repeats: 1 }
-};
-
-const NIGHT_ANIMATION = {
-    source: require("../assets/svg-icons/animations/sleepingCloudNew.json"),
-    repeats: 1
-};
 
 type WeatherDetailsItem = {
     icon: any,
@@ -54,30 +42,8 @@ type WeatherButtonsProps = {
     onChatPress: () => void;
 };
 
-// Фильтры цветов для Lottie
-const LOTTIE_COLOR_FILTERS = [
-    { keypath: "mouth", color: "#2B3F56" },
-    { keypath: "eye_r", color: "#2B3F56" },
-    { keypath: "eye_l", color: "#2B3F56" },
-    { keypath: "hand", color: "#FFFFFF" },
-    { keypath: "hand Container", color: "#FFFFFF" },
-    { keypath: "cloud", color: "#FFFFFF" },
-];
-
-// Типы
-type AnimationState = {
-    currentIndex: number;
-    repeatCount: number;
-    animationKey: number;
-    clickAnimation: { source: any; repeats: number } | null;
-};
-
 type WeatherCardProps = {
     isNightTime: boolean;
-    currentAnimation: any;
-    animationKey: number;
-    onAnimationPress: () => void;
-    onAnimationFinish: () => void;
     onChatPress: () => void;
 };
 
@@ -85,27 +51,10 @@ type HomeScreenProps = {
     navigation: any;
 };
 
-// Компонент кнопки с иконкой
 const IconButton = ({ icon }: { icon: React.ReactNode }) => (
     <View className="p-3 rounded-[15] bg-[#004b5870]/15">{icon}</View>
 );
 
-// Компонент заголовка местоположения
-const LocationTitle = () => {
-    const weatherCity = useAppSelector(state => state.weather.currentCity);
-
-    return (
-        <View className="flex-col items-center">
-            <Text className="font-manrope-extrabold text-2xl text-accent">{weatherCity}</Text>
-            <View className="w-20 h-2 bg-[#004b5870]/15 rounded-2xl"></View>
-        </View>
-    );
-};
-
-// Компонент размытого фона
-
-
-// Компонент заголовка погоды
 const WeatherHeader = () => {
     const weatherState = useAppSelector(state => state.weather);
     const localNowDate = getCurrentLocalDateFromWeatherState(weatherState);
@@ -114,12 +63,11 @@ const WeatherHeader = () => {
     const monthShort = t(`date.monthShort.${localNowDate.getUTCMonth()}`);
 
     const dispatch = useAppDispatch();
-
-    const currentLanguage = useAppSelector(state => state.appSettings.language);
+    useAppSelector(state => state.appSettings.language);
 
     const handleRefreshPress = async () => {
         try {
-            // Параллельно обновляем все данные
+
             await Promise.all([
                 dispatch(fetchWeather()),
                 dispatch(fetchMoonPhase()),
@@ -145,7 +93,6 @@ const WeatherHeader = () => {
     );
 };
 
-// Компонент диапазона температур
 const TemperatureRange = () => {
     const weatherState = useAppSelector(state => state.weather);
     const max = ~~weatherState.data?.daily.temperature_2m_max[1]!;
@@ -168,7 +115,7 @@ const TemperatureRange = () => {
 
 const TemperatureDisplay = () => {
     const weatherState = useAppSelector(x => x.weather);
-    const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(weatherState, 0));
+    const currentWeatherDescription = t("clock.weather_code_descriptions." + weatherState.data?.current.weather_code);
     const currentTemperature = ~~getCurrentTemperature(weatherState);
     const currentTemperatureUnit = getCurrentTemperatureUnit(weatherState);
 
@@ -202,7 +149,6 @@ const TemperatureDisplay = () => {
     );
 };
 
-// Компонент карточки деталей погоды
 const WeatherDetailCard = ({ item } : { item: WeatherDetailsItem }) => {
     return (
         <View className="w-[48%] bg-white/15 rounded-[20px] px-3 py-4">
@@ -232,7 +178,6 @@ const WeatherButtons = ({ onChatPress }: WeatherButtonsProps) => (
     </View>
 );
 
-// Компонент деталей погоды
 const WeatherDetails = () => {
     const weatherState = useAppSelector(x => x.weather);
     const weatherDetails: WeatherDetailsItem[] = [];
@@ -272,13 +217,7 @@ const WeatherDetails = () => {
     </View>
 };
 
-// Компонент контента погоды
-const WeatherContent = ({
-                            currentAnimation,
-                            animationKey,
-                            onAnimationPress,
-                            onAnimationFinish,
-                        }: Omit<WeatherCardProps, 'isNightTime' | 'onChatPress'>) => (
+const WeatherContent = ({ isNightTime,onChatPress  }: Omit<WeatherCardProps, 'onChatPress | currentAnimation | animationKey | onAnimationPress | onAnimationFinish'>) => (
     <View className="flex-col">
         <View className="flex-row justify-between">
             <TemperatureDisplay />
@@ -287,40 +226,23 @@ const WeatherContent = ({
                     className="rounded-xl overflow-hidden ml-2"
                     style={{ width: 170, height: 120 }}
                 >
-                    <TouchableOpacity onPress={onAnimationPress} activeOpacity={1}>
-                        <LottieView
-                            key={animationKey}
-                            source={currentAnimation}
-                            autoPlay
-                            loop={false}
-                            style={{ width: '100%', height: '100%' }}
-                            onAnimationFinish={onAnimationFinish}
-                            colorFilters={LOTTIE_COLOR_FILTERS}
-                        />
-                    </TouchableOpacity>
+                    <AnimatedWeatherCloud isNightTime={isNightTime}  />
                 </View>
             </View>
         </View>
     </View>
 );
 
-// Компонент карточки погоды
 const WeatherCard = ({
                          isNightTime,
-                         currentAnimation,
-                         animationKey,
-                         onAnimationPress,
-                         onAnimationFinish,
                          onChatPress
                      }: WeatherCardProps) => (
     <View className="w-full mt-6 p-6 relative overflow-hidden rounded-[25] bg-[#45576170]/25">
         <View className="w-full z-10">
             <WeatherHeader />
             <WeatherContent
-                currentAnimation={currentAnimation}
-                animationKey={animationKey}
-                onAnimationPress={onAnimationPress}
-                onAnimationFinish={onAnimationFinish}
+                isNightTime={isNightTime}
+                onChatPress={onChatPress}
             />
             <WeatherButtons onChatPress={onChatPress}/>
             <WeatherDetails />
@@ -328,66 +250,72 @@ const WeatherCard = ({
     </View>
 );
 
-// Главный компонент экрана
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const dispatch = useAppDispatch();
     // DON'T DELETE IT ALL APP WORK ON THIS LINE
     const { language } = useAppSelector(state => state.appSettings);
     const weatherState = useAppSelector(x => x.weather);
-    const [animationState, setAnimationState] = useState<AnimationState>({
-        currentIndex: 0,
-        repeatCount: 0,
-        animationKey: 0,
-        clickAnimation: null
-    });
+    const { favorites } = useAppSelector(state => state.favorites);
+
+    useEffect(() => {
+        dispatch(loadFavorites());
+    }, []);
+
+    const isCurrentFavorite = favorites.some(fav =>
+        fav.name === weatherState.currentCity
+        && fav.country == weatherState.currentCountry
+        && fav.country_code == weatherState.currentIsoCountryCode
+        && fav.utc_offset_seconds == weatherState.data!.utc_offset_seconds
+        && fav.admin1 == weatherState.currentAdmin1
+    );
+
+    const toggleFavorite = async () => {
+        if (!weatherState.location) return;
+
+        const location: ExtendedLocationResult = {
+            utc_offset_seconds: weatherState.data!.utc_offset_seconds,
+            id: Date.now(),
+            name: weatherState.currentCity,
+            country: weatherState.currentCountry,
+            country_code: weatherState.currentIsoCountryCode,
+            admin1: weatherState.currentAdmin1,
+            latitude: weatherState.location.latitude,
+            longitude: weatherState.location.longitude,
+            weatherInfo: {
+                temperature_current: weatherState.data!.current.temperature_2m,
+                temperature_max: weatherState.data!.daily.temperature_2m_max[1],
+                temperature_min: weatherState.data!.daily.temperature_2m_min[1],
+                weather_code: weatherState.data!.current.weather_code,
+                is_day: weatherState.data!.current.is_day === 1,
+                utc_offset_seconds: weatherState.data!.utc_offset_seconds
+            }
+        };
+
+        if (isCurrentFavorite) {
+            const favToRemove = favorites.find(fav =>
+                fav.name === weatherState.currentCity
+                && fav.country == weatherState.currentCountry
+                && fav.country_code == weatherState.currentIsoCountryCode
+                && fav.utc_offset_seconds == weatherState.data!.utc_offset_seconds
+                && fav.admin1 == weatherState.currentAdmin1
+            );
+            if (favToRemove) {
+                dispatch(removeFavorite(favToRemove.id));
+                const updatedFavorites = favorites.filter(fav => fav.id !== favToRemove.id);
+                dispatch(saveFavorites(updatedFavorites));
+            }
+        } else {
+            dispatch(addFavorite(location));
+            dispatch(saveFavorites([...favorites, location]));
+        }
+    };
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const isNightTime = weatherState.data!.current.is_day === 0;
 
-    const handleAnimationPress = useCallback(() => {
-        setAnimationState(prev => ({
-            ...prev,
-            clickAnimation: isNightTime ? CLICK_ANIMATIONS.night : CLICK_ANIMATIONS.day,
-            animationKey: prev.animationKey + 1
-        }));
-    }, [isNightTime]);
-
-    const handleAnimationFinish = useCallback(() => {
-        setAnimationState(prev => {
-            if (prev.clickAnimation) {
-                return { ...prev, clickAnimation: null };
-            }
-
-            if (isNightTime) {
-                return { ...prev, animationKey: prev.animationKey + 1 };
-            }
-
-            if (prev.repeatCount < ANIMATIONS[prev.currentIndex].repeats - 1) {
-                return {
-                    ...prev,
-                    repeatCount: prev.repeatCount + 1,
-                    animationKey: prev.animationKey + 1
-                };
-            }
-
-            return {
-                ...prev,
-                repeatCount: 0,
-                currentIndex: (prev.currentIndex + 1) % ANIMATIONS.length,
-                animationKey: prev.animationKey + 1
-            };
-        });
-    }, [isNightTime]);
-
     const handleChatPress = useCallback(() => {
         navigation.navigate('Chat');
     }, [navigation]);
-
-    const headerBackgroundOpacity = scrollY.interpolate({
-        inputRange: [0, 50],
-        outputRange: [0, 0.7],
-        extrapolate: 'clamp',
-    });
 
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -400,9 +328,9 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             <BackgroundImage
                 blurRadius={5}
                 overlayColor="rgba(25, 50, 75, 0.2)"
+                isPage={true}
             />
 
-            {/* Фиксированный хедер с анимированным фоном */}
             <Animated.View
                 className="w-full flex-row justify-between items-center px-4 pt-10 pb-4 absolute top-0 left-0 right-0 z-50"
                 style={{
@@ -414,13 +342,28 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     }),
                 }}
             >
+                <View className="flex-row gap-2">
                 <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                     <IconButton icon={<Ionicons name="settings" size={24} color="white"/>}/>
                 </TouchableOpacity>
-                <LocationTitle/>
-                <View className="flex-row gap-2">
                     <TouchableOpacity onPress={() => navigation.navigate('WeatherMap')}>
                         <IconButton icon={<Ionicons name="planet" size={24} color="white"/>}/>
+                    </TouchableOpacity>
+                </View>
+                <RunningLine
+                    title={weatherState.currentCity}
+                    textClassName="text-2xl font-extrabold text-white"
+                />
+
+                <View className="flex-row gap-2">
+                    <TouchableOpacity onPress={toggleFavorite}>
+                        <IconButton icon={
+                            <Ionicons
+                                name={isCurrentFavorite ? "heart" : "heart-outline"}
+                                size={24}
+                                color={isCurrentFavorite ? "white" : "white"}
+                            />
+                        }/>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Search')}>
                         <IconButton icon={<FontAwesome name="search" size={24} color="white"/>}/>
@@ -441,10 +384,6 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 <View className="flex-1 justify-center items-center px-4 w-full relative pb-5">
                     <WeatherCard
                         isNightTime={isNightTime}
-                        currentAnimation={getCurrentAnimation(animationState, isNightTime)}
-                        animationKey={animationState.animationKey}
-                        onAnimationPress={handleAnimationPress}
-                        onAnimationFinish={handleAnimationFinish}
                         onChatPress={handleChatPress}
                     />
                     <ClockComponent />
@@ -455,14 +394,4 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
             </Animated.ScrollView>
         </>
     );
-};
-
-// Вспомогательная функция для получения текущей анимации
-const getCurrentAnimation = (
-    state: AnimationState,
-    isNightTime: boolean
-) => {
-    if (state.clickAnimation) return state.clickAnimation.source;
-    if (isNightTime) return NIGHT_ANIMATION.source;
-    return ANIMATIONS[state.currentIndex].source;
 };

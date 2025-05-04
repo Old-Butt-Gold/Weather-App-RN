@@ -2,7 +2,6 @@
 import React from 'react';
 import {View, Text, Dimensions} from 'react-native';
 import {t} from "i18next";
-import {BlurView} from "expo-blur";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Svg, { Text as SvgText, Path} from "react-native-svg";
 import {describeRingSector} from "../utils/ringUtils";
@@ -19,7 +18,7 @@ const Infolabel = () => (
 );
 
 const getAngleFromAQI = (aqi: number, max_aqi :number): number => {
-    const clampedAQI = Math.min(max_aqi, Math.max(0, aqi)); // защита от выхода за диапазон
+    const clampedAQI = Math.min(max_aqi, Math.max(0, aqi));
     return 45 + (clampedAQI / max_aqi) * (315 - 45);
 };
 
@@ -51,37 +50,37 @@ export const AirCompositionWidget = () => {
     airComposition.push({
        label: "CO",
        value: weatherState.airQuality!.us_aqi_carbon_monoxide[currentHour].toString(),
-       max: "30" //??
+       max: "30"
     });
 
     airComposition.push({
         label: "PM2.5",
         value: weatherState.airQuality!.us_aqi_pm2_5[currentHour].toString(),
-        max: "250" //??
+        max: "250"
     });
 
     airComposition.push({
         label: "PM10",
         value: weatherState.airQuality!.us_aqi_pm10[currentHour].toString(),
-        max: "425" //??
+        max: "425"
     });
 
     airComposition.push({
         label: "O₃",
         value: weatherState.airQuality!.us_aqi_ozone[currentHour].toString(),
-        max: "201" //??
+        max: "201"
     });
 
     airComposition.push({
         label: "NO₂",
         value: weatherState.airQuality!.us_aqi_nitrogen_dioxide[currentHour].toString(),
-        max: "1250" //??
+        max: "1250"
     });
 
     airComposition.push({
         label: "SO₂",
         value: weatherState.airQuality!.us_aqi_sulphur_dioxide[currentHour].toString(),
-        max: "605" //??
+        max: "605"
     });
 
     const AIR_QUALITY_INDEX = weatherState.airQuality!.us_aqi[currentHour];

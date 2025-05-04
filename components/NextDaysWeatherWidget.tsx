@@ -4,23 +4,21 @@ import { t } from 'i18next';
 import WeatherIcon from "../assets/svg-icons/icon_components/WeatherIcon";
 import { BlurView } from "expo-blur";
 import WeatherIndicator from "./WeatherIndicator";
-import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {formatDate, getCurrentTemperatureUnit} from "../store/utils/weatherUtils";
-import {TemperatureUnit} from "../store/types/types";
+import {useAppSelector} from "../store/hooks";
+import {formatDate} from "../store/utils/weatherUtils";
 
 type ForecastItem = {
-    dayOfWeek: string; // берем из date.weekdayShort.число
-    date: string;      // вызвать функцию из utils
+    dayOfWeek: string;
+    date: string;
     temperature_2m_mean: number;
     temperature_2m_max: number;
     temperature_2m_min: number;
     weather_code: string;
-    wind_speed_10m_mean: number;  // Добавим скорость ветра для примера
-    precipitation_probability_mean: number; // Добавим шанс осадков для примера
-    relative_humidity_2m_mean: number;   // Добавим влажность для примера
+    wind_speed_10m_mean: number;
+    precipitation_probability_mean: number;
+    relative_humidity_2m_mean: number;
 };
 
-// --- ForecastProps теперь знает про индекс
 type ForecastProps = {
     item: ForecastItem,
     isFirst: boolean,
@@ -84,7 +82,6 @@ const ForecastCard = (props: ForecastProps) => {
                 </View>
             </View>
 
-            {/* Здесь выводим надпись снизу */}
             {bottomLabel !== "" && (
                 <Text className="w-full text-center text-white mt-1 font-manrope-bold text-xs">
                     {bottomLabel}

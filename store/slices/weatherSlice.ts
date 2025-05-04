@@ -1,14 +1,6 @@
-// src/redux/slices/weatherSlice.ts
 
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {
-    AirQuality,
-    Coordinates,
-    Status,
-    TemperatureUnit,
-    WeatherData,
-    WindSpeedUnit
-} from "../types/types";
+import {AirQuality, Coordinates, Status, TemperatureUnit, WeatherData, WindSpeedUnit} from "../types/types";
 import {fetchWeather} from "../actions/fetchWeather";
 import {fetchMoonPhase} from "../actions/fetchMoonPhase";
 import {fetchAirQuality} from "../actions/fetchAirQuality";
@@ -24,6 +16,9 @@ export interface WeatherState {
     temperatureUnit: TemperatureUnit;
     windSpeedUnit: WindSpeedUnit;
     currentCity: string | null;
+    currentCountry: string | null;
+    currentAdmin1: string | null;
+    currentIsoCountryCode: string | null;
     moonPhase: number | null;
     airQuality: AirQuality | null;
 }
@@ -37,6 +32,9 @@ const initialState: WeatherState = {
     temperatureUnit: '°C',
     windSpeedUnit: 'km/h',
     currentCity: null,
+    currentAdmin1: null,
+    currentCountry: null,
+    currentIsoCountryCode: null,
     moonPhase: null,
     airQuality: null,
 };
@@ -93,10 +91,18 @@ const weatherSlice = createSlice({
         setCurrentCity(state, action: PayloadAction<string | null>) {
             state.currentCity = action.payload;
         },
+        setCurrentCountry(state, action: PayloadAction<string | null>) {
+            state.currentCountry = action.payload;
+        },
+        setCurrentIsoCountryCode(state, action: PayloadAction<string | null>) {
+            state.currentIsoCountryCode = action.payload;
+        },
+        setCurrentAdmin1(state, action: PayloadAction<string | null>) {
+            state.currentAdmin1 = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
-            // Обработка fetchWeather
             .addCase(fetchWeather.pending, (state) => {
                 state.status = 'loading';
                 state.loading = true;
@@ -112,7 +118,6 @@ const weatherSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload ? action.payload.message : 'Ошибка запроса';
             })
-            // Обработка fetchMoonPhase
             .addCase(fetchMoonPhase.pending, (state) => {
                 state.status = 'loading';
                 state.loading = true;
@@ -153,6 +158,9 @@ const weatherSlice = createSlice({
                 state.loading = false;
                 state.location = action.payload;
                 state.currentCity = action.payload.city;
+                state.currentCountry = action.payload.country;
+                state.currentIsoCountryCode = action.payload.countryCode;
+                state.currentAdmin1 = "";
             })
             .addCase(fetchLocationByIP.rejected, (state, action) => {
                 state.status = 'failed';
@@ -166,5 +174,5 @@ const weatherSlice = createSlice({
 
 const DEFAULT_COORDINATES = { latitude: 53.9, longitude: 27.56667, city: "Минск" };
 
-export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity } = weatherSlice.actions;
+export const { setTemperatureUnit, setWindSpeedUnit, setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode, setCurrentAdmin1 } = weatherSlice.actions;
 export const weatherReducer = weatherSlice.reducer;
