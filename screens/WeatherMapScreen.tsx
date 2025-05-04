@@ -8,7 +8,13 @@ import WeatherHeader from '../components/WeatherHeader';
 import LoadingOverlay from '../components/LoadingOverlay';
 import ActionButton from '../components/ActionButton';
 import { fetchMapWeather } from '../store/actions/fetchMapWeather';
-import {setLocation, setCurrentCity, setCurrentCountry, setCurrentIsoCountryCode} from '../store/slices/weatherSlice';
+import {
+    setLocation,
+    setCurrentCity,
+    setCurrentCountry,
+    setCurrentIsoCountryCode,
+    setCurrentAdmin1
+} from '../store/slices/weatherSlice';
 import { fetchWeather } from '../store/actions/fetchWeather';
 import { fetchMoonPhase } from '../store/actions/fetchMoonPhase';
 import { fetchAirQuality } from '../store/actions/fetchAirQuality';
@@ -98,6 +104,7 @@ export const WeatherMapScreen = ({ navigation }: WeatherMapScreenProps) => {
             dispatch(setCurrentCity(weatherData.name));
             dispatch(setCurrentCountry(weatherData.country));
             dispatch(setCurrentIsoCountryCode(weatherData.isoCountryCode));
+            dispatch(setCurrentAdmin1(""));
 
             await Promise.all([
                 dispatch(fetchWeather()),

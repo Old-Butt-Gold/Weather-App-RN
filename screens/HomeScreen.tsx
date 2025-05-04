@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import { View, TouchableOpacity, Text, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ClockComponent } from '../components/ClockComponent';
@@ -23,7 +23,7 @@ import { fetchAirQuality } from "../store/actions/fetchAirQuality";
 import BackgroundImage from "../components/BackgroundImage";
 import {
     addFavorite,
-    ExtendedLocationResult,
+    ExtendedLocationResult, loadFavorites,
     removeFavorite,
     saveFavorites
 } from "../store/slices/favoritesSlice";
@@ -256,6 +256,10 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const { language } = useAppSelector(state => state.appSettings);
     const weatherState = useAppSelector(x => x.weather);
     const { favorites } = useAppSelector(state => state.favorites);
+
+    useEffect(() => {
+        dispatch(loadFavorites());
+    }, []);
 
     const isCurrentFavorite = favorites.some(fav =>
         fav.name === weatherState.currentCity

@@ -93,7 +93,6 @@ const SearchScreen = () => {
     const temperatureUnit = useAppSelector(state => state.weather.temperatureUnit);
 
     useEffect(() => {
-        dispatch(loadFavorites());
 
         return () => {
             setSearchQuery('');

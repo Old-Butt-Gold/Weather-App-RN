@@ -71,7 +71,8 @@ const Initializer = () => {
                 }}
             >
                 <Stack.Screen name="Home" component={HomeScreen} options={{
-                    animation: 'fade'
+                    animation: 'fade',
+                    gestureEnabled: false
                 }}/>
                 <Stack.Screen name="Chat" component={ChatScreen} options={{
                     animation: 'fade_from_bottom',
