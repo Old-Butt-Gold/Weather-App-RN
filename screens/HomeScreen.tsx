@@ -115,7 +115,7 @@ const TemperatureRange = () => {
 
 const TemperatureDisplay = () => {
     const weatherState = useAppSelector(x => x.weather);
-    const currentWeatherDescription = t("clock.weather_code_descriptions." + getWeatherCodeForHour(weatherState, 0));
+    const currentWeatherDescription = t("clock.weather_code_descriptions." + weatherState.data?.current.weather_code);
     const currentTemperature = ~~getCurrentTemperature(weatherState);
     const currentTemperatureUnit = getCurrentTemperatureUnit(weatherState);
 

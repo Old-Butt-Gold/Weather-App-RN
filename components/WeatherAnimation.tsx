@@ -4,8 +4,7 @@ import LottieView from 'lottie-react-native';
 import { useAppSelector } from "../store/hooks";
 
 // Типы погоды и соответствующие им группы анимаций
-//type WeatherType = 'clear' | 'partly_cloudy' | 'fog' | 'drizzle' | 'rain' | 'snow' | 'thunderstorm';
-type WeatherType = 'clear' | 'partly_cloudy' | 'rain';
+type WeatherType = 'clear' | 'partly_cloudy' | 'rain' | 'drizzle' | 'snow';
 interface WeatherAnimationGroup {
     idle: Array<{ source: any; repeats: number }>;
     click: {
@@ -44,26 +43,16 @@ const WEATHER_ANIMATIONS: Record<WeatherType, WeatherAnimationGroup> = {
         },
         night: { source: require("../assets/svg-icons/animations/moon/Moon.json"), repeats: 1 }
     },
-    // fog: {
-    //     idle: [
-    //         { source: require('../assets/svg-icons/animations/fogAnimation.json'), repeats: 3 }
-    //     ],
-    //     click: {
-    //         day: { source: require('../assets/svg-icons/animations/fogClick.json'), repeats: 1 },
-    //         night: { source: require('../assets/svg-icons/animations/fogNightClick.json'), repeats: 1 }
-    //     },
-    //     night: { source: require('../assets/svg-icons/animations/fogNight.json'), repeats: 1 }
-    // },
-    // drizzle: {
-    //     idle: [
-    //         { source: require('../assets/svg-icons/animations/drizzleAnimation.json'), repeats: 2 }
-    //     ],
-    //     click: {
-    //         day: { source: require('../assets/svg-icons/animations/drizzleClick.json'), repeats: 1 },
-    //         night: { source: require('../assets/svg-icons/animations/drizzleNightClick.json'), repeats: 1 }
-    //     },
-    //     night: { source: require('../assets/svg-icons/animations/drizzleNight.json'), repeats: 1 }
-    // },
+    drizzle: {
+        idle: [
+            { source: require('../assets/svg-icons/animations/coldy/Coldy.json'), repeats: 1 }
+        ],
+        click: {
+            day: { source: require("../assets/svg-icons/animations/coldy/WindDrizzleClick.json"), repeats: 1 },
+            night: { source: require("../assets/svg-icons/animations/coldy/ClickWindSleeping.json"), repeats: 1 }
+        },
+        night: { source: require("../assets/svg-icons/animations/coldy/SleepingDrizzle.json"), repeats: 1 }
+    },
     rain: {
         idle: [
             { source: require('../assets/svg-icons/animations/rain_sunny/Rain.json'), repeats: 1 },
@@ -74,29 +63,19 @@ const WEATHER_ANIMATIONS: Record<WeatherType, WeatherAnimationGroup> = {
         },
         night: { source: require("../assets/svg-icons/animations/rain_night/SleepRain.json"), repeats: 1 }
     },
-    // snow: {
-    //     idle: [
-    //         { source: require('../assets/svg-icons/animations/snowAnimation.json'), repeats: 3 }
-    //     ],
-    //     click: {
-    //         day: { source: require('../assets/svg-icons/animations/snowClick.json'), repeats: 1 },
-    //         night: { source: require('../assets/svg-icons/animations/snowNightClick.json'), repeats: 1 }
-    //     },
-    //     night: { source: require('../assets/svg-icons/animations/snowNight.json'), repeats: 1 }
-    // },
-    // thunderstorm: {
-    //     idle: [
-    //         { source: require('../assets/svg-icons/animations/thunderstormAnimation.json'), repeats: 2 }
-    //     ],
-    //     click: {
-    //         day: { source: require('../assets/svg-icons/animations/thunderstormClick.json'), repeats: 1 },
-    //         night: { source: require('../assets/svg-icons/animations/thunderstormNightClick.json'), repeats: 1 }
-    //     },
-    //     night: { source: require('../assets/svg-icons/animations/thunderstormNight.json'), repeats: 1 }
-    // }
+    snow: {
+        idle: [
+            { source: require('../assets/svg-icons/animations/snow/SnowDay.json'), repeats: 1 }
+        ],
+        click: {
+            day: { source: require("../assets/svg-icons/animations/snow/SnowClickDay.json"), repeats: 1 },
+            night: { source: require("../assets/svg-icons/animations/snow/SleepSnow.json"), repeats: 1 }
+        },
+        night: { source: require("../assets/svg-icons/animations/snow/NightSnow.json"), repeats: 1 }
+    },
+
 };
 
-// Фильтры цветов для Lottie
 const LOTTIE_COLOR_FILTERS = [
     { keypath: 'mouth', color: '#2B3F56' },
     { keypath: 'eye_r', color: '#2B3F56' },
@@ -121,9 +100,9 @@ type AnimatedWeatherCloudProps = {
 const getWeatherType = (weatherCode: number): WeatherType => {
     if (weatherCode === 0 || weatherCode === 1) return 'clear';
     if ((weatherCode >= 2 && weatherCode <= 3) || weatherCode === 45) return 'partly_cloudy';
-    // if (weatherCode >= 51 && weatherCode <= 57) return 'drizzle';
+    if (weatherCode >= 51 && weatherCode <= 57) return 'drizzle';
      if ((weatherCode >= 61 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 86) || (weatherCode >= 95 && weatherCode <= 99)) return 'rain';
-    // if (weatherCode >= 71 && weatherCode <= 77) return 'snow';
+    if (weatherCode >= 71 && weatherCode <= 77) return 'snow';
     return 'clear'; // fallback
 };
 
