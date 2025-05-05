@@ -9,24 +9,6 @@ import { ChatMessage } from '../api/openai';
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import BackgroundImage from "../components/BackgroundImage";
 
-
-const BlurBackground = () => (
-  <BlurView
-    intensity={44}
-    tint="light"
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      borderRadius: 25,
-      overflow: 'hidden',
-      zIndex: 0,
-    }}
-  />
-);
-
 const SuggestedQuestion = ({
   icon, 
   question,
@@ -40,7 +22,7 @@ const SuggestedQuestion = ({
 }) => (
   <TouchableOpacity 
     onPress={() => onPress(questionType, question)}
-    className="flex-row items-center bg-white/20 rounded-[12] p-3 mb-2"
+    className="flex-row items-center bg-[#45576170]/25 rounded-[12] p-3 mb-2"
   >
     <View className="bg-white/30 rounded-full p-1.5 mr-2">
       {icon}
@@ -124,7 +106,7 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
           <View className="flex-row items-center mb-4 mt-10 px-4 pt-10">
             <TouchableOpacity 
               onPress={() => navigation.goBack()} 
-              className="p-3 rounded-[15] bg-white/20 mr-3"
+              className="p-3 rounded-[15] bg-[#45576170]/25 mr-3"
             >
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
@@ -134,9 +116,8 @@ export const ChatScreen = ({ navigation }: ChatScreenProps) => {
           </View>
           
           <View className="flex-1 px-4">
-            <View className="flex-1 rounded-[25] overflow-hidden relative mb-3">
-              <BlurBackground />
-              
+            <View className="flex-1 rounded-[25] overflow-hidden relative mb-3 bg-[#45576170]/25">
+
               <ScrollView 
                 ref={scrollViewRef}
                 className="p-4 mb-2"
