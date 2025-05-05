@@ -10,12 +10,7 @@ import Feather from '@expo/vector-icons/Feather';
 import {describeFullRing, describeRingSector} from '../utils/ringUtils';
 import {t} from "i18next";
 import {useAppSelector} from "../store/hooks";
-import {
-    formatDate,
-    getCurrentLocalDateFromWeatherState,
-    getCurrentWindUnit,
-    getWeatherCodeForHour
-} from "../store/utils/weatherUtils";
+import {formatDate, getCurrentLocalDateFromWeatherState, getCurrentWindUnit, getWeatherCodeForHour} from "../store/utils/weatherUtils";
 
 export type WeatherDataType = 'temperature' | 'wind' | 'precipitation';
 

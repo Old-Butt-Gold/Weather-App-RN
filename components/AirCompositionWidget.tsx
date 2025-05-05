@@ -1,4 +1,3 @@
-// components/AirCompositionWidget.tsx
 import React from 'react';
 import {View, Text, Dimensions} from 'react-native';
 import {t} from "i18next";

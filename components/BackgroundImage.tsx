@@ -70,7 +70,6 @@ const BackgroundImage: React.FC<BackgroundImageProps> = (
 
     const source = bgImages[weatherCode]?.[timeOfDay] ?? require('../assets/1_day.png');
 
-    // Анимация пульсации
     const pulseAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {

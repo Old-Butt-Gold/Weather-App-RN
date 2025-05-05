@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 import BackgroundImage from "../components/BackgroundImage";
 import {getLocalDateByOffsetSeconds} from "../store/utils/convertUtils";
 import { Keyboard } from 'react-native';
-import { loadFavorites } from '../store/slices/favoritesSlice';
 import {RunningLine} from "../components/RunningLine";
 
 interface SearchResultCardProps {

@@ -41,8 +41,7 @@ const ForecastCard = (props: ForecastProps) => {
         <View style={{ marginLeft, marginRight }}>
             <View
                 className={`bg-[#45576170]/25 rounded-2xl flex-col items-center justify-center px-3 py-3 w-[130] relative overflow-hidden ${
-                    index === 1 ? 'border-2 border-primary/70' : ''
-                }`}
+                    index === 1 ? 'border-2 border-primary/70' : ''}`}
             >
                 <BlurView
                     intensity={15}

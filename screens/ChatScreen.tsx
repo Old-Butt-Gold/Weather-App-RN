@@ -1,12 +1,7 @@
 import React, { useRef } from 'react';
 import {View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { 
-  Ionicons, 
-  MaterialCommunityIcons, 
-  Feather, 
-  FontAwesome5 
-} from '@expo/vector-icons';
+import {Ionicons, MaterialCommunityIcons, Feather, FontAwesome5} from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { t } from 'i18next';
 import {addMessage, sendQuestion} from '../store/slices/chatSlice';
