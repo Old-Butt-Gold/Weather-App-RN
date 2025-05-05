@@ -3,6 +3,9 @@ import {TemperatureUnit} from "../types/types";
 
 export interface RawWeatherResponse {
     utc_offset_seconds: number;
+    current_units: {
+        temperature_2m: TemperatureUnit;
+    }
     current: {
         temperature_2m: number;
         weather_code: number;

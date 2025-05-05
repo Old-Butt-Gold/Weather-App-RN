@@ -105,6 +105,7 @@ export interface LocationWeatherInfo {
     is_day: boolean | null;
     temperature_max: number | null;
     temperature_min: number | null;
+    temperatureUnit: TemperatureUnit;
 }
 
 

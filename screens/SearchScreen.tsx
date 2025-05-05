@@ -19,15 +19,14 @@ import {RunningLine} from "../components/RunningLine";
 interface SearchResultCardProps {
     item: LocationResult;
     onPress: () => void;
-    temperatureUnit: TemperatureUnit;
 }
 
-const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, temperatureUnit} : SearchResultCardProps) => {
+const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress} : SearchResultCardProps) => {
     const localDate = item.weatherInfo.utc_offset_seconds !== null
         ? getLocalDateByOffsetSeconds(item.weatherInfo.utc_offset_seconds)
         : null;
     const temperatureText = item.weatherInfo.temperature_current !== null
-        ? `${~~item.weatherInfo.temperature_current}${temperatureUnit}`
+        ? `${~~item.weatherInfo.temperature_current}${item.weatherInfo.temperatureUnit}`
         : '-';
 
     const formatLocation = () => {
@@ -84,7 +83,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({ item, onPress, temp
                         textClassName="text-white font-manrope-medium text-[13px] max-w-60 text-left"
                     />
                 <Text className="text-white/80 font-manrope-bold text-[13px]">
-                    {`${t("search.maxLabel")} : ${~~item.weatherInfo.temperature_max!}${temperatureUnit}, ${t("search.minLabel")} : ${~~item.weatherInfo.temperature_min!}${temperatureUnit}`}
+                    {`${t("search.maxLabel")} : ${~~item.weatherInfo.temperature_max!}${item.weatherInfo.temperatureUnit}, ${t("search.minLabel")} : ${~~item.weatherInfo.temperature_min!}${item.weatherInfo.temperatureUnit}`}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -181,7 +180,6 @@ const SearchScreen = () => {
                         <SearchResultCard
                             item={item}
                             onPress={async () => await handleSelectLocation(item)}
-                            temperatureUnit={temperatureUnit}
                         />
                     )}
                     ListEmptyComponent={

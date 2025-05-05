@@ -39,6 +39,7 @@ export const fetchLocation = createAppAsyncThunk<LocationResult[], FetchLocation
                         is_day: w.current.is_day === 1,
                         temperature_max: w.daily.temperature_2m_max[0],
                         temperature_min: w.daily.temperature_2m_min[0],
+                        temperatureUnit: w.current_units.temperature_2m,
                     };
 
                     return {

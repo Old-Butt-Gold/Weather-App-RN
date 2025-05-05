@@ -287,7 +287,8 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 temperature_min: weatherState.data!.daily.temperature_2m_min[1],
                 weather_code: weatherState.data!.current.weather_code,
                 is_day: weatherState.data!.current.is_day === 1,
-                utc_offset_seconds: weatherState.data!.utc_offset_seconds
+                utc_offset_seconds: weatherState.data!.utc_offset_seconds,
+                temperatureUnit: weatherState.temperatureUnit,
             }
         };
 
