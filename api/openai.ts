@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { getAzureOpenAIEndpoint, getAzureOpenAIKey } from '../utils/env';
-import { getPromptForQuestion } from '../utils/prompts';
-import { WeatherData, AppSettingsState } from '../store/types/types';
+import {getPromptForQuestion} from '../utils/prompts';
+import {AppSettingsState} from '../store/types/types';
 import {WeatherState} from "../store/slices/weatherSlice";
 
 export type ChatMessage = {
@@ -42,8 +41,8 @@ export const openaiService = {
       model?: string;
     } = {}
   ): Promise<string> => {
-    const endpoint = getAzureOpenAIEndpoint();
-    const apiKey = getAzureOpenAIKey();
+    const endpoint = process.env.EXPO_PUBLIC_AZURE_OPENAI_ENDPOINT;
+    const apiKey = process.env.EXPO_PUBLIC_AZURE_OPENAI_KEY;
     const model = options.model || 'gpt-4o-mini';
     
     const url = `${endpoint}/openai/deployments/${model}/chat/completions?api-version=2024-02-01`;
@@ -68,10 +67,7 @@ export const openaiService = {
       });
 
       if (response.data.choices && response.data.choices.length > 0) {
-        const content = response.data.choices[0].message.content;
-        console.log('[OPENAI SERVICE] Response content sample:', 
-          content.substring(0, 50) + '...');
-        return content;
+        return response.data.choices[0].message.content;
       }
 
       throw new Error('No response from OpenAI API');
@@ -80,7 +76,6 @@ export const openaiService = {
     }
   },
 
-  // Generate a chat response for a specific question type
   generateResponseForQuestion: async (
     questionType: string,
     userQuestion: string,

@@ -112,8 +112,8 @@ const getWeatherMapHtml = (latitude: number, longitude: number, translations: Re
             message: message
           }));
         }
-        const map = L.map('map', { zoomControl: false, attributionControl: false })
-      .setView([${latitude}, ${longitude}], 12);
+        
+        const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([${latitude}, ${longitude}], 12);
         
         let lastMarker = null;
         const arrowIcon = L.icon({

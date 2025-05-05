@@ -11,10 +11,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ onPress, title, visible }) 
     if (!visible) return null;
 
     return (
-        <TouchableOpacity
-            style={styles.button}
-            onPress={onPress}
-        >
+        <TouchableOpacity style={styles.button} onPress={onPress}>
             <Text style={styles.buttonText}>{title}</Text>
         </TouchableOpacity>
     );

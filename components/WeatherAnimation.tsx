@@ -96,7 +96,6 @@ type AnimatedWeatherCloudProps = {
     isNightTime: boolean;
 };
 
-// Функция для определения типа погоды по коду
 const getWeatherType = (weatherCode: number): WeatherType => {
     if (weatherCode === 0 || weatherCode === 1) return 'clear';
     if ((weatherCode >= 2 && weatherCode <= 3) || weatherCode === 45) return 'partly_cloudy';
@@ -112,9 +111,7 @@ export const AnimatedWeatherCloud: React.FC<AnimatedWeatherCloudProps> = ({
     const weatherState = useAppSelector(x => x.weather);
     const weatherCode = weatherState.data?.current.weather_code ?? 0;
 
-    // Определяем тип погоды
     const weatherType = getWeatherType(weatherCode);
-    // Получаем группу анимаций для текущего типа погоды
     const currentAnimations = WEATHER_ANIMATIONS[weatherType];
 
     const [animationState, setAnimationState] = useState<AnimationState>({
