@@ -24,7 +24,7 @@
     "rainy": "Rainy",
     "reload": "Reload",
     "temperatureRange": "Temperature range",
-    "nextDays": "7-day forecast"
+    "nextDays": "16-day forecast"
   },
   "windUnit": {
     "km/h":  "km/h",

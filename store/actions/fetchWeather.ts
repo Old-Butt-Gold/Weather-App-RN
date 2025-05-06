@@ -37,6 +37,7 @@ export const fetchWeather = createAppAsyncThunk<WeatherData>(
                 current:
                     'wind_speed_10m,weather_code,apparent_temperature,temperature_2m,relative_humidity_2m,is_day',
                 timezone: 'auto',
+                forecast_days: 16,
                 forecast_hours: '24',
                 past_days: '1',
                 wind_speed_unit: queryWindUnit,
