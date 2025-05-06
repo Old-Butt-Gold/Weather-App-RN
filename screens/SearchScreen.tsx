@@ -164,7 +164,6 @@ const SearchScreen = () => {
                     placeholder={t('search.placeholder')}
                     placeholderTextColor="#ffffff80"
                     className="flex-1 text-white font-manrope-medium text-base"
-                    autoFocus
                 />
             </View>
 
@@ -182,13 +181,20 @@ const SearchScreen = () => {
                             onPress={async () => await handleSelectLocation(item)}
                         />
                     )}
-                    ListEmptyComponent={
-                        <Text className="text-white/60 text-center font-manrope-medium">
-                            {searchQuery.length > 0
-                                ? t('search.noResults')
-                                : t('search.noFavorites')}
-                        </Text>
-                    }
+                    ListEmptyComponent={() => (
+                        <View className="flex-1 items-center justify-center mt-12">
+                            <Ionicons
+                                nam
+                                name={searchQuery.length > 0 ? "sad-outline" : "heart-outline"}
+                                size={40}
+                                color="rgba(255,255,255,0.3)"
+                                className="mb-3"
+                            />
+                            <Text className="text-white/50 text-center text-base">
+                                {searchQuery.length > 0 ? t('search.noResults') : t('search.noFavorites')}
+                            </Text>
+                        </View>
+                    )}
                 />
             )}
         </View>
