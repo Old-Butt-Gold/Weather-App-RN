@@ -2,6 +2,7 @@
 import {Coordinates, LocationData} from "../types/types";
 import * as Location from "expo-location";
 import {LocationAccuracy} from "expo-location";
+import yandexGeocoding from "../../api/yandexGeocoding";
 
 export const fetchLocationByIP = createAppAsyncThunk<LocationData, string>(
     'weather/fetchLocationByIP',
@@ -38,7 +39,7 @@ export const fetchLocationByIP = createAppAsyncThunk<LocationData, string>(
                     longitude: location.coords.longitude
                 };
 
-                const locationInfo = await getLocationName(coordinates.latitude, coordinates.longitude);
+                const locationInfo = await getLocationName(coordinates.latitude, coordinates.longitude, lang);
 
                 const locationData: LocationData = {
                     latitude: coordinates.latitude,
@@ -62,40 +63,60 @@ interface LocationInfo {
     isoCountryCode: string;
 }
 
-const getLocationName = async (latitude: number, longitude: number): Promise<LocationInfo> => {
+interface Components {
+    kind: string,
+    name: string,
+}
+
+const getLocationName = async (latitude: number, longitude: number, lang: string): Promise<LocationInfo> => {
     try {
-        const location = await Location.reverseGeocodeAsync({
-            latitude,
-            longitude
-        });
+        const params = {
+            geocode: `${longitude},${latitude}`,
+            lang: `${lang}_RU`,
+            apikey: process.env.EXPO_PUBLIC_YANDEX_API_KEY,
+            format: "json",
+            results: "1"
+        };
 
-        if (location && location.length > 0) {
-            const { city, district, street, region, country, isoCountryCode } = location[0];
+        const response = await yandexGeocoding.get('', { params });
 
-            let locationName: string = "";
-            let countryName: string = "";
-            let postalCodeName: string = "";
+        const data = response.data;
 
-            if (city)
-                locationName = city;
-            else if (district)
-                locationName = district;
-            else if (street)
-                locationName = street;
-            else if (region)
-                locationName = region;
+        if (data.response?.GeoObjectCollection?.featureMember?.length > 0) {
+            const geoObject = data.response.GeoObjectCollection.featureMember[0].GeoObject;
 
-            if (country)
-                countryName = country;
+            const countryCode = geoObject.metaDataProperty.GeocoderMetaData.AddressDetails?.Country?.CountryNameCode || '';
+            const country = geoObject.metaDataProperty.GeocoderMetaData.AddressDetails?.Country?.CountryName || '';
 
-            if (isoCountryCode)
-                postalCodeName = isoCountryCode;
+            const formattedAddress = geoObject.metaDataProperty.GeocoderMetaData.Address?.formatted || '';
+            const addressWithoutCountry = formattedAddress
+                .split(', ')
+                .slice(1)
+                .join(', ');
 
-            return {city: locationName, country: countryName, isoCountryCode: postalCodeName};
+            const components = geoObject.metaDataProperty.GeocoderMetaData.Address?.Components as Components[] || [];
+            const cityPart = components.find(c => c.kind === 'locality')?.name || '';
+            const streetPart = components.find(c => c.kind === 'street')?.name || '';
+            const streetHouse = components.find(c => c.kind === 'house')?.name || '';
+            const combinedAddress = [cityPart, streetPart, streetHouse].filter(Boolean).join(', ');
+
+            return {
+                city: addressWithoutCountry || combinedAddress || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+                country: country,
+                isoCountryCode: countryCode
+            };
         }
 
-        return {city: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, country: "", isoCountryCode: ""};
+        return {
+            city: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+            country: '',
+            isoCountryCode: ''
+        };
     } catch (error) {
-        return {city: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, country: "", isoCountryCode: ""};
+        return {
+            city: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+            country: '',
+            isoCountryCode: ''
+        };
     }
 };
